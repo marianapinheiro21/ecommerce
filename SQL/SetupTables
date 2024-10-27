@@ -78,3 +78,21 @@ CREATE TABLE IF NOT EXISTS ECOMMERCE.VENDA(
 	FOREIGN KEY (CART_ID) REFERENCES ECOMMERCE.CARRINHO(CART_ID),
 	FOREIGN KEY (CLIENT_NIF) REFERENCES ECOMMERCE.CLIENT(NIF)
 );
+
+
+--------------------------------------------------------------------------------------------
+--------------------------- ADICIONAR CONTEÚDOS INICIAIS------------------------------------
+--------------------------------------------------------------------------------------------
+
+
+--INSERT INTO ECOMMERCE.CLIENT
+--VALUES
+--('123456789', 'Maria do Mar', 'mariadomar@mail.com', '123Oliveira4', '987654321', 'Rua do Oceano n14'),
+--('134677985', 'Rodrigo Alteres', 'stronrodrigo@mail.pt', 'homemforte', '989898989', 'Rua do ginasio n5'),
+--('242424242', 'Mariana Pinheiro', 'marianapinheiro@ua.pt', 'palavrapass', '916562734', 'a minha rua n27');
+
+
+--INSERT INTO ECOMMERCE.LOGISTA
+--VALUES
+--('454545454', 'loja fixe', 'fixe@store.pt', 'password', '888888889', 'rua bacana n45'),
+--('124578986', 'Loja do Mestre André', 'mestreandre@store.pt', 'passdaloja', '326598147', 'Rua da loja n12');
