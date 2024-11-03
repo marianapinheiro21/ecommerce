@@ -1,7 +1,7 @@
 ----------------------------------DROP DROP----------------------------------
 DROP PROCEDURE ecommerce.logistaadicionaproduto(numeric,character varying,numeric,numeric,character varying,character varying); 
 DROP PROCEDURE ecommerce.clientefavorita(numeric,numeric);
-DROP PROCEDURE ECOMMERCE.ClientAddProductCart(numeric,numeric, numeric,numeric);
+--DROP PROCEDURE ECOMMERCE.ClientAddProductCart(numeric,numeric, numeric,numeric);
 
 CREATE OR REPLACE PROCEDURE ECOMMERCE.LogistaAdicionaProduto(O_NifLogista NUMERIC(9,0), O_NomeProduto VARCHAR, O_Stock NUMERIC, O_Preco NUMERIC(10,2), O_descricao VARCHAR, O_categoria VARCHAR)
 LANGUAGE plpgsql
@@ -29,16 +29,16 @@ $$;
 
 
 
---CREATE OR REPLACE PROCEDURE ECOMMERCE.NewCart(O_USER_NIF)
---LANGUAGE plpgsql
---AS $$
---	DECLARE
---		CART_ID NUMERIC:= RAND()*1000;
---		PRICE NUMERIC = 0.00
---	BEGIN
---		INSERT INTO ECOMMERCE.CARRINHO()
---	END;
---$$;
+CREATE OR REPLACE PROCEDURE ECOMMERCE.NewCart(O_USER_NIF NUMERIC(9,0))
+LANGUAGE plpgsql
+AS $$
+	DECLARE
+		O_PRECO NUMERIC = 0.00;
+	BEGIN
+		INSERT INTO ECOMMERCE.CARRINHO(NIF_CLIENTE, TOTAL)
+		VALUES(O_USER_NIF, O_PRECO);
+	END;
+$$;
 
 
 
