@@ -1,23 +1,17 @@
 ----------------------------------DROP DROP----------------------------------
 DROP PROCEDURE ecommerce.logistaadicionaproduto(numeric,character varying,numeric,numeric,character varying,character varying); 
-DROP PROCEDURE ecommerce.clientefavorita(numeric,numeric)
+DROP PROCEDURE ecommerce.clientefavorita(numeric,numeric);
 DROP PROCEDURE ECOMMERCE.ClientAddProductCart(numeric,numeric, numeric,numeric);
 
 CREATE OR REPLACE PROCEDURE ECOMMERCE.LogistaAdicionaProduto(O_NifLogista NUMERIC(9,0), O_NomeProduto VARCHAR, O_Stock NUMERIC, O_Preco NUMERIC(10,2), O_descricao VARCHAR, O_categoria VARCHAR)
 LANGUAGE plpgsql
 AS $$
-	--BEGIN
-	DECLARE 
-		O_CODIGO NUMERIC :=RAND()*1000;
-		O_CODIGO2 NUMERIC:=RAND()*1000;
-		--SET O_CODIGO=RAND()*1000;
 	BEGIN	
-		INSERT INTO ECOMMERCE.PRODUTO(IDPRODUTO, Stock, Nome, Preco, Descricao, Categoria)
-		VALUES (O_CODIGO, O_Stock, O_NomeProduto, O_Preco, O_descricao, O_categoria);
-		--DECLARE O_CODIGO2 INT;
-		--SET O_CODIGO2=RAND()*1000;
-		INSERT INTO ECOMMERCE.LOGISTA_PRODUTO(ADDP_ID, LOGISTA_NIF, PRODUTO_ID)
-		VALUES (O_CODIGO2, O_NifLogista, O_CODIGO);
+		INSERT INTO ECOMMERCE.PRODUTO(Stock, Nome, Preco, Descricao, Categoria)
+		VALUES (O_Stock, O_NomeProduto, O_Preco, O_descricao, O_categoria);
+		
+		INSERT INTO ECOMMERCE.LOGISTA_PRODUTO(LOGISTA_NIF, PRODUTO_ID)
+		VALUES (O_NifLogista, O_CODIGO);
 		
 	END;
 $$;
@@ -27,11 +21,9 @@ $$;
 CREATE OR REPLACE PROCEDURE ECOMMERCE.ClienteFavorita(O_Nif_cliente NUMERIC(9,0), O_PRODUTO_ID NUMERIC)
 LANGUAGE plpgsql
 AS $$
-	DECLARE
-		FID NUMERIC := RAND()*1000;
 	BEGIN
-		INSERT INTO ECOMMERCE.FAVORITO(FAV_ID, NIF_CLIENTE, PRODUTO_ID)
-		VALUES (FID, O_Nif_cliente, O_PRODUTO_ID);
+		INSERT INTO ECOMMERCE.FAVORITO(NIF_CLIENTE, PRODUTO_ID)
+		VALUES (O_Nif_cliente, O_PRODUTO_ID);
 	END;
 $$;
 
