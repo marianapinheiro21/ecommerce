@@ -2,7 +2,7 @@
 --DROP PROCEDURE ecommerce.logistaadicionaproduto(numeric,character varying,numeric,numeric,character varying,character varying); 
 --DROP PROCEDURE ecommerce.clientefavorita(numeric,numeric);
 --DROP PROCEDURE ECOMMERCE.NewCart(numeric);
-DROP PROCEDURE ECOMMERCE.ClientAdicionaProdutoCarrinho(INTEGER, INTEFER, INTEGER);
+--DROP PROCEDURE ECOMMERCE.ClientAdicionaProdutoCarrinho(INTEGER, INTEGER, INTEGER);
 
 
 CREATE OR REPLACE PROCEDURE ECOMMERCE.LogistaAdicionaProduto(O_NifLogista NUMERIC(9,0), O_NomeProduto VARCHAR, O_Stock NUMERIC, O_Preco NUMERIC(10,2), O_descricao VARCHAR, O_categoria VARCHAR)
@@ -48,8 +48,9 @@ CREATE OR REPLACE PROCEDURE ECOMMERCE.ClienteAdicionaProdutoCarrinho(O_CART_ID I
 LANGUAGE plpgsql
 AS $$
 	BEGIN
-		INSERT INTO ECOMMERCE.CARRINHO_PRODUTO_VENDA(CARRINHO_ID, PRODUTO_ID, QUANTITY)
+		INSERT INTO ECOMMERCE.CARRINHO_PRODUTO(CARRINHO_ID, PRODUTO_ID, QUANTITY)
 		VALUES (O_CART_ID, O_PRODUCT_ID, O_QUANTITY);
+		-- Falta criar uma procedure/Função que retorna o valor total do carrinho
 	END;
 $$;
 
@@ -57,3 +58,9 @@ $$;
 -- FAZER UM UPDATE AUTOMÁTICO DO TOTAL DO CARRINHO
 
 -- ADICIONAR VALORES INICIAIS
+
+-- Alterar preço produto
+-- Activar descontos
+--Comprar produtos carrinho
+--Alterar quantidade de produtos no carrinho
+--Tirar produtos carrinho
