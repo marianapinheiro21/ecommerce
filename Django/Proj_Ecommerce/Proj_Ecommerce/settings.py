@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'ecommerce_app'
 ]
 
 MIDDLEWARE = [
@@ -72,12 +73,16 @@ WSGI_APPLICATION = 'Proj_Ecommerce.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
+import os
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'Proj_PSI',
+        'USER': 'postgres',
+        'PASSWORD': 't.n8~TU8P9&sUKr',
+        'HOST': 'database-ecommerce.c38mmm2uawp5.us-east-1.rds.amazonaws.com',
+        'PORT': '5432'
+    } 
 }
 
 
