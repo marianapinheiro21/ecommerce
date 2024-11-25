@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ecommerce_app'
+    'projpsi'
 ]
 
 MIDDLEWARE = [
@@ -76,11 +76,11 @@ WSGI_APPLICATION = 'Proj_Ecommerce.wsgi.application'
 import os
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'Proj_PSI',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'projpsi',
         'USER': 'postgres',
         'PASSWORD': 't.n8~TU8P9&sUKr',
-        'HOST': 'database-ecommerce.c38mmm2uawp5.us-east-1.rds.amazonaws.com',
+        'HOST': 'projpsi.c38mmm2uawp5.us-east-1.rds.amazonaws.com',
         'PORT': '5432'
     } 
 }
