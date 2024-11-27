@@ -37,6 +37,10 @@ class Cliente(models.Model):
     ntelefone = models.DecimalField(max_digits=9, decimal_places=0)
     morada = models.CharField(max_length=50)
 
+    
+    def __str__(self):
+        return self.nome
+    
     class Meta:
         managed = False
         db_table = 'cliente'

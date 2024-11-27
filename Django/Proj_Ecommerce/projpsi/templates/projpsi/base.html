@@ -1,0 +1,93 @@
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce</title>
+
+    <!--css link-->
+    <link rel="stylesheet" href="./style.css">
+
+    <!--font awesome cdn link-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <a href="#" class="logo"><img src="./images/logo_ecommerce.png" alt=""></a>
+        <div class="input-search">
+            <input type="text" placeholder="Digite o produto que procuras " class="input-header">
+            <i class="fa fa-search" aria-hidden="true"></i>
+        </div>
+
+        <div class="icons">
+            <a href=""><i class="fa fa-star" aria-hidden="true"></i></a>
+            <a href=""><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
+            <a href="./novo_usuario/criar_login.html"><i class="fa fa-user" aria-hidden="true"></i></a>
+        </div>
+    
+        <div class="nav-bar">
+            <section class="nav-section">
+    
+                <ul>
+                    <li class="nav-item"><a href="#">Produtos</a></li>
+                    <li class="nav-item"><a href="#">Promoções</a></li>
+                    <li class="nav-item"><a href="#">Novidades</a></li>
+                    <li class="nav-item"><a href="#">Sobre Nós</a></li>
+                </ul>
+       
+            </section>
+        </div>
+    </header>
+
+    {% block content %}
+    {% endblock content %}
+
+    <footer> 
+        <div class="footer-container">
+            <div class="footer-logo">
+                <a href="#" class="logo"><img src="./staticFiles/logo_ecommerce.png" alt="logo-footer"></a>
+                <p>O mundo da tecnologia, está cá.</p> <br>
+                <p>Encontre-nos nas redes.</p>
+                <div class="footer-icons">
+                    <a href=""><i class="fab fa-facebook" aria-hidden="true"></i></a>
+                    <a href=""><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                    <a href=""><i class="fab fa-twitch" aria-hidden="true"></i></a>
+                </div>
+            </div>
+           
+            <ul class="footer-lista">
+                    <li>    
+                        <h3>Apoio ao Cliente</h3>
+                    </li>
+                    <a href=""><li>Ajuda</li></a>
+                    <a href=""><li>Entregas</li></a>
+                    <a href=""><li>Trocas</li></a>
+                    <a href=""><li>Devoluções</li></a>
+            </ul>
+            <ul class="footer-lista">
+                    <li>    
+                        <h3>Formas de Pagamento</h3>
+                    </li>
+                    <a href=""><i class="fab fa-paypal" aria-hidden="true"></i></a>
+                    <a href=""><i class="fa fa-credit-card" aria-hidden="true"> </i></a>
+                    <a href=""><i class="fab fa-cc-visa" aria-hidden="true"></i></a>
+                    <a href=""><i class="fab fa-cc-mastercard" aria-hidden="true"></i></a>
+            </ul>
+            <ul class="footer-input">                    
+                <h3>Subscribe</h3>
+                <p>Receba todas as novidades da E-commerce.</p>
+                <div class="input-footer">
+                    <input type="email" id="email" class="input-footer" placeholder="Digite o seu e-mail">
+                    <button>
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </ul>
+        </div>
+        <div class="footer-copyrigth">
+            &#169
+            2024 all rights reserved
+        </div>
+    </footer>
+</body>
+</html>
