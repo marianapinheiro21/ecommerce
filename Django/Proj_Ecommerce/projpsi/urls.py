@@ -83,6 +83,7 @@ Página Apoio ao Cliente
 """
 
 urlpatterns = [
+    path('', views.index, name='index'),
     path('cliente/', views.clientes, name='cliente'),
     path('logista/', views.logista, name='logista'),
     path('carrinho/', views.carrinho, name='carrinho'),

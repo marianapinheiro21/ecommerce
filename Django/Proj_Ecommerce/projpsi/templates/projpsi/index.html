@@ -1,0 +1,142 @@
+{% extends "./base.html" %}
+
+{% block content%}
+
+    <section class="carousel">
+        <div class="carousel-container" id="carousel-img">
+            {% load static %}<img src="{% statc './carousel/logo_carousel_1.png' %}" alt="">
+            {% load static %}<img src="{% statc './carousel/frete_rápido_carousel_2.png' %}" alt="">
+            {% load static %}<img src="{% statc './carousel/carousel_4.png' %}" alt="">
+            {% load static %}<img src="{% statc './carousel/computador_carousel_3.png' %}" alt="">
+            
+        </div>
+    </section>
+
+    <section class="components">
+        <div class="components-container" id="components-container">
+           <a href="" class="component">
+            <div class="circle">
+                {% load static %}<img src="{% statc './products/computer.png' %}" alt="">
+            </div>
+            <span>Computadores</span>
+           </a>
+                
+           
+            <a href="" class="component">
+                <div class="circle">
+                    {% load static %}<img src="{% statc './products/portatil.png' %}" alt="">
+                </div>
+                <span>Portátil</span>
+            </a>
+
+            <a href="" class="component">
+                <div class="circle">
+                    {% load static %}<img src="{% statc './products/gaming.png' %}" alt="">
+                </div>
+                <span>Gaming</span>
+            </a>
+            
+            <a href="" class="component">
+                <div class="circle">
+                    {% load static %}<img src="{% statc './products/telemovel.png' %}" alt="">
+                </div>
+                <span>Telemóvel</span>
+            </a>
+                
+           <a href="" class="component">
+               <div class="circle">
+                    {% load static %}<img src="{% statc './products/servidor.png' %}" alt="">
+               </div>
+               <span>Servidor</span>
+
+           </a>
+               <a href="" class="component">
+                   <div class="circle">
+                    {% load static %}<img src="{% statc './products/acessorio.png' %}" alt="">
+                   </div>
+                   <span>Acessórios</span>
+               </a> 
+        </div>
+    </section>
+
+    <section class="featured-products">
+        
+        <h2>Aproveite todas as promoções que temos disponíveis para si!</h2>  
+        <h2>Aproveite todas as promoções que temos disponíveis para si!</h2>  
+        <h2>Aproveite todas as promoções que temos disponíveis para si!</h2>  
+        <h2>Aproveite todas as promoções que temos disponíveis para si!</h2>  
+        
+            <div class="product-grid">
+                
+                <div class="product-item">
+                    {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                    <p class="descricao">Laptop Gaming </p>
+                    <p class="price">€49,99</p>
+                    <div class="product-actions">
+                        <button class="add-to-cart">Adicionar ao Cesto</button>
+                        <i class="fa fa-star favorite" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+                            <div class="product-actions">
+                                <button class="add-to-cart">Adicionar ao Cesto</button>
+                                <i class="fa fa-star favorite" aria-hidden="true"></i>
+                            </div>
+                    </div>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+                            <div class="product-actions">
+                                <button class="add-to-cart">Adicionar ao Cesto</button>
+                                <i class="fa fa-star favorite" aria-hidden="true"></i>
+                            </div>
+
+                    </div>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+                            <div class="product-actions">
+                                <button class="add-to-cart">Adicionar ao Cesto</button>
+                                <i class="fa fa-star favorite" aria-hidden="true"></i>
+                            </div>
+
+                    </div>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+                            <div class="product-actions">
+                                <button class="add-to-cart">Adicionar ao Cesto</button>
+                                <i class="fa fa-star favorite" aria-hidden="true"></i>
+                            </div>
+
+                    </div>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+                            <div class="product-actions">
+                                <button class="add-to-cart">Adicionar ao Cesto</button>
+                                <i class="fa fa-star favorite" aria-hidden="true"></i>
+                            </div>
+
+                    </div>
+                </div>
+    </section>
+    
+    {% load static %}<script src="{% static './scripts.js' %}"></script>
+    </body>
+    
+    {% endblock content%}
+
+

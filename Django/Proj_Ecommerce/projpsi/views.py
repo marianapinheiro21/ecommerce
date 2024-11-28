@@ -7,6 +7,9 @@ def my_view(request):
     objects = Cliente.objects.all()
     return HttpResponse(objects)
 
+def index(request):
+    return render(request, "./projpsi/index2.html")
+
 def clientes(request):
     return HttpResponse("Hello!!")
 
