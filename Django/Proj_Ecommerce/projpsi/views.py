@@ -12,7 +12,7 @@ def index(request):
     return render(request, "projpsi/index.html")
 
 def index(request):
-    return render(request, "./projpsi/index2.html")
+    return render(request, "./projpsi/index.html")
 
 def clientes(request):
     return HttpResponse("Hello!!")
