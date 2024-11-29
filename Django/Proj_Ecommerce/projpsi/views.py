@@ -11,6 +11,9 @@ def my_view(request): #Lista todos os cientes
 def index(request):
     return render(request, "projpsi/index.html")
 
+def index(request):
+    return render(request, "./projpsi/index.html")
+
 def clientes(request):
     return HttpResponse("Hello!!")
 
