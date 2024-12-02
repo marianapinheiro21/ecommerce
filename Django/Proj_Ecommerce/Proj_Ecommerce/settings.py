@@ -26,7 +26,7 @@ SECRET_KEY = '@3=(6(butj-1pq&nem62)9jz%)lwm_gnhckbl3(*c7x=(99!wk'
 DEBUG = False
 #Alterado por Mariana
 
-ALLOWED_HOSTS = ['rds.amazonaws.com']
+ALLOWED_HOSTS = ['*']
 #Alterado por Mariana
 
 # Application definition
