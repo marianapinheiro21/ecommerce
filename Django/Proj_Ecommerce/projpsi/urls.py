@@ -1,13 +1,9 @@
 from django.urls import path
 from . import views
-from projpsi.views import index
-
-app_name= 'projpsi'
-
 
 
 urlpatterns = [
-
+    path('', views.index, name='index'),
     path('cliente/', views.clientes, name='cliente'),
     path('logista/', views.logista, name='logista'),
     path('carrinho/', views.carrinho, name='carrinho'),
