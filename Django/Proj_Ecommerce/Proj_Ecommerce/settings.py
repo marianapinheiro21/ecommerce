@@ -23,10 +23,11 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = '@3=(6(butj-1pq&nem62)9jz%)lwm_gnhckbl3(*c7x=(99!wk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+#Alterado por Mariana
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['rds.amazonaws.com']
+#Alterado por Mariana
 
 # Application definition
 
@@ -125,3 +126,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '.projpsi/static/'
+#conexão feita por Mariana
