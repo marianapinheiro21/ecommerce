@@ -68,6 +68,9 @@ class Logista(models.Model):
         managed = False
         db_table = 'logista'
 
+    def __str__(self):
+        return self.title
+
 
 class LogistaProduto(models.Model):
     addp_id = models.AutoField(primary_key=True)
