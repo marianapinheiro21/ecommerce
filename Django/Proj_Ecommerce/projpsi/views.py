@@ -14,7 +14,7 @@ def index(request):
 def index(request):
     return render(request, "./projpsi/index.html")
 
-def clientes(request):
+def novoCliente(request):
     return HttpResponse("Hello!!")
 
 def logista(request):
