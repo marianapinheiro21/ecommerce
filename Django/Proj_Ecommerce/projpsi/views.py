@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from projpsi.models import *
+from projpsi.models import Logista
 # Create your views here.
 
 def my_view(request): #Lista todos os cientes
@@ -18,7 +19,11 @@ def clientes(request):
     return HttpResponse("Hello!!")
 
 def logista(request):
-    return HttpResponse("Hello! How can I help you?")
+    logista = Logista.objects.all()
+    context= {
+        'logista':logista,
+    }
+    return render (request,'projpsi/logista_list.html',context)
 
 def carrinho(request):
     return HttpResponse('Aqui estão os seus produtos!')
