@@ -71,6 +71,8 @@ class Logista(models.Model):
     def __str__(self):
         return self.title
 
+   
+
 
 class LogistaProduto(models.Model):
     addp_id = models.AutoField(primary_key=True)
