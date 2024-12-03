@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from projpsi.models import *
-from projpsi.models import Logista
 # Create your views here.
 
 def my_view(request): #Lista todos os cientes
