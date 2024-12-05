@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = '@3=(6(butj-1pq&nem62)9jz%)lwm_gnhckbl3(*c7x=(99!wk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 #Alterado por Mariana
 
 ALLOWED_HOSTS = ['*']
@@ -127,3 +127,5 @@ USE_TZ = True
 
 STATIC_URL = '.projpsi/static/'
 #conexão feita por Mariana
+
+STATICFILES_DIRS = [BASE_DIR / "static"]
