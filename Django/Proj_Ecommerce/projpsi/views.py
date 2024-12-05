@@ -11,18 +11,18 @@ def my_view(request): #Lista todos os cientes
 def index(request):
     return render(request, "projpsi/index.html")
 
-def index(request):
-    return render(request, "./projpsi/index.html")
-
 def clientes(request):
     return HttpResponse("Hello!!")
 
 def logista(request):
-    logista = Logista.objects.all()
-    context= {
-        'logista':logista,
+    logistas = Logista.objects.all()
+    context = {
+        'logistas': logistas,
     }
     return render (request,'projpsi/logista_list.html',context)
+
+def logista_dados(request):
+    return render(request, 'projpsi/logista_dados.html')
 
 def carrinho(request):
     return HttpResponse('Aqui estão os seus produtos!')
