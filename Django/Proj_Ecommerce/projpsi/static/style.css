@@ -69,13 +69,13 @@ a.logo img{
 
 .nav-bar {
     background-color: rgb(75, 75, 75);
-    margin-top: 8rem;
+    margin-top: 1rem;
     padding: 1rem 1rem;
     box-shadow: 0px 5px  10px rgb(188, 175, 247);
 }
 
 .nav-section ul{
-   display: flex; 
+    display: flex; 
    justify-content: center;
    gap: 8rem;
    list-style: none;
@@ -246,9 +246,9 @@ a.logo img{
 
 .product-grid {
     display: grid;
-    justify-content: end;
-    grid-template-columns: repeat(5, auto);
-    gap: 2rem;
+    justify-content: center;
+    grid-template-columns: repeat(4, auto);
+    gap: 5rem;
     
     
 }
@@ -257,7 +257,6 @@ a.logo img{
 
 footer{
     width: 100%;
-    
 }
 
 .footer-container {
@@ -347,6 +346,13 @@ footer{
     color: #fff;
     padding: 1.5rem;
     font-size: 0.9rem;
+}
+
+.pt2030 {
+    width: 35%;
+    height: auto;
+    display: flex;
+    justify-content: center;
 }
 
 
