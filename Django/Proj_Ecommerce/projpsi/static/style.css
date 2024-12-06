@@ -77,7 +77,7 @@ a.logo img{
 .nav-section ul{
     display: flex; 
    justify-content: center;
-   gap: 8rem;
+    gap: 15rem;
    list-style: none;
    font-size: 1.3rem;
 }

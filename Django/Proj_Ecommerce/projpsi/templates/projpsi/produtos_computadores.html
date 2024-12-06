@@ -1,0 +1,50 @@
+{% extends 'projpsi/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="featured-products">
+    <div class="product-grid">
+
+        <div class="product-item">
+            <a href="#"><img src="{% static 'img_computadores/pc_1.png' %}" alt="Produto 1"></a>
+            <p class="descricao">Computador 1</p>
+            <p class="price">€499,99</p>
+            <div class="product-actions">
+                <button class="add-to-cart">Adicionar ao Cesto</button>
+                <i class="fa fa-star favorite" aria-hidden="true"></i>
+            </div>
+        </div>
+
+        <div class="product-item">
+            <a href="#"><img src="{% static 'img_computadores/pc_2.png' %}" alt="Produto 2"></a>
+            <p class="descricao">Computador 2</p>
+            <p class="price">€649,99</p>
+            <div class="product-actions">
+                <button class="add-to-cart">Adicionar ao Cesto</button>
+                <i class="fa fa-star favorite" aria-hidden="true"></i>
+            </div>
+        </div>
+
+        <div class="product-item">
+            <a href="#"><img src="{% static 'img_computadores/pc_3.png' %}" alt="Produto 3"></a>
+            <p class="descricao">Computador 3</p>
+            <p class="price">€749,99</p>
+            <div class="product-actions">
+                <button class="add-to-cart">Adicionar ao Cesto</button>
+                <i class="fa fa-star favorite" aria-hidden="true"></i>
+            </div>
+        </div>
+
+        <div class="product-item">
+            <a href="#"><img src="{% static 'img_computadores/pc_4.png' %}" alt="Produto 4"></a>
+            <p class="descricao">Computador 4</p>
+            <p class="price">€349,99</p>
+            <div class="product-actions">
+                <button class="add-to-cart">Adicionar ao Cesto</button>
+                <i class="fa fa-star favorite" aria-hidden="true"></i>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

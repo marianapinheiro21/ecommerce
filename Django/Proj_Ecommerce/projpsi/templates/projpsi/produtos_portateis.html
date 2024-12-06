@@ -1,0 +1,52 @@
+{% extends 'projpsi/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="featured-products">
+    <div class="product-grid">
+
+        <div class="product-item">
+            {% load static %}<a href="#"><img src="{% static 'img_portatil/portatil_1.png' %}" alt="Produto 5"></a>
+            <p class="descricao">Portatil 1</p>
+            <p class="price">€249,99</p>
+                <div class="product-actions">
+                    <button class="add-to-cart">Adicionar ao Cesto</button>
+                    <i class="fa fa-star favorite" aria-hidden="true"></i>
+                </div>
+
+        </div>
+
+        <div class="product-item">
+            {% load static %}<a href="#"><img src="{% static 'img_portatil/portatil_3.png' %}" alt="Produto 6"></a>
+            <p class="descricao">Portatil 2</p>
+            <p class="price">€149,99</p>
+                <div class="product-actions">
+                    <button class="add-to-cart">Adicionar ao Cesto</button>
+                    <i class="fa fa-star favorite" aria-hidden="true"></i>
+                </div>
+        </div>
+    
+
+        <div class="product-item">
+              {% load static %}<a href="#"><img src="{% static 'img_portatil/portatil_2.png' %}" alt="Produto 7"></a>
+              <p class="descricao">Portatil 3</p>
+             <p class="price">€49,99</p>
+            <div class="product-actions">
+                <button class="add-to-cart">Adicionar ao Cesto</button>
+                <i class="fa fa-star favorite" aria-hidden="true"></i>
+            </div>
+        </div>
+
+        <div class="product-item">
+            {% load static %}<a href="#"><img src="{% static 'img_portatil/portatil_4.png' %}" alt="Produto 8"></a>
+            <p class="descricao">Acessorio 1</p>
+            <p class="price">€229,99</p>
+            <div class="product-actions">
+                <button class="add-to-cart">Adicionar ao Cesto</button>
+                <i class="fa fa-star favorite" aria-hidden="true"></i>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -5,34 +5,44 @@
  
 {% block content%}
 
-    <section class="carousel">
-        <div class="carousel-container" id="carousel-img">
-            {% load static %}<img src="{% static './carousel/logo_carousel_1.png' %}" alt="">
-            {% load static %}<img src="{% static './carousel/frete_rápido_carousel_2.png' %}" alt="">
-            {% load static %}<img src="{% static './carousel/carousel_4.png' %}" alt="">
-            {% load static %}<img src="{% static './carousel/computador_carousel_3.png' %}" alt="">
-            
-        </div>
+<nav class="nav-bar">
+    <section class="nav-section">
+        <ul>
+            <li class="nav-item"><a href="#">Produtos</a></li>
+            <li class="nav-item"><a href="#">Promoções</a></li>
+            <li class="nav-item"><a href="#">Novidades</a></li>
+            <li class="nav-item"><a href="#">Sobre Nós</a></li>
+        </ul>
     </section>
+</nav>
+
+<section class="carousel">
+    <div class="carousel-container" id="carousel-img">
+        {% load static %}<img src="{% static './carousel/logo_carousel_1.png' %}" alt="">
+        {% load static %}<img src="{% static './carousel/frete_rápido_carousel_2.png' %}" alt="">
+        {% load static %}<img src="{% static './carousel/carousel_4.png' %}" alt="">
+        {% load static %}<img src="{% static './carousel/computador_carousel_3.png' %}" alt="">
+    </div>
+</section>
 
     <section class="components">
         <div class="components-container" id="components-container">
 
-           <a href="" class="component">
+           <a href="{% url 'produtos_computadores' %}" class="component">
             <div class="circle">
                 {% load static %}<img src="{% static './products/computer.png' %}" alt="">
             </div>
             <span>Computadores</span>
            </a>
            
-            <a href="" class="component">
+            <a href="{% url 'produtos_portateis' %}" class="component">
                 <div class="circle">
                     {% load static %}<img src="{% static './products/portatil.png' %}" alt="">
                 </div>
                 <span>Portátil</span>
             </a>
 
-            <a href="" class="component">
+            <a href="{% url 'produtos_acessorios' %}" class="component">
                    <div class="circle">
                     {% load static %}<img src="{% static './products/acessorio.png' %}" alt="">
                    </div>
