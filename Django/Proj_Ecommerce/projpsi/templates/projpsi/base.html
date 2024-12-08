@@ -25,8 +25,9 @@
         </div>
 
         <div class="icons">
-            <a href=""><i class="fa fa-star" aria-hidden="true"></i></a>
-            <a href=""><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
+            <a href="{% url 'favoritos' %}"><i class="fa fa-star" aria-hidden="true"></i></a>
+            <a href="{% url 'carrinho' %}"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
+            <span id="cart-count">0</span>
             <a href="./novo_usuario/criar_login.html"><i class="fa fa-user" aria-hidden="true"></i></a>
         </div>
     
