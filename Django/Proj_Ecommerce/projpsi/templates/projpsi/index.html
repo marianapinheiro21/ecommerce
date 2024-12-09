@@ -4,27 +4,17 @@
  Conexão ao Django e divisão em base.html e index.html por Mariana -->
  
 {% block content%}
-
-<nav class="nav-bar">
-    <section class="nav-section">
-        <ul>
-            <li class="nav-item"><a href="#">Produtos</a></li>
-            <li class="nav-item"><a href="#">Promoções</a></li>
-            <li class="nav-item"><a href="#">Novidades</a></li>
-            <li class="nav-item"><a href="#">Sobre Nós</a></li>
-        </ul>
+           <section class="carousel">
+         <div class="carousel-container" id="carousel-img">
+            {% load static %}<img src="{% static './carousel/logo_carousel_1.png' %}" alt="">
+            {% load static %}<img src="{% static './carousel/frete_rápido_carousel_2.png' %}" alt="">
+            {% load static %}<img src="{% static './carousel/carousel_4.png' %}" alt="">
+            {% load static %}<img src="{% static './carousel/computador_carousel_3.png' %}" alt="">
+        </div>
     </section>
-</nav>
-
-<!--  <section class="carousel">
-    <div class="carousel-container" id="carousel-img">
-        {% load static %}<img src="{% static './carousel/logo_carousel_1.png' %}" alt="">
-        {% load static %}<img src="{% static './carousel/frete_rápido_carousel_2.png' %}" alt="">
-        {% load static %}<img src="{% static './carousel/carousel_4.png' %}" alt="">
-        {% load static %}<img src="{% static './carousel/computador_carousel_3.png' %}" alt="">
-    </div>
-</section> -->
-
+    
+<div id="index-content-block">
+    
     <section class="components">
         <div class="components-container" id="components-container">
 
@@ -178,7 +168,7 @@
 
             </div>
     </section>
-    
+</div>   
     {% load static %}<script src="{% static './scripts.js' %}"></script>
     </body>
     

@@ -30,21 +30,26 @@
             <span id="cart-count">0</span>
             <a href="./novo_usuario/criar_login.html"><i class="fa fa-user" aria-hidden="true"></i></a>
         </div>
-    
+    </header>
+    <div id="nav-content-block">
         <nav class="nav-bar">
             <section class="nav-section">
                 <ul>
-                    <li class="nav-item"><a href="#">Produtos</a></li>
+                    <li class="nav-item dropdown">
+                        <a href="#">Produtos</a>
+                        <ul class="dropdown">
+                            <li><a href="{% url 'produtos_computadores' %}">Pc</a></li>
+                            <li><a href="{% url 'produtos_portateis' %}">Portátil</a></li>
+                            <li><a href="{% url 'produtos_acessorios' %}">Acessórios</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item"><a href="#">Promoções</a></li>
                     <li class="nav-item"><a href="#">Novidades</a></li>
                     <li class="nav-item"><a href="#">Sobre Nós</a></li>
                 </ul>
             </section>
         </nav>
-
-        
-    </header>
-
+    </div>
     {% block content %}
     {% endblock content %}
 

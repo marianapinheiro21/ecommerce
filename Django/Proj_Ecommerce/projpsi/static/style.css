@@ -6,6 +6,15 @@
     text-decoration: none;
 }
 
+#index-content-block {
+    margin-top: 20rem; 
+    margin-bottom: 10rem;
+}
+
+#nav-content-block {
+    margin-top: 8rem;
+}
+
 header{
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -72,21 +81,15 @@ a.logo img{
 
 .nav-bar {
     background-color: rgb(75, 75, 75);
-    margin-top: 1rem;
-    padding: 1rem 1rem;
     box-shadow: 0px 5px  10px rgb(188, 175, 247);
+    width: 100%;
 }
 
 .nav-section ul{
     display: flex; 
-   justify-content: center;
-    gap: 15rem;
-   list-style: none;
-   font-size: 1.3rem;
-}
-
-.nav-item {
-    margin: 0 15px;
+    justify-content: center;
+    gap: 8rem;
+    font-size: 1rem;
 }
 
 .nav-section a{
@@ -99,26 +102,94 @@ a.logo img{
     color: #fff;
 }
 
+ul li {
+    display: inline-block;
+    position: relative;
+}
+
+ul li a{
+    display: block;
+    padding: 20px 25px;
+    color: rgb(196, 192, 214);
+    text-align: center;
+    font-size: 20px;
+   
+}
+
+ul li ul.dropdown li {
+    display: block;
+}
+
+ul li ul.dropdown {
+    width: 100%;
+    background-color:rgb(75, 75, 75);;
+    position: absolute;
+    z-index: 999;
+    display: none;
+}
+
+ul li:hover ul.dropdown {
+    display: block;
+}
+
 @media screen and (max-width: 768px) {
-    .nav-section ul {
-        gap: 4rem;
-        font-size: 1.1rem;
+    header {
+        flex-direction: column;
+        padding: 1.5rem;
+        align-items: flex-start;
+    }
+
+    a.logo img {
+        width: 10rem;
+    }
+
+    .input-search {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .icons {
+        justify-content: flex-start;
+        width: 100%;
+        margin-top: 1rem;
     }
 
     .nav-bar {
-        margin-top: 4rem;
+        margin-top: 12rem;
     }
-}
 
-@media screen and (max-width: 426px) {
     .nav-section ul {
         flex-direction: column;
         gap: 1rem;
-        font-size: 1rem;
+        text-align: center;
     }
 
-    .nav-bar {
-        padding: 0.5rem;
+    ul li a {
+        font-size: 18px;
+    }
+
+    ul li ul.dropdown {
+        position: static;
+        margin-top: 1rem;
+        text-align: left;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    a.logo img {
+        width: 8rem;
+    }
+
+    .input-header {
+        font-size: 0.9rem;
+    }
+
+    ul li a {
+        font-size: 16px;
+    }
+
+    .icons i {
+        font-size: 1.2rem;
     }
 }
 /* ------------------- CAROUSEL ------------------- */
