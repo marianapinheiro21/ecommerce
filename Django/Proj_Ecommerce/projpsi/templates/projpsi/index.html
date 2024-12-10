@@ -1,4 +1,4 @@
-{% extends "./base.html" %}
+{% extends "base.html" %}
 
 <!-- Código em html feito por Natanny. 
  Conexão ao Django e divisão em base.html e index.html por Mariana -->
@@ -55,49 +55,63 @@
         
             <div class="product-grid">
                 <div class="product-item">
-                    {% load static %}<a href="#"><img src="{% static 'img_computadores/pc_1.png' %}" alt="Produto 1"></a>
-                    <p class="descricao">Computador 1</p>
-                    <p class="price">€499,99</p>
+
+                    {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
+                    <p class="descricao">Laptop Gaming </p>
+                    <p class="price">€49,99</p>
+
                     <div class="product-actions">
                         <button class="add-to-cart">Adicionar ao Cesto</button>
                         <i class="fa fa-star favorite" aria-hidden="true"></i>
                     </div>
                 </div>
 
-                <div class="product-item">
-                        {% load static %}<a href="#"><img src="{% static 'img_computadores/pc_2.png' %}" alt="Produto 2"></a>
-                        <p class="descricao">Computador 2</p>
-                        <p class="price">€649,99</p>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+
                             <div class="product-actions">
                                 <button class="add-to-cart">Adicionar ao Cesto</button>
                                 <i class="fa fa-star favorite" aria-hidden="true"></i>
                             </div>
                 </div>
 
-                <div class="product-item">
-                        {% load static %}<a href="#"><img src="{% static 'img_computadores/pc_3.png' %}" alt="Produto 3"></a>
-                        <p class="descricao">Computador 3</p>
-                        <p class="price">€749,99</p>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+
                             <div class="product-actions">
                                 <button class="add-to-cart">Adicionar ao Cesto</button>
                                 <i class="fa fa-star favorite" aria-hidden="true"></i>
                             </div>
                 </div>
 
-                <div class="product-item">
-                        {% load static %}<a href="#"><img src="{% static 'img_computadores/pc_4.png' %}" alt="Produto 4"></a>
-                        <p class="descricao">Computador 4</p>
-                        <p class="price">€349,99</p>
+
+                    </div>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+
                             <div class="product-actions">
                                 <button class="add-to-cart">Adicionar ao Cesto</button>
                                 <i class="fa fa-star favorite" aria-hidden="true"></i>
                             </div>
                 </div>
 
-                <div class="product-item">
-                        {% load static %}<a href="#"><img src="{% static 'img_portatil/portatil_1.png' %}" alt="Produto 5"></a>
-                        <p class="descricao">Portatil 1</p>
-                        <p class="price">€249,99</p>
+
+                    </div>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+
                             <div class="product-actions">
                                 <button class="add-to-cart">Adicionar ao Cesto</button>
                                 <i class="fa fa-star favorite" aria-hidden="true"></i>
@@ -105,10 +119,12 @@
 
                 </div>
 
-                <div class="product-item">
-                        {% load static %}<a href="#"><img src="{% static 'img_portatil/portatil_3.png' %}" alt="Produto 6"></a>
-                        <p class="descricao">Portatil 2</p>
-                        <p class="price">€149,99</p>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+
                             <div class="product-actions">
                                 <button class="add-to-cart">Adicionar ao Cesto</button>
                                 <i class="fa fa-star favorite" aria-hidden="true"></i>

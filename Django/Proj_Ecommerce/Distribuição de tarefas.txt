@@ -26,11 +26,13 @@ Página inicial:
     
 Página Novos Clientes -> Mariana
     * Formulário a preencher com todas as infos necesárias
+    * Cifrar palavra-pass
     * Podemos por um check para notificações
     * tentar receber um mail automático para confirmar a criação de conta
     
 Página Novos Logistas -> Mariana 
     * Formulário a preencher com todas as infos necesárias
+    * Cifrar palavra-pass
     * Podemos por um check para notificações
     * tentar receber um mail automático para confirmar a criação de conta
 
