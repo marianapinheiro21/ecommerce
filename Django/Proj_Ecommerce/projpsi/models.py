@@ -6,6 +6,8 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+from django.contrib.auth.hashers import make_password
+from dirtyfields import DirtyFieldsMixin
 
 class Carrinho(models.Model):
     carrinho_id = models.AutoField(primary_key=True)
@@ -29,7 +31,7 @@ class CarrinhoProduto(models.Model):
         db_table = 'carrinho_produto'
 
 
-class Cliente(models.Model):
+class Cliente(DirtyFieldsMixin, models.Model):
     nif = models.DecimalField(primary_key=True, max_digits=9, decimal_places=0)
     nome = models.CharField(max_length=50)
     mail = models.CharField(unique=True, max_length=50)
@@ -40,6 +42,12 @@ class Cliente(models.Model):
     
     def __str__(self):
         return self.nome
+    
+    def save(self, *args, **kwargs):
+        if not self.pk or 'pass_field' in self.get_dirty_fields():
+        # Caso não haja palavra passe, ou caso haja uma alteração, garante que esta é cifrada
+            self.pass_field = make_password(self.pass_field)
+        super().save(*args, **kwargs)
     
     class Meta:
         managed = False

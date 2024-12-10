@@ -1,4 +1,4 @@
-{% extends "./base.html" %}
+{% extends "base.html" %}
 
 <!-- Código em html feito por Natanny. 
  Conexão ao Django e divisão em base.html e index.html por Mariana -->
@@ -72,7 +72,7 @@
             <div class="product-grid">
                 
                 <div class="product-item">
-                    {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                    {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
                     <p class="descricao">Laptop Gaming </p>
                     <p class="price">€49,99</p>
                     <div class="product-actions">
@@ -82,7 +82,7 @@
                 </div>
 
                     <div class="product-item">
-                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
                         <p class="descricao">Laptop Gaming </p>
                         <p class="price">€49,99</p>
                             <div class="product-actions">
@@ -92,18 +92,7 @@
                     </div>
 
                     <div class="product-item">
-                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
-                        <p class="descricao">Laptop Gaming </p>
-                        <p class="price">€49,99</p>
-                            <div class="product-actions">
-                                <button class="add-to-cart">Adicionar ao Cesto</button>
-                                <i class="fa fa-star favorite" aria-hidden="true"></i>
-                            </div>
-
-                    </div>
-
-                    <div class="product-item">
-                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
                         <p class="descricao">Laptop Gaming </p>
                         <p class="price">€49,99</p>
                             <div class="product-actions">
@@ -114,7 +103,7 @@
                     </div>
 
                     <div class="product-item">
-                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
                         <p class="descricao">Laptop Gaming </p>
                         <p class="price">€49,99</p>
                             <div class="product-actions">
@@ -125,7 +114,18 @@
                     </div>
 
                     <div class="product-item">
-                        {% load static %}<img src="{% static './promotionss/laptopGaming.png' %}" alt="Produto 1">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
+                        <p class="descricao">Laptop Gaming </p>
+                        <p class="price">€49,99</p>
+                            <div class="product-actions">
+                                <button class="add-to-cart">Adicionar ao Cesto</button>
+                                <i class="fa fa-star favorite" aria-hidden="true"></i>
+                            </div>
+
+                    </div>
+
+                    <div class="product-item">
+                        {% load static %}<img src="{% static './promotions/laptopGaming.png' %}" alt="Produto 1">
                         <p class="descricao">Laptop Gaming </p>
                         <p class="price">€49,99</p>
                             <div class="product-actions">
