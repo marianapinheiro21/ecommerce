@@ -30,6 +30,17 @@ def novoCliente(request):
             
     return render(request, 'newClient.html', {'form':form})
 
+def novoLogista(request):
+    if request.method == 'POST':
+        form = LogistaRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('sucesso')
+    else:
+        form = LogistaRegistrationForm()
+            
+    return render(request, 'newLogista.html', {'form':form})
+
 def sucesso(request):
     return render(request, 'sucesso.html')
     

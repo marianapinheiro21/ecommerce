@@ -64,7 +64,7 @@ class Favorito(models.Model):
         db_table = 'favorito'
 
 
-class Logista(models.Model):
+class Logista(DirtyFieldsMixin, models.Model):
     nif = models.DecimalField(primary_key=True, max_digits=9, decimal_places=0)
     nome = models.CharField(max_length=50)
     mail = models.CharField(max_length=50)
@@ -75,6 +75,12 @@ class Logista(models.Model):
     class Meta:
         managed = False
         db_table = 'logista'
+        
+    def save(self, *args, **kwargs):
+        if not self.pk or 'pass_field' in self.get_dirty_fields():
+        # Caso não haja palavra passe, ou caso haja uma alteração, garante que esta é cifrada
+            self.pass_field = make_password(self.pass_field)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

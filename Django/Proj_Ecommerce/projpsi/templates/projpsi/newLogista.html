@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center">Criar uma conta de Cliente</h1>
+    <h1 class="text-center">Criar uma conta de Logista</h1>
     <!-- Display form errors -->
     {% if form.errors %}
     <div class="alert alert-danger">
@@ -18,7 +18,7 @@
         </ul>
     </div>
     {% endif %}
-    <!-- Client Creation Form -->
+    <!-- Logista Creation Form -->
     <form method="POST" class="needs-validation" novalidate>
         {% csrf_token %}
         {{ form.as_p}}
