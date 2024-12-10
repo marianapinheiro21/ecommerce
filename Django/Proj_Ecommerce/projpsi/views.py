@@ -4,7 +4,7 @@ from projpsi.models import *
 from .forms import *
 # Create your views here.
 
-def my_view(request): #Lista todos os cientes
+def my_view(request): #Lista todos os clientes -> Apenas Teste
     clients_list = Cliente.objects.all()
     output = ", ".join([c.nome for c in clients_list])
     return HttpResponse(output)
