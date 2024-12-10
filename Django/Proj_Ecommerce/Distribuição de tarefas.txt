@@ -10,10 +10,10 @@ No cabeçalho do site queremos:
             
 No Rodapé:
     * Sobre nós
-    * Informação Legal 
+    * Informação Legal #Natany
     * Informação de taxas e tempos de entrega
-    * Imagem Portugal 2030
-    * Imagem do LinkedIn, para depois conectar com os nossos (hiperligação)            
+    * Imagem Portugal 2030 #Natany
+    * Imagem do LinkedIn, para depois conectar com os nossos (hiperligação)  #Natany
     * Apoio ao Cliente (Tentar)   
     
     
@@ -42,7 +42,7 @@ Página Área Cliente -> Natany
     * Acesso ao Histórico de Compras    
     * Acesso aos artigos favoritos
     
-Página Área Logista
+Página Área Logista -> Gustavo
     * Dados da Loja/Logista
     * Possibilidade de alteração dos dados
     * Acesso ao Histórico de Vendas
@@ -55,7 +55,7 @@ Página Carrinho
     * tentar receber um mail automático com os detalhes da compra (após check-out)
     
 Página Produtos
-    * Criar uma página para cada categoria de produtos
+    * Criar uma página para cada categoria de produtos #Natany
     * Filtros do Lado esquerdo do ecrã
     * A pesquisa de "filtros deve ser feita consoante palavras chaves na Descrição do produto
     * Quem trata desta página adiciona à BD os produtos que vão estar visiveis

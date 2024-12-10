@@ -34,10 +34,31 @@ def sucesso(request):
     return render(request, 'sucesso.html')
     
 def logista(request):
-    return HttpResponse("Hello! How can I help you?")
+    logista = Logista.objects.all()
+    context= {
+        'logista':logista,
+    }
+    return render (request,'projpsi/logista_list.html',context)
 
 def carrinho(request):
     return HttpResponse('Aqui estão os seus produtos!')
 
+def produtos_computadores(request):
+    return render(request, 'projpsi/produtos_computadores.html')
+
+def produtos_acessorios(request):
+    return render(request, 'projpsi/produtos_acessorios.html')
+
+def produtos_portateis(request):
+    return render(request, 'projpsi/produtos_portateis.html')
+
 def produto(request):
-    return HttpResponse("O produto que procuras está aqui :)")
+    categoria = request.GET.get('categoria')  # Recebe a categoria como parâmetro
+    if categoria == 'computadores':
+        return render(request, 'projpsi/produtos_computadores.html')
+    elif categoria == 'acessorios':
+        return render(request, 'projpsi/produtos_acessorios.html')
+    elif categoria == 'portateis':
+        return render(request, 'projpsi/produtos_portateis.html')
+    else:
+        return render(request, 'projpsi/produtos_geral.html')  # Página geral
