@@ -24,7 +24,7 @@ Página inicial:
     * "Quadrados" com imagem e texto a representar as várias categorias de produtos
     
     
-Página Novos Clientes -> Mariana
+Página Novos Clientes -> Mariana Feito em 10/12
     * Formulário a preencher com todas as infos necesárias
     * Cifrar palavra-pass
     * Podemos por um check para notificações

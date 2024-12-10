@@ -4,7 +4,7 @@ from projpsi.models import *
 from .forms import *
 # Create your views here.
 
-def my_view(request): #Lista todos os cientes
+def my_view(request): #Lista todos os clientes -> Apenas Teste
     clients_list = Cliente.objects.all()
     output = ", ".join([c.nome for c in clients_list])
     return HttpResponse(output)
@@ -29,6 +29,17 @@ def novoCliente(request):
         form = ClienteRegistrationForm()
             
     return render(request, 'newClient.html', {'form':form})
+
+def novoLogista(request):
+    if request.method == 'POST':
+        form = LogistaRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('sucesso')
+    else:
+        form = LogistaRegistrationForm()
+            
+    return render(request, 'newLogista.html', {'form':form})
 
 def sucesso(request):
     return render(request, 'sucesso.html')
