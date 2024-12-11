@@ -30,7 +30,7 @@ Página Novos Clientes -> Mariana Feito em 10/12
     * Podemos por um check para notificações
     * tentar receber um mail automático para confirmar a criação de conta
     
-Página Novos Logistas -> Mariana 
+Página Novos Logistas -> Mariana Feito em 10/12
     * Formulário a preencher com todas as infos necesárias
     * Cifrar palavra-pass
     * Podemos por um check para notificações
