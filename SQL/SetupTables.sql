@@ -3,84 +3,85 @@
 
 --CREATE SCHEMA IF NOT EXISTS ;
 
---DROP TABLE CARRINHO_PRODUTO_VENDA;
+--DROP TABLE CARRINHO_PRODUTO;
 
 --DROP TABLE FAVORITO;
---DROP TABLE LOGISTA_PRODUTO;
 --DROP TABLE VENDA;
+--DROP TABLE PRODUTO;
 --DROP TABLE CARRINHO;
 --DROP TABLE CLIENTE;
---DROP TABLE LOGISTA;
---DROP TABLE PRODUTO;
+DROP TABLE LOGISTA;
+
 
 
 
 
 CREATE TABLE IF NOT EXISTS CLIENTE(
-	NIF			NUMERIC(9,0) PRIMARY KEY,
+
+	id 			SERIAL PRIMARY KEY,
+	NIF			NUMERIC(9,0) UNIQUE,
 	Nome		varchar NOT NULL, 
 	Mail		varchar NOT NULL UNIQUE,
-	Pass		varchar, 
-	NTelefone	NUMERIC(9,0) NOT NULL,
-	Morada		varchar NOT NULL 
+	Password		varchar NOT NULL, 
+	NTelefone	NUMERIC(9,0),
+	Morada		varchar,
+	last_login TIMESTAMP WITH TIME ZONE, -- campos usados pelo Django para acesso e autenticação.
+    is_superuser BOOLEAN NOT NULL DEFAULT false,
+	is_active BOOLEAN NOT NULL DEFAULT true,
+    is_staff BOOLEAN NOT NULL DEFAULT false,
+    date_joined TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS LOGISTA(
-	NIF			NUMERIC(9,0) PRIMARY KEY,
+
+	id 			SERIAL PRIMARY KEY,
+	NIF			NUMERIC(9,0) UNIQUE NOT NULL,
 	Nome		varchar NOT NULL, 
-	Mail		varchar NOT NULL,
-	Pass		varchar, 
+	Mail		varchar NOT NULL UNIQUE,
+	Password		varchar NOT NULL, 
 	NTelefone	NUMERIC(9,0) NOT NULL,
-	Morada		varchar
+	Morada		varchar NOT NULL,
+	last_login TIMESTAMP WITH TIME ZONE, -- campos usados pelo Django para acesso e autenticação.
+    is_superuser BOOLEAN NOT NULL DEFAULT false,
+	is_active BOOLEAN NOT NULL DEFAULT true,
+    is_staff BOOLEAN NOT NULL DEFAULT false,
+    date_joined TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
 
 CREATE TABLE IF NOT EXISTS PRODUTO(
 	IDPRODUTO	SERIAL PRIMARY KEY, 
+	ID_LOGISTA 	INTEGER NOT NULL,
 	Stock		DECIMAL NOT NULL,
 	Nome		VARCHAR NOT NULL,
 	Preco		NUMERIC(10,2) NOT NULL,
 	Descricao	VARCHAR, 
-	Categoria	VARCHAR
+	Categoria	VARCHAR,
+
+	FOREIGN KEY (ID_LOGISTA) REFERENCES LOGISTA(id)
 );
 
 
 
 CREATE TABLE IF NOT EXISTS CARRINHO(
 	CARRINHO_ID	SERIAL PRIMARY KEY,
-	NIF_CLIENTE	NUMERIC(9,0) NOT NULL,
+	ID_CLIENTE	INTEGER NOT NULL,
 	TOTAL		NUMERIC(10,2),
 
-	FOREIGN KEY (NIF_CLIENTE) REFERENCES CLIENTE(NIF)
+	FOREIGN KEY (ID_CLIENTE) REFERENCES CLIENTE(id)
 );
 
-CREATE TABLE IF NOT EXISTS CARRINHO_PRODUTO(
-	ID_C_P		SERIAL PRIMARY KEY, 
-	CARRINHO_ID	INTEGER,
-	VENDA_ID	INTEGER,
-	PRODUTO_ID	INTEGER,
-	QUANTIDADE	INTEGER,
 
-	FOREIGN KEY (CARRINHO_ID) REFERENCES CARRINHO(CARRINHO_ID),
-	FOREIGN KEY (PRODUTO_ID) REFERENCES PRODUTO(IDPRODUTO)
-);
 
 CREATE TABLE IF NOT EXISTS FAVORITO(
 	FAV_ID		SERIAL PRIMARY KEY,
-	NIF_CLIENTE	NUMERIC(9,0) NOT NULL,
+	ID_CLIENTE	INTEGER NOT NULL,
 	PRODUTO_ID	INTEGER NOT NULL,
 
-	FOREIGN KEY (NIF_CLIENTE) REFERENCES CLIENTE(NIF),
+	FOREIGN KEY (ID_CLIENTE) REFERENCES CLIENTE(ID),
 	FOREIGN KEY (PRODUTO_ID) REFERENCES PRODUTO(IDPRODUTO)
 );
 
-CREATE TABLE IF NOT EXISTS LOGISTA_PRODUTO(
-	ADDP_ID		SERIAL PRIMARY KEY,
-	LOGISTA_NIF	NUMERIC(9,0) NOT NULL,
-	PRODUTO_ID	INTEGER NOT NULL,
-
-	FOREIGN KEY (LOGISTA_NIF) REFERENCES LOGISTA(NIF),
-	FOREIGN KEY (PRODUTO_ID) REFERENCES PRODUTO(IDPRODUTO)
-);
 
 CREATE TABLE IF NOT EXISTS VENDA(
 	VENDA_ID	SERIAL PRIMARY KEY,
@@ -90,27 +91,38 @@ CREATE TABLE IF NOT EXISTS VENDA(
 	FOREIGN KEY (CARRINHO_ID) REFERENCES CARRINHO(CARRINHO_ID)
 );
 
+CREATE TABLE IF NOT EXISTS CARRINHO_PRODUTO(
+	ID_C_P		SERIAL PRIMARY KEY, 
+	CARRINHO_ID	INTEGER NOT NULL,
+	VENDA_ID	INTEGER,
+	PRODUTO_ID	INTEGER NOT NULL,
+	QUANTIDADE	INTEGER NOT NULL,
+
+	FOREIGN KEY (CARRINHO_ID) REFERENCES CARRINHO(CARRINHO_ID),
+	FOREIGN KEY (PRODUTO_ID) REFERENCES PRODUTO(IDPRODUTO)
+);
+
 
 --------------------------------------------------------------------------------------------
 --------------------------- ADICIONAR CONTEÚDOS INICIAIS------------------------------------
 --------------------------------------------------------------------------------------------
 
 
-INSERT INTO CLIENTE
-VALUES
-('123456789', 'Maria do Mar', 'mariadomar@mail.com', '123Oliveira4', '987654321', 'Rua do Oceano n14'),
-('134677985', 'Rodrigo Alteres', 'strongrodrigo@mail.pt', 'homemforte', '989898989', 'Rua do ginasio n5'),
-('242424242', 'Mariana Pinheiro', 'marianapinheiro@ua.pt', 'palavrapass', '916562734', 'a minha rua n27');
+--INSERT INTO CLIENTE
+--VALUES
+--('123456789', 'Maria do Mar', 'mariadomar@mail.com', '123Oliveira4', '987654321', 'Rua do Oceano n14'),
+--('134677985', 'Rodrigo Alteres', 'strongrodrigo@mail.pt', 'homemforte', '989898989', 'Rua do ginasio n5'),
+--('242424242', 'Mariana Pinheiro', 'marianapinheiro@ua.pt', 'palavrapass', '916562734', 'a minha rua n27');
 
 
-INSERT INTO LOGISTA
-VALUES
-('454545454', 'loja fixe', 'fixe@store.pt', 'password', '888888889', 'rua bacana n45'),
-('124578986', 'Loja do Mestre André', 'mestreandre@store.pt', 'passdaloja', '326598147', 'Rua da loja n12');
+--INSERT INTO LOGISTA
+--VALUES
+--('454545454', 'loja fixe', 'fixe@store.pt', 'password', '888888889', 'rua bacana n45'),
+--('124578986', 'Loja do Mestre André', 'mestreandre@store.pt', 'passdaloja', '326598147', 'Rua da loja n12');
 
 
-INSERT INTO PRODUTO(Stock, Nome, Preco, Descricao, Categoria)
-VALUES
-('3', 'OLAOLA', '14', 'JVNÇDFJNV', 'JKBVJBJ'),
-('5', 'PIUPIU', '20', 'TICOTICO', 'JNJFDJJJ'),
-('9', 'BACALHAU', '50', 'ZAZA', 'ANONIO');
+--INSERT INTO PRODUTO(Stock, Nome, Preco, Descricao, Categoria)
+--VALUES
+--('3', 'OLAOLA', '14', 'JVNÇDFJNV', 'JKBVJBJ'),
+--('5', 'PIUPIU', '20', 'TICOTICO', 'JNJFDJJJ'),
+--('9', 'BACALHAU', '50', 'ZAZA', 'ANONIO');
