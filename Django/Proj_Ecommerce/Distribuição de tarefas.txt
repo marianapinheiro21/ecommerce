@@ -27,14 +27,16 @@ Página inicial:
 Página Novos Clientes -> Mariana Feito em 10/12
     * Formulário a preencher com todas as infos necesárias
     * Cifrar palavra-pass
-    * Podemos por um check para notificações
-    * tentar receber um mail automático para confirmar a criação de conta
+    * Podemos por um check para notificações (ainda não)
+    * tentar receber um mail automático para confirmar a criação de conta (ainda não)
     
 Página Novos Logistas -> Mariana Feito em 10/12
     * Formulário a preencher com todas as infos necesárias
     * Cifrar palavra-pass
-    * Podemos por um check para notificações
-    * tentar receber um mail automático para confirmar a criação de conta
+    * Podemos por um check para notificações (ainda não)
+    * tentar receber um mail automático para confirmar a criação de conta (ainda não)
+
+Página para Login de Clientes e Logistas (Mariana)
 
 Página Área Cliente -> Natany
     * Dados Pessoais do Cliente

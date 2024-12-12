@@ -1,5 +1,6 @@
 from django import forms
 from .models import *
+from django.db import transaction
 
 class ClienteRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, min_length=8)
@@ -14,13 +15,15 @@ class ClienteRegistrationForm(forms.ModelForm):
         fields = ['nif', 'nome', 'mail', 'password', 'confirm_password', 'ntelefone', 'morada']    
     
     def save(self, commit=True):
-        user = super().save(commit=False)
-        password = self.cleaned_data["password"]
-        if password:
-            user.set_password(password)
-        if commit:
-            user.save()
-        return user     
+        with transaction.atomic(): #Garante que são criados Cliente e Carrinho e não apenas 1
+            user = super().save(commit=False)
+            password = self.cleaned_data["password"]
+            if password:
+                user.set_password(password) 
+            if commit:
+                user.save()
+                Carrinho.objects.create(id_cliente=user, total=0.0)
+            return user     
        
     def clean(self):
         cleaned_data = super().clean()
@@ -86,3 +89,8 @@ class LogistaRegistrationForm(forms.ModelForm):
             user.save()
         return user     
         
+        
+class ProdutoForm(forms.ModelForm): #Por acabar
+    class Meta:
+        mode = Produto
+        fields = ['id_logista', 'stock', 'nome', 'preco', 'descricao', 'categoria', 'imagem']
