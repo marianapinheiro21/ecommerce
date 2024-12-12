@@ -117,30 +117,23 @@ class Logista(DirtyFieldsMixin, AbstractBaseUser, models.Model):
 
 class Produto(models.Model):
     idproduto = models.AutoField(primary_key=True)
-    stock = models.DecimalField(max_digits=65535, decimal_places=65535)
+    id_logista = models.ForeignKey(Logista, models.DO_NOTHING, db_column='id')
+    stock = models.IntegerField()
     nome = models.CharField(max_length=50)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
-    descricao = models.CharField(max_length=50, blank=True, null=True)
+    descricao = models.CharField(max_length=255, blank=True, null=True)
     categoria = models.CharField(max_length=50, blank=True, null=True)
+    imagem = models.ImageField(upload_to='produtos_images/')
 
     class Meta:
         managed = False
         db_table = 'produto'
 
-
-class LogistaProduto(models.Model):
-    addp_id = models.AutoField(primary_key=True)
-    logista_nif = models.ForeignKey(Logista, models.DO_NOTHING, db_column='logista_nif')
-    produto = models.ForeignKey('Produto', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'logista_produto'
         
 
 class Carrinho(models.Model):
     carrinho_id = models.AutoField(primary_key=True)
-    nif_cliente = models.ForeignKey('Cliente', models.DO_NOTHING, db_column='nif_cliente')
+    id_cliente = models.ForeignKey('Cliente', models.DO_NOTHING, db_column='id_cliente')
     total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     class Meta:

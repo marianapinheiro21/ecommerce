@@ -21,6 +21,7 @@ mccabe==0.6.1
 parso==0.7.1
 pexpect==4.8.0
 pickleshare==0.7.5
+pillow==10.4.0
 prompt-toolkit==3.0.8
 psycopg2==2.9.10
 psycopg2-binary==2.8.6

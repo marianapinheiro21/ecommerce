@@ -43,7 +43,17 @@ def novoLogista(request):
 
 def sucesso(request):
     return render(request, 'sucesso.html')
-    
+
+def adicionar_produto(request): #Não testado
+    if request.method == 'POST':
+        form = ProdutoForm(request.POST, request.FILES)    
+        if form.is_valid():
+            form.save()
+            return redirect ('sucesso')
+    else:
+        form = ProdutoForm()
+    return render(request, 'addProduct.html', {'form':form})
+
 def logista(request):
     logista = Logista.objects.all()
     context= {
