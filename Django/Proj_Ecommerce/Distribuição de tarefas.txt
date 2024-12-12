@@ -10,10 +10,10 @@ No cabeçalho do site queremos:
             
 No Rodapé:
     * Sobre nós
-    * Informação Legal 
+    * Informação Legal #Natany
     * Informação de taxas e tempos de entrega
-    * Imagem Portugal 2030
-    * Imagem do LinkedIn, para depois conectar com os nossos (hiperligação)            
+    * Imagem Portugal 2030 #Natany
+    * Imagem do LinkedIn, para depois conectar com os nossos (hiperligação)  #Natany
     * Apoio ao Cliente (Tentar)   
     
     
@@ -24,15 +24,19 @@ Página inicial:
     * "Quadrados" com imagem e texto a representar as várias categorias de produtos
     
     
-Página Novos Clientes -> Mariana
+Página Novos Clientes -> Mariana Feito em 10/12
     * Formulário a preencher com todas as infos necesárias
-    * Podemos por um check para notificações
-    * tentar receber um mail automático para confirmar a criação de conta
+    * Cifrar palavra-pass
+    * Podemos por um check para notificações (ainda não)
+    * tentar receber um mail automático para confirmar a criação de conta (ainda não)
     
-Página Novos Logistas -> Mariana 
+Página Novos Logistas -> Mariana Feito em 10/12
     * Formulário a preencher com todas as infos necesárias
-    * Podemos por um check para notificações
-    * tentar receber um mail automático para confirmar a criação de conta
+    * Cifrar palavra-pass
+    * Podemos por um check para notificações (ainda não)
+    * tentar receber um mail automático para confirmar a criação de conta (ainda não)
+
+Página para Login de Clientes e Logistas (Mariana)
 
 Página Área Cliente -> Natany
     * Dados Pessoais do Cliente
@@ -53,7 +57,7 @@ Página Carrinho
     * tentar receber um mail automático com os detalhes da compra (após check-out)
     
 Página Produtos
-    * Criar uma página para cada categoria de produtos
+    * Criar uma página para cada categoria de produtos #Natany
     * Filtros do Lado esquerdo do ecrã
     * A pesquisa de "filtros deve ser feita consoante palavras chaves na Descrição do produto
     * Quem trata desta página adiciona à BD os produtos que vão estar visiveis
