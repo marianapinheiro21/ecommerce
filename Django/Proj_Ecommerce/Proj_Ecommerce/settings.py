@@ -52,6 +52,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+#Mariana
+
+AUTH_USER_MODEL = 'projpsi.Utilizador'
+#Mariana
+
 ROOT_URLCONF = 'Proj_Ecommerce.urls'
 
 TEMPLATES = [
@@ -126,11 +134,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '.projpsi/static/'
-
-#conexão feita por Mariana
-
-#STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [BASE_DIR / "projpsi" / "static"]
 
