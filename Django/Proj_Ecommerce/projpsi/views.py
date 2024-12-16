@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import get_user_model
 from projpsi.models import *
 from .forms import *
 # Create your views here.
@@ -23,7 +25,8 @@ def novoCliente(request):
     if request.method == 'POST':
         form = ClienteRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user=form.save()
+            login(request, user)
             return redirect('sucesso')
     else:
         form = ClienteRegistrationForm()
@@ -34,7 +37,8 @@ def novoLogista(request):
     if request.method == 'POST':
         form = LogistaRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user=form.save()
+            login(request, user)
             return redirect('sucesso')
     else:
         form = LogistaRegistrationForm()
@@ -43,6 +47,45 @@ def novoLogista(request):
 
 def sucesso(request):
     return render(request, 'sucesso.html')
+
+
+def cliente_login(request):
+    
+    if request.method=='POST':
+        form=CustomLoginForm(request.POST)
+        if form.is_valid():
+            user=form.cleaned_data['user']
+            if not hasattr(user, 'cliente'):
+                form.add_error(None, "Este usuário não está registrado como Cliente")
+            else:
+                login(request, user)
+                return redirect('index') 
+                #return redirect('cliente_dashboard') -> Ainda não criada
+            
+        #else:
+        #    print("Form errors: ", form.errors)
+            
+    else:
+        form=CustomLoginForm()
+           
+    return render(request, 'cliente_login.html', {'form': form})
+    
+def logista_login(request):
+    if request.method == 'POST':
+        form = CustomLoginForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+            # Check if the user is a Logista
+            if not hasattr(user, 'logista'):
+                form.add_error(None, "Este usuário não está registrado como Logista")
+            else:
+                login(request, user)
+                return redirect('index') 
+                #return redirect('logista_dashboard') -> Ainda não criada
+    else:
+        form = CustomLoginForm()
+
+    return render(request, 'logista_login.html', {'form': form})
 
 def adicionar_produto(request): #Não testado
     if request.method == 'POST':
