@@ -6,6 +6,7 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+from django.views.generic import TemplateView
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from dirtyfields import DirtyFieldsMixin
@@ -78,6 +79,9 @@ class Logista(models.Model):
     class Meta:
         managed = False
         db_table = 'logista'
+
+    def logista_dados(request):
+        return render(request, 'projpsi/logista_dados.html')
 
 
 class Produto(models.Model):

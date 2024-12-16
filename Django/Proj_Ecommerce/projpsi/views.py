@@ -18,6 +18,7 @@ def not_found(request, exception):
 def server_error(request):
     return render(request, '500.html', status=500)
 
+
 def index(request):
     return render(request, "index.html")
 
@@ -97,12 +98,16 @@ def adicionar_produto(request): #Não testado
         form = ProdutoForm()
     return render(request, 'addProduct.html', {'form':form})
 
+
 def logista(request):
-    logista = Logista.objects.all()
-    context= {
-        'logista':logista,
+    logistas = Logista.objects.all()
+    context = {
+        'logistas': logistas,
     }
     return render (request,'projpsi/logista_list.html',context)
+
+def logista_dados(request):
+    return render(request, 'projpsi/logista_dados.html')
 
 def carrinho(request):
     return HttpResponse('Aqui estão os seus produtos!')
