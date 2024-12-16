@@ -369,3 +369,34 @@ footer{
         padding: 3rem 2rem;
     }
 }
+
+
+/*em teste
+/*page loading*/
+
+.preloader-active {
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999999;
+    -webkit-transition: .6s;
+    transition: .6s;
+    margin: 0 auto;
+}
+
+.preloader img {
+    max-height: 100px;
+}
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
