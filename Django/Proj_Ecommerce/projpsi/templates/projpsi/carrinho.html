@@ -3,10 +3,31 @@
 
 {% block content %}
 
-    <div id="content-block">
-        <h3>O meu carinho</h3>
-        <div>
-            
-        </div>
+<div id="itens">
+    <div id="finalizar-compras"></div>
+    <h3>Itens: </h3>
+    <h3>Total: </h3>
+    <button id="finalizar-compra">Finalizar Compra</button>
+    <itens></itens>
+        <table> 
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço</th>  
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>€{{ item.price }}</td>
+                    <td>€{{ item.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+</div>
 {% endblock %}

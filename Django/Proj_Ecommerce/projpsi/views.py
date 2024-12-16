@@ -34,8 +34,7 @@ def atualizar_carrinho(request):
         return JsonResponse({'status': 'success', 'carrinhoItens':carrinho_itens})
 def carrinho(request):
     carrinho_itens = request.session.get('carrinhoItens', {})
-    return render(request, 'projpsi/carrinho.html', {'carrinhoItens': carrinho_itens})
-    #return HttpResponse('Aqui estão os seus produtos!')    
+    return render(request, 'projpsi/carrinho.html', {'carrinhoItens': carrinho_itens})   
 
 def produtos_computadores(request):
     return render(request, 'projpsi/produtos_computadores.html')
