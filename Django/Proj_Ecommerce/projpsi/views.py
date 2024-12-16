@@ -57,11 +57,11 @@ def adicionar_produto(request): #Não testado
 
 
 def logista(request):
-    logistas = Logista.objects.all()
+    logista = Logista.objects.all()
     context = {
-        'logistas': logistas,
+        'logista': logista,
     }
-    return render (request,'projpsi/logista_list.html',context)
+    return render(request, 'projpsi/logista_list.html', context)
 
 def logista_dados(request):
     return render(request, 'projpsi/logista_dados.html')
