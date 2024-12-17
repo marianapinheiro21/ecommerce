@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from dirtyfields import DirtyFieldsMixin
+from django.shortcuts import render
 
 
 class UtilizadorManager(BaseUserManager):
@@ -28,6 +29,7 @@ class UtilizadorManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class Utilizador(AbstractBaseUser, PermissionsMixin):
+    id = models.AutoField(primary_key=True)
     email = models.EmailField(unique=True)
     nome = models.CharField(max_length=50)
     nif = models.DecimalField(max_digits=9, decimal_places=0, blank=True, null=True)
@@ -79,25 +81,39 @@ class Logista(models.Model):
     class Meta:
         managed = False
         db_table = 'logista'
-
+ 
     def logista_dados(request):
         return render(request, 'projpsi/logista_dados.html')
 
 
 class Produto(models.Model):
+    campos= [
+        ('computador fixo', 'Computador Fixo'),
+        ('computador portátil', 'Computador Portátil'),
+        ('periférico', 'Periférico'),
+        ('acessório', 'Acessório'),
+    ]
+    
     id = models.AutoField(primary_key=True)
     logista = models.ForeignKey(Logista, models.DO_NOTHING, db_column='id_logista')
     stock = models.IntegerField()
     nome = models.CharField(max_length=50)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     descricao = models.CharField(max_length=255, blank=True, null=True)
-    categoria = models.CharField(max_length=50, blank=True, null=True)
-    imagem = models.ImageField(upload_to='produtos_images/', blank=True, null=True)
+    categoria = models.CharField(max_length=50, choices=campos, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'produto'
 
+class ProdutoImagem(models.Model):
+    id = models.AutoField(primary_key=True)
+    produto = models.ForeignKey(Produto, related_name='imagem', on_delete=models.CASCADE)
+    imagem = models.ImageField(upload_to='produtos_imagens/')
+    
+    class Meta:
+        managed = False
+        db_table = 'produtoimagem'
         
 
 class Carrinho(models.Model):

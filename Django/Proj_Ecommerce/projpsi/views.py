@@ -1,16 +1,13 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, Http404
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import get_user_model
-from projpsi.models import *
+from django.http import HttpResponse, HttpResponseForbidden
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from rest_framework import generics
+from .models import *
 from .forms import *
+from .serializers import *
+
 # Create your views here.
-
-def my_view(request): #Lista todos os clientes -> Apenas Teste
-    clients_list = Cliente.objects.all()
-    output = ", ".join([c.nome for c in clients_list])
-    return HttpResponse(output)
-
 
 def not_found(request, exception):
     return render(request, '404.html', status=404)
@@ -81,23 +78,47 @@ def logista_login(request):
                 form.add_error(None, "Este usuário não está registrado como Logista")
             else:
                 login(request, user)
-                return redirect('index') 
+                return redirect('adicionar_produto') 
                 #return redirect('logista_dashboard') -> Ainda não criada
     else:
         form = CustomLoginForm()
 
     return render(request, 'logista_login.html', {'form': form})
 
-def adicionar_produto(request): #Não testado
+@login_required
+def adicionar_produto(request): 
+    if not hasattr(request.user, 'logista'):
+        return HttpResponseForbidden("Apenas Logistas podem adicionar produtos.")
+    
     if request.method == 'POST':
-        form = ProdutoForm(request.POST, request.FILES)    
-        if form.is_valid():
-            form.save()
-            return redirect ('sucesso')
+        form = ProdutoForm(request.POST, request.FILES)  
+        formset = ProdutoImagemFormSet(request.POST, request.FILES, queryset=ProdutoImagem.objects.none())  
+        
+        
+        if form.is_valid() and formset.is_valid():
+            produto = form.save(commit=False)
+            produto.logista = request.user.logista
+            produto.save() 
+            imagens = formset.save(commit=False)
+            for imagem in imagens:
+                imagem.produto = produto  
+                imagem.save()  
+            #return redirect('adicionar_produto_successo')
+            return redirect ('sucesso') #Tenho que criar outra página de sucesso
+        else: 
+            print("Form errors:", form.errors)
+            print("Formset errors:", formset.errors)
     else:
         form = ProdutoForm()
-    return render(request, 'addProduct.html', {'form':form})
+        formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
+    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 
+class ProdutoListaView(generics.ListAPIView):
+    queryset = Produto.objects.all().select_related('logista', 'logista__user')
+    serializer_class = ProdutoSerializer
+    
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 def logista(request):
     logista = Logista.objects.all()
