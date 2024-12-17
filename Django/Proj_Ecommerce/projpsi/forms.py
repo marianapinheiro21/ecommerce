@@ -212,9 +212,12 @@ class ProdutoForm(forms.ModelForm):
         fields = ['nome', 'preco', 'descricao', 'categoria','stock']
         widgets = {
             'descricao': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
-            'categoria': forms.TextInput(attrs={'placeholder': 'Categoria'}),
         }
-            
+                
+        def __init__(self, *args, **kwargs):
+            super(ProdutoForm, self).__init__(*args, **kwargs)
+            self.fields['categoria'].widget = forms.Select(choices=Produto.CATEGORY_CHOICES)
+                        
         def clean_stock(self):
             stock = self.cleaned_data.get('stock')
             if stock < 0:

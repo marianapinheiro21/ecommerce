@@ -87,13 +87,20 @@ class Logista(models.Model):
 
 
 class Produto(models.Model):
+    campos= [
+        ('computador fixo', 'Computador Fixo'),
+        ('computador portátil', 'Computador Portátil'),
+        ('periférico', 'Periférico'),
+        ('acessório', 'Acessório'),
+    ]
+    
     id = models.AutoField(primary_key=True)
     logista = models.ForeignKey(Logista, models.DO_NOTHING, db_column='id_logista')
     stock = models.IntegerField()
     nome = models.CharField(max_length=50)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     descricao = models.CharField(max_length=255, blank=True, null=True)
-    categoria = models.CharField(max_length=50, blank=True, null=True)
+    categoria = models.CharField(max_length=50, choices=campos, blank=True, null=True)
 
     class Meta:
         managed = False
