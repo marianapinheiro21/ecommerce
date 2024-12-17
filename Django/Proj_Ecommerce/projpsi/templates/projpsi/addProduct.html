@@ -15,15 +15,25 @@
             {% for error in form.non_field_errors %}
                 <li>{{ error }}</li>
             {% endfor %}
+            {% for form in formset %}
+                {{ form.as_p }}
+                {% if form.errors %}
+                    {{ form.errors }}
+                {% endif %}
+            {% endfor %}
         </ul>
     </div>
     {% endif %}
     <!-- Client Creation Form -->
     <!-- Não testado!!-->
-    <form method="POST" class="needs-validation" novalidate enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p}}
-        <button type="submit" class="btn btn-primary">Submeter</button>
+        {{ form.as_p }}
+        {{ formset.management_form }}  <!-- Include the management form -->
+        {% for form in formset %}
+            {{ form.as_p }}
+        {% endfor %}
+        <button type="submit">Save Product</button>
     </form>
 </div>
 {% endblock %}

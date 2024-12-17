@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.hashers import make_password
+from django.forms import modelformset_factory
 from django.forms.widgets import PasswordInput, TextInput
 
 class ClienteRegistrationForm(UserCreationForm):
@@ -180,21 +181,21 @@ class CustomLoginForm(forms.Form):
         #cleaned_data=super().clean()
         email=self.cleaned_data.get('email')
         password=self.cleaned_data.get('password')
-        print(f"Email x entered: {email}")
-        print(f"Password x entered: {password}")
+        #print(f"Email x entered: {email}")
+        #print(f"Password x entered: {password}")
     #    
         User=get_user_model()
     #    
         if not User.objects.filter(email=email).exists():
-            print(f"Email {email} não existe na Base de Dados")
+            #print(f"Email {email} não existe na Base de Dados")
             raise forms.ValidationError("Email não encontrado no Sistema")
         passe= User.objects.get(email=email).password
-        print(f"A palavra passe é: {passe}")   
-        print(f"Email {email} existe na Base de Dados")
+        #print(f"A palavra passe é: {passe}")   
+        #print(f"Email {email} existe na Base de Dados")
         if email and password:
             user = authenticate(username=email, password=password)
             if not user:
-                print(f"Authentication failed for email: {email} with password: {password}")
+                #print(f"Authentication failed for email: {email} with password: {password}")
                 raise forms.ValidationError("Email ou senha incorretos")
          
             if not user.is_active:
@@ -207,5 +208,28 @@ class CustomLoginForm(forms.Form):
         
 class ProdutoForm(forms.ModelForm): #Por acabar
     class Meta:
-        mode = Produto
-        fields = ['id_logista', 'stock', 'nome', 'preco', 'descricao', 'categoria', 'imagem']
+        model = Produto
+        fields = ['nome', 'preco', 'descricao', 'categoria','stock']
+        widgets = {
+            'descricao': forms.Textarea(attrs={'rows': 4, 'cols': 40}),
+            'categoria': forms.TextInput(attrs={'placeholder': 'Categoria'}),
+        }
+            
+        def clean_stock(self):
+            stock = self.cleaned_data.get('stock')
+            if stock < 0:
+                raise forms.ValidationError("O stock não pode ser negativo.")
+            return stock
+        
+        def clean_preco(self):
+            preco = self.cleaned_data.get('preco')
+            if preco <= 0:
+                raise forms.ValidationError("O preço deve ser maior que 0.")
+            return preco
+        
+ProdutoImagemFormSet = modelformset_factory(
+    ProdutoImagem,
+    fields=('imagem', ),
+    extra=3,  # Permite 3 imagens de cada vez
+    max_num=10  # Com um máximo de 10 imagens
+)
