@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'projpsi', #Mariana
+    'rest_framework', #Mariana
     ]
 
 MIDDLEWARE = [

@@ -206,7 +206,7 @@ class CustomLoginForm(forms.Form):
             raise forms.ValidationError("Preencha todos os campos")    
         return self.cleaned_data
         
-class ProdutoForm(forms.ModelForm): #Por acabar
+class ProdutoForm(forms.ModelForm): 
     class Meta:
         model = Produto
         fields = ['nome', 'preco', 'descricao', 'categoria','stock']
