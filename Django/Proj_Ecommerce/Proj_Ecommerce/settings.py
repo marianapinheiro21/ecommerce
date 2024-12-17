@@ -55,10 +55,10 @@ MIDDLEWARE = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
-#Mariana
+
 
 AUTH_USER_MODEL = 'projpsi.Utilizador'
-#Mariana
+
 
 ROOT_URLCONF = 'Proj_Ecommerce.urls'
 
@@ -138,8 +138,8 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [BASE_DIR / "projpsi" / "static"]
 
+
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
 
 #conexão feita por Mariana

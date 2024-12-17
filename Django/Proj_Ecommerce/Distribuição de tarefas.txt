@@ -24,13 +24,13 @@ Página inicial:
     * "Quadrados" com imagem e texto a representar as várias categorias de produtos
     
     
-Página Novos Clientes -> Mariana Feito em 10/12
+Página Novos Clientes -> Mariana
     * Formulário a preencher com todas as infos necesárias
     * Cifrar palavra-pass
     * Podemos por um check para notificações (ainda não)
     * tentar receber um mail automático para confirmar a criação de conta (ainda não)
     
-Página Novos Logistas -> Mariana Feito em 10/12
+Página Novos Logistas -> Mariana 
     * Formulário a preencher com todas as infos necesárias
     * Cifrar palavra-pass
     * Podemos por um check para notificações (ainda não)
@@ -39,12 +39,15 @@ Página Novos Logistas -> Mariana Feito em 10/12
 Página para Login de Clientes e Logistas (Mariana)
 
 Página Área Cliente -> Natany
+    * Dashboard Cliente
     * Dados Pessoais do Cliente
     * Possibilidade de alteração dos dados pessoais
     * Acesso ao Histórico de Compras    
     * Acesso aos artigos favoritos
     
 Página Área Logista -> Gustavo
+    * Dashboard Logista
+    * Adicionar um produto (Mariana)
     * Dados da Loja/Logista
     * Possibilidade de alteração dos dados
     * Acesso ao Histórico de Vendas

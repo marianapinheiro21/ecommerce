@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from projpsi.models import *
 from .forms import *
 # Create your views here.
@@ -80,22 +81,40 @@ def logista_login(request):
                 form.add_error(None, "Este usuário não está registrado como Logista")
             else:
                 login(request, user)
-                return redirect('index') 
+                return redirect('adicionar_produto') 
                 #return redirect('logista_dashboard') -> Ainda não criada
     else:
         form = CustomLoginForm()
 
     return render(request, 'logista_login.html', {'form': form})
 
+@login_required
 def adicionar_produto(request): #Não testado
+    if not hasattr(request.user, 'logista'):
+        return HttpResponseForbidden("Apenas Logistas podem adicionar produtos.")
+    
     if request.method == 'POST':
-        form = ProdutoForm(request.POST, request.FILES)    
-        if form.is_valid():
-            form.save()
-            return redirect ('sucesso')
+        form = ProdutoForm(request.POST, request.FILES)  
+        formset = ProdutoImagemFormSet(request.POST, request.FILES, queryset=ProdutoImagem.objects.none())  
+        
+        
+        if form.is_valid() and formset.is_valid():
+            produto = form.save(commit=False)
+            produto.logista = request.user.logista
+            produto.save() 
+            imagens = formset.save(commit=False)
+            for imagem in imagens:
+                imagem.produto = produto  
+                imagem.save()  
+            #return redirect('adicionar_produto_successo')
+            return redirect ('sucesso') #Tenho que criar outra página de sucesso
+        else: 
+            print("Form errors:", form.errors)
+            print("Formset errors:", formset.errors)
     else:
         form = ProdutoForm()
-    return render(request, 'addProduct.html', {'form':form})
+        formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
+    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 
 
 def logista(request):
