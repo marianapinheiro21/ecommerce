@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect
+from django.db.models import Sum
+from django.contrib.auth.models import AbstractBaseUser
+from django.utils.timezone import now
 from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -120,15 +123,41 @@ class ProdutoListaView(generics.ListAPIView):
     def get_serializer_context(self):
         return {'request': self.request}
 
-def logista(request):
+def  logista(request):
     logista = Logista.objects.all()
     context = {
         'logista': logista,
     }
+    
     return render(request, 'projpsi/logista_list.html', context)
 
 def logista_dados(request):
     return render(request, 'projpsi/logista_dados.html')
+
+def dashboard(request):
+    total_lucro = CarrinhoProduto.objects.aaggregate(price=Sum('price'))
+    total_pedidos = CarrinhoProduto.objects.all()
+    total_produtos = Produto.objects.all()
+    pedido_recente = User.objects.all().order_by('')[:6]
+
+    mes = now().month
+    mes_lucro = (CarrinhoProduto.objects.filter(mes=mes).aaggregate(price=Sum('price')))
+
+
+    context = {
+        'total_lucro ' : total_lucro,
+        'total_pedidos' : total_pedidos,
+        'total_produtos' : total_produtos,
+        'pedido_recente' : pedido_recente,
+        'mes_lucro' : mes_lucro,
+    }
+    return render(request, "projpsi/dashboard.html", context)
+
+
+
+
+
+
 
 def carrinho(request):
     return HttpResponse('Aqui estão os seus produtos!')

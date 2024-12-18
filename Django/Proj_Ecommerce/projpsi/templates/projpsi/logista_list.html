@@ -4,27 +4,7 @@
 
 
 
-<div class="row vendor-grid">
-    {% for l in logistas %}
-        <div class="col-lg-6 col-md-6 col-12 col-sm-6">
-            <div class="vendor-wrap style-2 mb-40">
-                    </div>
-                    <div class="mt-10">
-                        <span class="font-small total-product">{{ l.produtos_total }} produtos</span>
-                    </div>
-                </div>
-                <div class="vendor-content-wrap">
-                    <h4 class="mb-5"><a href="#">{{ l.nome }}</a></h4>
-                    <ul class="contact-infor text-muted">
-                        <li><strong>Email:</strong> {{ l.mail }}</li>
-                        <li><strong>Telefone:</strong> {{ l.ntelefone }}</li>
-                        <li><strong>Morada:</strong> {{ l.morada }}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    {% empty %}
-        <p>Nenhum logista encontrado.</p>
-    {% endfor %}
-</div> 
+
+ 
+
 {% endblock content %}
