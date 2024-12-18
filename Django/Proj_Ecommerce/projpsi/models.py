@@ -73,17 +73,17 @@ class Cliente(models.Model):
         managed = False
 
 class Lojista(models.Model):
-    user = models.OneToOneField(Utilizador, on_delete=models.CASCADE, related_name='logista', primary_key=True)
-
+    user = models.OneToOneField(Utilizador, on_delete=models.CASCADE, related_name='lojista', primary_key=True)
+    
     def __str__(self):
-        return f"Logista: {self.user.nome}"
+        return f"Lojista: {self.user.nome}"
     
     class Meta:
         managed = False
         db_table = 'lojista'
  
-    def logista_dados(request):
-        return render(request, 'projpsi/logista_dados.html')
+    def lojista_dados(request):
+        return render(request, 'projpsi/lojista_dados.html')
 
 
 class Produto(models.Model):

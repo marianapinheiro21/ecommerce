@@ -11,7 +11,7 @@ DROP TABLE PRODUTOIMAGEM;
 DROP TABLE PRODUTO;
 --DROP TABLE CARRINHO;
 --DROP TABLE CLIENTE;
---DROP TABLE LOGISTA;
+DROP TABLE LOGISTA;
 --DROP TABLE UTILIZADOR;
 
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS CLIENTE (
     PRIMARY KEY (user_id)
 );
 
-CREATE TABLE IF NOT EXISTS LOGISTA (
+CREATE TABLE IF NOT EXISTS LOJISTA (
     user_id INTEGER NOT NULL UNIQUE REFERENCES UTILIZADOR(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id)
 );
@@ -44,14 +44,14 @@ CREATE TABLE IF NOT EXISTS LOGISTA (
 
 CREATE TABLE IF NOT EXISTS PRODUTO(
 	id			SERIAL PRIMARY KEY, 
-	ID_LOGISTA 	INTEGER NOT NULL,
+	ID_LOJISTA 	INTEGER NOT NULL,
 	Stock		INTEGER NOT NULL,
 	Nome		VARCHAR NOT NULL,
 	Preco		NUMERIC(10,2) NOT NULL,
 	Descricao	VARCHAR, 
 	Categoria   VARCHAR CHECK (Categoria IN ('computador fixo', 'computador portátil', 'periférico', 'acessório')),
 
-	FOREIGN KEY (ID_LOGISTA) REFERENCES LOGISTA(user_id)
+	FOREIGN KEY (ID_LOJISTA) REFERENCES LOJISTA(user_id)
 );
 
 
@@ -102,27 +102,3 @@ CREATE TABLE IF NOT EXISTS CARRINHO_PRODUTO(
 	FOREIGN KEY (VENDA_ID) REFERENCES VENDA(id)
 );
 
-
---------------------------------------------------------------------------------------------
---------------------------- ADICIONAR CONTEÚDOS INICIAIS------------------------------------
---------------------------------------------------------------------------------------------
-
-
---INSERT INTO CLIENTE
---VALUES
---('123456789', 'Maria do Mar', 'mariadomar@mail.com', '123Oliveira4', '987654321', 'Rua do Oceano n14'),
---('134677985', 'Rodrigo Alteres', 'strongrodrigo@mail.pt', 'homemforte', '989898989', 'Rua do ginasio n5'),
---('242424242', 'Mariana Pinheiro', 'marianapinheiro@ua.pt', 'palavrapass', '916562734', 'a minha rua n27');
-
-
---INSERT INTO LOGISTA
---VALUES
---('454545454', 'loja fixe', 'fixe@store.pt', 'password', '888888889', 'rua bacana n45'),
---('124578986', 'Loja do Mestre André', 'mestreandre@store.pt', 'passdaloja', '326598147', 'Rua da loja n12');
-
-
---INSERT INTO PRODUTO(Stock, Nome, Preco, Descricao, Categoria)
---VALUES
---('3', 'OLAOLA', '14', 'JVNÇDFJNV', 'JKBVJBJ'),
---('5', 'PIUPIU', '20', 'TICOTICO', 'JNJFDJJJ'),
---('9', 'BACALHAU', '50', 'ZAZA', 'ANONIO');

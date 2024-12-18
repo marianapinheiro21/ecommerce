@@ -40,7 +40,8 @@ def novoLojista(request):
         if form.is_valid():
             user=form.save()
             login(request, user)
-            return redirect('sucesso')
+            return redirect('adicionar_produto')
+            #return redirect('lojista_dashboard') -> Ainda não criada
     else:
         form = LojistaRegistrationForm()
             
@@ -49,6 +50,8 @@ def novoLojista(request):
 def sucesso(request):
     return render(request, 'sucesso.html')
 
+def sucesso_produto(request):
+    return render(request, 'sucesso_addProduto.html')
 
 def cliente_login(request):
     
@@ -91,7 +94,9 @@ def lojista_login(request):
 @login_required
 def adicionar_produto(request): 
     if not hasattr(request.user, 'lojista'):
+
         return HttpResponseForbidden("Apenas Lojistas podem adicionar produtos.")
+
     
     if request.method == 'POST':
         form = ProdutoForm(request.POST, request.FILES)  
@@ -106,8 +111,8 @@ def adicionar_produto(request):
             for imagem in imagens:
                 imagem.produto = produto  
                 imagem.save()  
-            #return redirect('adicionar_produto_successo')
-            return redirect ('sucesso') #Tenho que criar outra página de sucesso
+            return redirect('adicionar_produto_successo')
+            #return redirect ('sucesso') #Tenho que criar outra página de sucesso
         else: 
             print("Form errors:", form.errors)
             print("Formset errors:", formset.errors)
@@ -130,6 +135,7 @@ class LojistaListaView(generics.ListAPIView):
 
     def get_serializer_context(self):
         return {'request': self.request}
+
 
 
 def  lojista(request):
@@ -161,10 +167,6 @@ def dashboard(request):
         'mes_lucro' : mes_lucro,
     }
     return render(request, "projpsi/dashboard.html", context)
-
-
-
-
 
 
 
