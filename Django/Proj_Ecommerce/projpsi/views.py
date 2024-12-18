@@ -31,17 +31,17 @@ def novoCliente(request):
             
     return render(request, 'newClient.html', {'form':form})
 
-def novoLogista(request):
+def novoLojista(request):
     if request.method == 'POST':
-        form = LogistaRegistrationForm(request.POST)
+        form = LojistaRegistrationForm(request.POST)
         if form.is_valid():
             user=form.save()
             login(request, user)
             return redirect('sucesso')
     else:
-        form = LogistaRegistrationForm()
+        form = LojistaRegistrationForm()
             
-    return render(request, 'newLogista.html', {'form':form})
+    return render(request, 'newLojista.html', {'form':form})
 
 def sucesso(request):
     return render(request, 'sucesso.html')
@@ -68,27 +68,27 @@ def cliente_login(request):
            
     return render(request, 'cliente_login.html', {'form': form})
     
-def logista_login(request):
+def lojista_login(request):
     if request.method == 'POST':
         form = CustomLoginForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data['user']
-            # Check if the user is a Logista
-            if not hasattr(user, 'logista'):
-                form.add_error(None, "Este usuário não está registrado como Logista")
+            # Check if the user is a Lojista
+            if not hasattr(user, 'lojista'):
+                form.add_error(None, "Este usuário não está registrado como Lojista")
             else:
                 login(request, user)
                 return redirect('adicionar_produto') 
-                #return redirect('logista_dashboard') -> Ainda não criada
+                #return redirect('lojista_dashboard') -> Ainda não criada
     else:
         form = CustomLoginForm()
 
-    return render(request, 'logista_login.html', {'form': form})
+    return render(request, 'lojista_login.html', {'form': form})
 
 @login_required
 def adicionar_produto(request): 
-    if not hasattr(request.user, 'logista'):
-        return HttpResponseForbidden("Apenas Logistas podem adicionar produtos.")
+    if not hasattr(request.user, 'lojista'):
+        return HttpResponseForbidden("Apenas lojistas podem adicionar produtos.")
     
     if request.method == 'POST':
         form = ProdutoForm(request.POST, request.FILES)  
@@ -97,7 +97,7 @@ def adicionar_produto(request):
         
         if form.is_valid() and formset.is_valid():
             produto = form.save(commit=False)
-            produto.logista = request.user.logista
+            produto.lojista = request.user.lojista
             produto.save() 
             imagens = formset.save(commit=False)
             for imagem in imagens:
@@ -114,21 +114,21 @@ def adicionar_produto(request):
     return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 
 class ProdutoListaView(generics.ListAPIView):
-    queryset = Produto.objects.all().select_related('logista', 'logista__user')
+    queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
     serializer_class = ProdutoSerializer
     
     def get_serializer_context(self):
         return {'request': self.request}
 
-def logista(request):
-    logistas = Logista.objects.all()
+def lojista(request):
+    lojistas = lojista.objects.all()
     context = {
-        'logistas': logistas,
+        'lojistas': lojistas,
     }
-    return render (request,'projpsi/logista_list.html',context)
+    return render (request,'projpsi/lojista_list.html',context)
 
-def logista_dados(request):
-    return render(request, 'projpsi/logista_dados.html')
+def lojista_dados(request):
+    return render(request, 'projpsi/lojista_dados.html')
 
 def carrinho(request):
     return HttpResponse('Aqui estão os seus produtos!')

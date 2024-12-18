@@ -72,18 +72,18 @@ class Cliente(models.Model):
         db_table = 'cliente'
         managed = False
 
-class Logista(models.Model):
-    user = models.OneToOneField(Utilizador, on_delete=models.CASCADE, related_name='logista', primary_key=True)
+class Lojista(models.Model):
+    user = models.OneToOneField(Utilizador, on_delete=models.CASCADE, related_name='lojista', primary_key=True)
 
     def __str__(self):
-        return f"Logista: {self.user.nome}"
+        return f"Lojista: {self.user.nome}"
     
     class Meta:
         managed = False
-        db_table = 'logista'
+        db_table = 'lojista'
  
-    def logista_dados(request):
-        return render(request, 'projpsi/logista_dados.html')
+    def lojista_dados(request):
+        return render(request, 'projpsi/lojista_dados.html')
 
 
 class Produto(models.Model):
@@ -95,7 +95,7 @@ class Produto(models.Model):
     ]
     
     id = models.AutoField(primary_key=True)
-    logista = models.ForeignKey(Logista, models.DO_NOTHING, db_column='id_logista')
+    Lojista = models.ForeignKey(Lojista, models.DO_NOTHING, db_column='id_lojista')
     stock = models.IntegerField()
     nome = models.CharField(max_length=50)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
