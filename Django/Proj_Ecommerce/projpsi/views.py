@@ -122,6 +122,9 @@ class ProdutoListaView(generics.ListAPIView):
     
     def get_serializer_context(self):
         return {'request': self.request}
+    
+
+
 
 def  logista(request):
     logista = Logista.objects.all()
