@@ -10,9 +10,9 @@ Xab4mZ+XgN6NtRUfR9MarwkHwc0hDNo0EGdXuCbx
 
 CLIENTES:
 
-Galinda
+Glinda
 glinda@thegood.com
-goodGalinda
+popular!
 (sem mais dados)
 
 123456789 
@@ -29,6 +29,10 @@ wizard@oz.com
 123wizard123
 963852741
 Esmerald City
+
+(superuser)
+byte@store.com
+memoriaRAM
 
 
 
