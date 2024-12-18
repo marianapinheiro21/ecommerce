@@ -86,7 +86,7 @@ class ClienteRegistrationForm(UserCreationForm):
 
     
     
-class LogistaRegistrationForm(UserCreationForm):
+class LojistaRegistrationForm(UserCreationForm):
     
     nome=forms.CharField(widget=forms.TextInput(attrs={
         'placeholder':'Nome'
@@ -148,7 +148,7 @@ class LogistaRegistrationForm(UserCreationForm):
 
                 with connection.cursor() as cursor:
                     cursor.execute("""
-                        INSERT INTO logista (user_id) VALUES (%s)
+                        INSERT INTO lojista (user_id) VALUES (%s)
                     """, [user_id])
                 
                 user = Utilizador(id=user_id, nome=cleaned_data['nome'], email=cleaned_data['email'])
