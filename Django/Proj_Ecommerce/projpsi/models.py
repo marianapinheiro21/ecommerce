@@ -74,7 +74,7 @@ class Cliente(models.Model):
 
 class Lojista(models.Model):
     user = models.OneToOneField(Utilizador, on_delete=models.CASCADE, related_name='lojista', primary_key=True)
-
+    
     def __str__(self):
         return f"Lojista: {self.user.nome}"
     

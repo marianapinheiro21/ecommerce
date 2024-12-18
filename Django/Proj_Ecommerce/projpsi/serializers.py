@@ -13,6 +13,7 @@ class LojistaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lojista
         fields = ['user']
+
         
         
 class ProdutoImagemSerializer(serializers.ModelSerializer):
