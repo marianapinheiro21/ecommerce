@@ -37,7 +37,8 @@ def novoLojista(request):
         if form.is_valid():
             user=form.save()
             login(request, user)
-            return redirect('sucesso')
+            return redirect('adicionar_produto')
+            #return redirect('lojista_dashboard') -> Ainda não criada
     else:
         form = LojistaRegistrationForm()
             
@@ -46,6 +47,8 @@ def novoLojista(request):
 def sucesso(request):
     return render(request, 'sucesso.html')
 
+def sucesso_produto(request):
+    return render(request, 'sucesso_addProduto.html')
 
 def cliente_login(request):
     
@@ -103,8 +106,8 @@ def adicionar_produto(request):
             for imagem in imagens:
                 imagem.produto = produto  
                 imagem.save()  
-            #return redirect('adicionar_produto_successo')
-            return redirect ('sucesso') #Tenho que criar outra página de sucesso
+            return redirect('adicionar_produto_successo')
+            #return redirect ('sucesso') #Tenho que criar outra página de sucesso
         else: 
             print("Form errors:", form.errors)
             print("Formset errors:", formset.errors)
