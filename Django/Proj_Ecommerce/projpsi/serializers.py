@@ -8,11 +8,12 @@ class UtilizadorSerializer(serializers.ModelSerializer):
         fields = ['nome', 'nif', 'email']
 
 
-class LogistaSerializer(serializers.ModelSerializer):
+class LojistaSerializer(serializers.ModelSerializer):
     user = UtilizadorSerializer(read_only=True)
     class Meta:
-        model = Logista
+        model = Lojista
         fields = ['user']
+
         
         
 class ProdutoImagemSerializer(serializers.ModelSerializer):
@@ -22,9 +23,9 @@ class ProdutoImagemSerializer(serializers.ModelSerializer):
 
 
 class ProdutoSerializer(serializers.ModelSerializer):
-    logista = LogistaSerializer(read_only=True)
+    lojista = LojistaSerializer(read_only=True)
     imagens = ProdutoImagemSerializer(source='imagem', many=True)
     
     class Meta:
         model = Produto
-        fields = ['logista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
+        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
