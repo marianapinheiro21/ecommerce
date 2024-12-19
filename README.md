@@ -23,12 +23,20 @@ wickedelphaba
 rua de oz
 
 LOGISTAS
-234567891
 Wizard of Oz
 wizard@oz.com
-123wizard123
+234567891
 963852741
 Esmerald City
+123wizard123
+
+Byte Store
+byte@store.com
+963852741
+741852963
+memoriaRAM
+
+
 
 (superuser)
 byte@store.com

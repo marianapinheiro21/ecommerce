@@ -10,6 +10,7 @@ urlpatterns = [
     path('registar/cliente/', views.novoCliente, name='novoCliente'),
     path('registar/lojista/', views.novoLojista, name='novoLojista'),
     path('sucesso/', views.sucesso, name='sucesso'), 
+    path('lojista/addProduto/sucesso/', views.sucesso_produto, name='adicionar_produto_successo'), 
     path('login/cliente/', views.cliente_login, name='cliente_login'), 
     path('login/lojista/', views.lojista_login, name='lojista_login'), 
     path('lojista/addProduto/', views.adicionar_produto, name='adicionar_produto'), 
