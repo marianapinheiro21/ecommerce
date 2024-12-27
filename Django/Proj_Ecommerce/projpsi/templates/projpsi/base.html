@@ -1,31 +1,106 @@
-<!DOCTYPE html>
-<html lang="pt-PT">
-<head>
-    <meta charset="UTF-8">
+<!-- Código em html feito por Natanny. 
+ Conexão ao Django e divisão em base.html e index.html por Mariana -->
 
-    <title>Simple Base</title>
-
-</head>
-<body class="text-center">
-    <header>
-
-        <h1 class="text-center">Site Header</h1>
-
-    </header>
-
-    {% block content %}
-    {% endblock content %}
-
-
-    <footer>
-        <p>2024 all rights reserved</p>
-           
-        </div>
-        <div class="footer-copyrigth">
-            &#169
-            2024 all rights reserved
+ <html lang="pt-PT">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ecommerce</title>
+    
+        <!--css link-->
+        {% load static %}
+        <link rel="stylesheet" href="{% static './style.css' %}">
+    
+        <!--font awesome cdn link-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    </head>
+    
+    <body>
+        <header>
             
+            <a href="#" class="logo">{% load static %}<img src="{% static './logo_ecommerce.png' %}" alt=""></a>
+            <div class="input-search">
+                <input type="text" placeholder="Digite o produto que procuras" class="input-header">
+                <i class="fa fa-search" aria-hidden="true"></i>
+            </div>
+    
+            <div class="icons">
+                <a href="{% url 'favoritos' %}"><i class="fa fa-star" aria-hidden="true"></i></a>
+                <a href="{% url 'carrinho' %}"><i class="fa fa-shopping-cart" aria-hidden="true"></i></a>
+                <span id="cart-count">0</span>
+                <a href="{% url 'criar_login' %}"><i class="fa fa-user" aria-hidden="true"></i></a>
+            </div>
+        </header>
+        <div id="nav-content-block-base">
+            <nav class="nav-bar">
+                <section class="nav-section">
+                    <ul>
+                        <li class="nav-item dropdown">
+                            <a href="#">Produtos</a>
+                            <ul class="dropdown">
+                                <li><a href="{% url 'produtos_computadores' %}">Pc</a></li>
+                                <li><a href="{% url 'produtos_portateis' %}">Portátil</a></li>
+                                <li><a href="{% url 'produtos_acessorios' %}">Acessórios</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a href="#">Promoções</a></li>
+                        <li class="nav-item"><a href="#">Novidades</a></li>
+                        <li class="nav-item"><a href="#">Sobre Nós</a></li>
+                    </ul>
+                </section>
+            </nav>
         </div>
-    </footer>
-</body>
-</html>
+        {% block content %}
+        {% endblock content %}
+    
+        <footer> 
+            <div class="footer-container">
+                <div class="footer-logo">
+                    <a href="#" class="logo">{% load static %}<img src="{% static 'logo_ecommerce.png' %}" alt="logo-footer"></a>
+                    <p>O mundo da tecnologia, está cá.</p> <br>
+                    <p>Encontre-nos nas redes.</p>
+                    <div class="footer-icons">
+                        <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                    
+                </div>
+               
+                <ul class="footer-lista">
+                        <li>    
+                            <h3>Apoio ao Cliente</h3>
+                        </li>
+                        <a href=""><li>Ajuda</li></a>
+                        <a href=""><li>Entregas</li></a>
+                        <a href=""><li>Trocas e Devoluções</li></a>
+                        <a href=""><li>Informação Legal </li></a>
+                </ul>
+                <ul class="footer-lista">
+                        <li>    
+                            <h3>Formas de Pagamento</h3>
+                        </li>
+                        <a href=""><i class="fab fa-paypal" aria-hidden="true"></i></a>
+                        <a href=""><i class="fa fa-credit-card" aria-hidden="true"> </i></a>
+                        <a href=""><i class="fab fa-cc-visa" aria-hidden="true"></i></a>
+                        <a href=""><i class="fab fa-cc-mastercard" aria-hidden="true"></i></a>
+                </ul>
+                <ul class="footer-input">                    
+                    <h3>Subscribe</h3>
+                    <p>Receba todas as novidades da E-commerce.</p>
+                    <div class="input-footer">
+                        <input type="email" id="email" class="input-footer" placeholder="Digite o seu e-mail">
+                        <button>
+                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <img class="pt2030" src="{% static './pt2030.png' %}" alt="">
+                </ul>
+               
+            </div>
+            <div class="footer-copyrigth">
+                &#169
+                2024 all rights reserved
+                
+            </div>
+        </footer>
+    </body>
+    </html>
