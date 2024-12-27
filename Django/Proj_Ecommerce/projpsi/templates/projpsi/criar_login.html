@@ -3,22 +3,22 @@
 {% load static %}  
 
 {% block head %}
-    <link rel="stylesheet" href="{% static 'criar_login.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 {% endblock %}
 
 {% block content %}
 <div id="nav-content-block-criar_login">
-    <div class="container">
-        <div class="button1">
+    <div class="container-criar_login">
+        <div class="button1-criar_login">
             <h3>Escolha a conta que deseja criar?</h3>
-            <button class="lojista">Lojista</button>
-            <button class="cliente">Cliente</button>
+            <a href="{% url 'novoLojista' %}" class="button">Criar Novo Lojista</a>
+            <a href="{% url 'novoCliente' %}" class="button">Criar Novo Cliente</a>
         </div>
-        <div class="button2">
+        <div class="button2-criar_login">
             <h3>Já és lojista?</h3>
-            <button class="lojista">Fazer Login</button>
+            <a href="{% url 'lojista_login' %}" class="button-2">Fazer Login Lojista</a>
             <h3>Já és cliente?</h3>
-            <button class="cliente">Fazer Login</button>
+            <a href="{% url 'cliente_login' %}" class="button-2">Fazer Login Cliente</a>
         </div>
     </div>
 </div>
