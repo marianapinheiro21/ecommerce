@@ -6,6 +6,15 @@
     text-decoration: none;
 }
 
+
+#nav-content-block-base {
+    margin-top: 8rem;
+}
+
+#nav-content-block-criar_login {
+    margin-top: 8rem;
+}
+
 header{
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -65,25 +74,22 @@ a.logo img{
     transform: scale(1.2);
 }
 
+#cart-count.hidden {
+    display: none;
+}
 /* ------------------- SECTION NAV-MENU ------------------- */
 
 .nav-bar {
     background-color: rgb(75, 75, 75);
-    margin-top: 1rem;
-    padding: 1rem 1rem;
     box-shadow: 0px 5px  10px rgb(188, 175, 247);
+    width: 100%;
 }
 
 .nav-section ul{
     display: flex; 
-   justify-content: center;
-    gap: 15rem;
-   list-style: none;
-   font-size: 1.3rem;
-}
-
-.nav-item {
-    margin: 0 15px;
+    justify-content: center;
+    gap: 8rem;
+    font-size: 1rem;
 }
 
 .nav-section a{
@@ -96,26 +102,94 @@ a.logo img{
     color: #fff;
 }
 
+ul li {
+    display: inline-block;
+    position: relative;
+}
+
+ul li a{
+    display: block;
+    padding: 20px 25px;
+    color: rgb(196, 192, 214);
+    text-align: center;
+    font-size: 20px;
+   
+}
+
+ul li ul.dropdown li {
+    display: block;
+}
+
+ul li ul.dropdown {
+    width: 100%;
+    background-color:rgb(75, 75, 75);;
+    position: absolute;
+    z-index: 999;
+    display: none;
+}
+
+ul li:hover ul.dropdown {
+    display: block;
+}
+
 @media screen and (max-width: 768px) {
-    .nav-section ul {
-        gap: 4rem;
-        font-size: 1.1rem;
+    header {
+        flex-direction: column;
+        padding: 1.5rem;
+        align-items: flex-start;
+    }
+
+    a.logo img {
+        width: 10rem;
+    }
+
+    .input-search {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .icons {
+        justify-content: flex-start;
+        width: 100%;
+        margin-top: 1rem;
     }
 
     .nav-bar {
-        margin-top: 4rem;
+        margin-top: 12rem;
     }
-}
 
-@media screen and (max-width: 426px) {
     .nav-section ul {
         flex-direction: column;
         gap: 1rem;
-        font-size: 1rem;
+        text-align: center;
     }
 
-    .nav-bar {
-        padding: 0.5rem;
+    ul li a {
+        font-size: 18px;
+    }
+
+    ul li ul.dropdown {
+        position: static;
+        margin-top: 1rem;
+        text-align: left;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    a.logo img {
+        width: 8rem;
+    }
+
+    .input-header {
+        font-size: 0.9rem;
+    }
+
+    ul li a {
+        font-size: 16px;
+    }
+
+    .icons i {
+        font-size: 1.2rem;
     }
 }
 /* ------------------- CAROUSEL ------------------- */
@@ -249,8 +323,10 @@ a.logo img{
     justify-content: center;
     grid-template-columns: repeat(4, auto);
     gap: 5rem;
-    
-    
+}
+
+button .add-to-cart {
+    background-color: #007bff;
 }
 
 /*  ------------------- FOOTER  ------------------- */
@@ -370,33 +446,55 @@ footer{
     }
 }
 
-
-/*em teste
-/*page loading*/
-
-.preloader-active {
-    background-color: #fff;
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 999999;
-    -webkit-transition: .6s;
-    transition: .6s;
-    margin: 0 auto;
+#itens {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 800px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.preloader img {
-    max-height: 100px;
+#itens h3 {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: #333;
 }
-@keyframes rotate {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+
+#finalizar-compra {
+    width: 20%;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+#finalizar-compra:hover {
+    background-color: #0056b3;
+}
+#produtos-carrinho {
+    margin-top: 20px;
+    overflow-x: auto; 
+}
+
+#produtos-carrinho {
+    display: flex;
+    justify-content: center;
+}
+
+#produtos-carrinho, thead {
+    background-color: rgb(75, 75, 75);
+    color: #fff;
+    padding: 8px;
+}
+
+#produtos-carrinho, th{
+    font-size: 1.3rem;
 }

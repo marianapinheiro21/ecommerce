@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% load static %}  
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'criar_login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="nav-content-block-criar_login">
+    <div class="container">
+        <div class="button1">
+            <h3>Escolha a conta que deseja criar?</h3>
+            <button class="lojista">Lojista</button>
+            <button class="cliente">Cliente</button>
+        </div>
+        <div class="button2">
+            <h3>Já és lojista?</h3>
+            <button class="lojista">Fazer Login</button>
+            <h3>Já és cliente?</h3>
+            <button class="cliente">Fazer Login</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

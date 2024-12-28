@@ -10,9 +10,9 @@ Xab4mZ+XgN6NtRUfR9MarwkHwc0hDNo0EGdXuCbx
 
 CLIENTES:
 
-Galinda
+Glinda
 glinda@thegood.com
-goodGalinda
+popular!
 (sem mais dados)
 
 123456789 
@@ -37,6 +37,10 @@ byte@store.com
 memoriaRAM
 
 
+
+(superuser)
+byte@store.com
+memoriaRAM
 
 
 
