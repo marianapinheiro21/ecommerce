@@ -169,9 +169,15 @@ def dashboard(request):
     return render(request, "projpsi/dashboard.html", context)
 
 
+def criar_login(request):
+    return render(request, 'projpsi/criar_login.html')
+
 
 def carrinho(request):
-    return HttpResponse('Aqui estão os seus produtos!')
+    return render(request, 'projpsi/carrinho.html')
+
+def favoritos(request):
+    return HttpResponse('Aqui estão os seus favoritos!')
 
 def produtos_computadores(request):
     return render(request, 'projpsi/produtos_computadores.html')
