@@ -41,7 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'projpsi', #Mariana
     'rest_framework', #Mariana
+    'rest_framework_simplejwt.token_blacklist', #Mariana
     ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+} #Mariana
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
