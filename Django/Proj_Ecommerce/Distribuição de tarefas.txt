@@ -1,3 +1,17 @@
+APIs
+    * Login Cliente/Logista -> Mariana
+    * Novo Cliente/Logista -> Mariana
+    * Venda -> Mariana
+    * Todos os produtos -> Mariana
+    * Todos os Logistas -> Gustavo (Se conseguires, edita para que devolva o total ganho ao vender produtos)
+    * Editar Cliente/Logista -> Gustavo
+    * Produtos por Categoria -> Gustavo
+    * Adicionar produto ao Carrinho -> Natany
+    * Marcar produto como favorito -> Natany
+    
+    
+
+
 No cabeçalho do site queremos:
     * carrinho no lado Direito
     * Nome / Imagem do site no centro do cabeçalho
