@@ -14,6 +14,7 @@ urlpatterns = [
     path('api/login/lojista/', LojistaLoginAPIView.as_view(), name='lojista_login'),
     path('api/logout/', LogoutAPIView.as_view(), name='logout'),
     path('api/produtos/create/', ProdutoCreateAPIView.as_view(), name='produto-create'),
+    path('api/clientes/<int:pk>/', ClienteUpdateAPIView.as_view(), name='cliente-update'),
     #path('registar/lojista/', novoLojista, name='novoLojista'),
     #path('sucesso/', sucesso, name='sucesso'), 
     path('criar_login/', criar_login, name='criar_login'),
@@ -32,5 +33,6 @@ urlpatterns = [
     path('produto/portateis/', produtos_portateis, name='produtos_portateis'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+handler403 = 'projpsi.views.denied_access'
 handler404 = 'projpsi.views.not_found'
 handler500='projpsi.views.server_error'
