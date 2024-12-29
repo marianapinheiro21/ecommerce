@@ -182,6 +182,18 @@ class ProdutoCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
+class ProdutoPorCategoriaAPIView(APIView):
+    
+    def get(self, request, categoria, format=None):
+        produtos = Produto.objects.filter(categoria=categoria)
+        
+        if not produtos.exists():
+            return Response({"error": "Nenhum produto encontrado para esta categoria."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = ProdutoSerializer(produtos, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
 class ClienteUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -189,7 +201,7 @@ class ClienteUpdateAPIView(APIView):
         try:
             cliente = Cliente.objects.get(pk=pk)
             if cliente.user != user:
-                return None  # Retornar None se o cliente não pertencer ao usuário autenticado
+                return None  
             return cliente
         except Cliente.DoesNotExist:
             return None
@@ -204,6 +216,33 @@ class ClienteUpdateAPIView(APIView):
             serializer.save()
             return Response({"message": "Cliente atualizado com sucesso!", "cliente": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class LojistaUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk, user):
+        try:
+            lojista = Lojista.objects.get(pk=pk)
+            if lojista.user != user:
+                return None 
+            return lojista
+        except Lojista.DoesNotExist:
+            return None
+
+    def put(self, request, pk, format=None):
+        lojista = self.get_object(pk, request.user)
+        if lojista is None:
+            return Response({"error": "Lojista não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = LojistaSerializer(lojista, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Lojista atualizado com sucesso!", "lojista": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
 
 
     
