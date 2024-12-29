@@ -163,6 +163,20 @@ def lojista_login(request):
 
     return render(request, 'lojista_login.html', {'form': form})
 
+
+class ProdutoCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        if not hasattr(request.user, 'lojista'):
+            return Response({"error": "Only Lojistas can add products."}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = ProdutoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(lojista=request.user.lojista)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 @login_required
 def adicionar_produto(request): 
     if not hasattr(request.user, 'lojista'):

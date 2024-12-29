@@ -99,8 +99,15 @@ class ProdutoImagemSerializer(serializers.ModelSerializer):
 
 class ProdutoSerializer(serializers.ModelSerializer):
     lojista = LojistaSerializer(read_only=True)
-    imagens = ProdutoImagemSerializer(source='imagem', many=True)
+    imagens = ProdutoImagemSerializer(source='imagem', many=True, required=False)
     
     class Meta:
         model = Produto
         fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
+        
+    def create(self, validated_data):
+        imagens_data = validated_data.pop('imagens', [])
+        produto = Produto.objects.create(**validated_data)
+        for image_data in imagens_data:
+            ProdutoImagem.objects.create(produto=produto, **image_data)
+        return produto
