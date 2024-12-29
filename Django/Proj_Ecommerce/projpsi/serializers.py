@@ -124,7 +124,7 @@ class ProdutoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Produto
-        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
+        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens','categoria']
         
     def create(self, validated_data):
         imagens_data = validated_data.pop('imagens', [])
