@@ -3,6 +3,8 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf.urls import handler404, handler500
 from .views import *
+from .views import adicionar_favorito
+from . import views
 
 
 urlpatterns = [
@@ -25,6 +27,7 @@ urlpatterns = [
     path('lojista_dados/', lojista_dados, name='lojista_dados'),
     path('carrinho/', carrinho, name='carrinho'),
     path('favoritos/', favoritos, name='favoritos'),
+    path('adicionar_favorito/', views.adicionar_favorito, name='adicionar_favorito'),
     path('produto/', produto, name='produto'),
     path('produto/computadores/', produtos_computadores, name='produtos_computadores'),
     path('produto/acessorios/', produtos_acessorios, name='produtos_acessorios'),

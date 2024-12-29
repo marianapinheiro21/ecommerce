@@ -3,6 +3,8 @@ from .models import *
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 
 
 class BaseRegistrationSerializer(serializers.ModelSerializer):
@@ -104,3 +106,11 @@ class ProdutoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Produto
         fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
+
+class FavoritoSerializer(serializers.ModelSerializer):
+    id_cliente = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all(), source='cliente')
+    produto_id = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all(), source='produto')
+
+    class Meta:
+        model = Favorito
+        fields = ['id', 'id_cliente', 'produto_id']

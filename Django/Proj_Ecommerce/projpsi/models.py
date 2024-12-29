@@ -128,8 +128,8 @@ class Carrinho(models.Model):
         
 class Favorito(models.Model):
     id = models.AutoField(primary_key=True)
-    cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='id_cliente')
-    produto = models.ForeignKey(Produto, models.DO_NOTHING)
+    id_cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='id_cliente')
+    produto_id = models.ForeignKey(Produto, models.DO_NOTHING)
 
     class Meta:
         managed = False
