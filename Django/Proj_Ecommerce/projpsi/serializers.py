@@ -41,7 +41,7 @@ class ClienteRegistrationSerializer(BaseRegistrationSerializer):
     def create(self, validated_data):
         user = super().create(validated_data)
         cliente=Cliente.objects.create(user=user)
-        Carrinho.objects.create(cliente=cliente)
+        Carrinho.objects.create(cliente=cliente, total=0.0)
         return user
 
 class LojistaRegistrationSerializer(BaseRegistrationSerializer):
