@@ -1,22 +1,32 @@
 from django.shortcuts import render, redirect
 from django.db.models import Sum
+from django.http import HttpResponseNotFound, HttpResponseServerError
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils.timezone import now
 from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from rest_framework import generics
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from .models import *
 from .forms import *
 from .serializers import *
 
+import logging
+
 # Create your views here.
 
 def not_found(request, exception):
-    return render(request, '404.html', status=404)
+    #return render(request, '404.html', status=404)
+    return HttpResponseNotFound('404 Not Found: The resource does not exist.')
 
 def server_error(request):
-    return render(request, '500.html', status=500)
+    #return render(request, '500.html', status=500)
+    return HttpResponseServerError('500 Internal Server Error: An error occurred on the server.')
 
 
 def index(request):
@@ -33,6 +43,68 @@ def novoCliente(request):
         form = ClienteRegistrationForm()
             
     return render(request, 'newClient.html', {'form':form})
+
+class ClienteRegistrationAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({"message": "Use POST with nome, email, password, nif, ntelefone, and morada to register a new client."})
+    
+    def post(self, request, *args, **kwargs):
+        serializer = ClienteRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"message": "Cliente registrado com sucesso!", "user_id": user.id}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LojistaRegistrationAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({"message": "Use POST with nome, email, password, nif, ntelefone, and morada to register a new client."})
+    
+    def post(self, request, *args, **kwargs):
+        serializer = LojistaRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"message": "Lojista registrado com sucesso!", "user_id": user.id}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ClienteLoginAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        request.data.update({'user_type': 'cliente'})
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            tokens = serializer.validated_data
+            return Response({
+                'access_token': tokens['access'],
+                'refresh_token': tokens['refresh'],
+                'message': 'Cliente login successful'
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LojistaLoginAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        request.data.update({'user_type': 'lojista'})
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            tokens = serializer.validated_data
+            return Response({
+                'access_token': tokens['access'],
+                'refresh_token': tokens['refresh'],
+                'message': 'Lojista login successful'
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class LogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
+            return Response({"error": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except (TokenError, InvalidToken) as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 def novoLojista(request):
     if request.method == 'POST':
@@ -91,6 +163,20 @@ def lojista_login(request):
 
     return render(request, 'lojista_login.html', {'form': form})
 
+
+class ProdutoCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        if not hasattr(request.user, 'lojista'):
+            return Response({"error": "Only Lojistas can add products."}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = ProdutoSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(lojista=request.user.lojista)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 @login_required
 def adicionar_produto(request): 
     if not hasattr(request.user, 'lojista'):
