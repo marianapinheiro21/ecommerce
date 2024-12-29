@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.db.models import Sum
-from django.http import HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils.timezone import now
 from django.http import HttpResponse, HttpResponseForbidden
@@ -19,6 +19,10 @@ from .serializers import *
 import logging
 
 # Create your views here.
+
+def denied_access(request, exception=None):
+    #return render(request,'403.html', status=403)
+    return HttpResponseForbidden('403 Forbidden: You do not have permission to access this resource.')
 
 def not_found(request, exception):
     #return render(request, '404.html', status=404)
@@ -176,6 +180,32 @@ class ProdutoCreateAPIView(APIView):
             serializer.save(lojista=request.user.lojista)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class ClienteUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk, user):
+        try:
+            cliente = Cliente.objects.get(pk=pk)
+            if cliente.user != user:
+                return None  # Retornar None se o cliente não pertencer ao usuário autenticado
+            return cliente
+        except Cliente.DoesNotExist:
+            return None
+
+    def put(self, request, pk, format=None):
+        cliente = self.get_object(pk, request.user)
+        if cliente is None:
+            return Response({"error": "Cliente não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ClienteSerializer(cliente, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Cliente atualizado com sucesso!", "cliente": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
     
 @login_required
 def adicionar_produto(request): 
