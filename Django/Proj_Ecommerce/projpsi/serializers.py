@@ -90,6 +90,26 @@ class LojistaSerializer(serializers.ModelSerializer):
         model = Lojista
         fields = ['user']
 
+
+class ClienteSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=Utilizador.objects.all())
+
+    class Meta:
+        model = Cliente
+        fields = ['user', 'nif', 'ntelefone', 'morada']
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+
+        instance.nif = validated_data.get('nif', instance.nif)
+        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
+        instance.morada = validated_data.get('morada', instance.morada)
+        instance.save()
+        return instance
+
         
         
 class ProdutoImagemSerializer(serializers.ModelSerializer):
