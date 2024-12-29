@@ -15,6 +15,8 @@ urlpatterns = [
     path('api/logout/', LogoutAPIView.as_view(), name='logout'),
     path('api/produtos/create/', ProdutoCreateAPIView.as_view(), name='produto-create'),
     path('api/clientes/<int:pk>/', ClienteUpdateAPIView.as_view(), name='cliente-update'),
+    path('api/lojistas/<int:pk>/', LojistaUpdateAPIView.as_view(), name='lojista-update'),
+    path('api/produtos/categoria/<str:categoria>/',ProdutoPorCategoriaAPIView.as_view(), name='produtos-por-categoria'),
     #path('registar/lojista/', novoLojista, name='novoLojista'),
     #path('sucesso/', sucesso, name='sucesso'), 
     path('criar_login/', criar_login, name='criar_login'),
@@ -31,6 +33,7 @@ urlpatterns = [
     path('produto/computadores/', produtos_computadores, name='produtos_computadores'),
     path('produto/acessorios/', produtos_acessorios, name='produtos_acessorios'),
     path('produto/portateis/', produtos_portateis, name='produtos_portateis'),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler403 = 'projpsi.views.denied_access'
