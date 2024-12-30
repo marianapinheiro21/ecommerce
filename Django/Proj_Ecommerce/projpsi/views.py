@@ -367,9 +367,6 @@ def adicionar_favorito(request):
     try:
         user_id = Cliente.objects.get(user_id=user_id)  
         produto_id = Produto.objects.get(id=produto_id)  
-        # Aqui você pode adicionar a lógica para marcar o produto como favorito para o cliente.
-        # Exemplo, se você tiver uma relação de favoritos entre Cliente e Produto:
-        # cliente.favoritos.add(produto)
 
         return Response({"message": "Produto adicionado aos favoritos com sucesso!"}, status=200)
 
@@ -377,63 +374,63 @@ def adicionar_favorito(request):
         return Response({"error": "Cliente não encontrado"}, status=404)
     except Produto.DoesNotExist:
         return Response({"error": "Produto não encontrado"}, status=404)
-   
-@csrf_exempt
+    
+@api_view(['DELETE'])
+def remover_favorito(request):
+    user_id = request.data.get('user')
+    produto_id = request.data.get('produto_id')
+
+    try:
+        # Alteração aqui, usando user_id para buscar o Cliente
+        cliente = Cliente.objects.get(user_id=user_id)  # Usa user_id como a chave primária
+        produto = Produto.objects.get(id=produto_id)
+
+        # Tente excluir o favorito
+        favorito = Favorito.objects.get(cliente=cliente, produto=produto)
+        favorito.delete()
+
+        return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=200)
+
+    except Cliente.DoesNotExist:
+        return Response({"error": "Cliente não encontrado"}, status=404)
+    except Produto.DoesNotExist:
+        return Response({"error": "Produto não encontrado"}, status=404)
+    except Favorito.DoesNotExist:
+        return Response({"error": "Favorito não encontrado"}, status=404)
+
+
+@api_view(['POST'])
 def adicionar_ao_carrinho(request):
-    if request.method == 'POST':
-        try:
-            # Carregando os dados recebidos
-            data = json.loads(request.body)
-            user_id = data.get('user')
-            produto_id = data.get('produto_id')
-            quantidade = data.get('quantidade', 1)  # Default 1 caso não informado
+    user_id = request.data.get('user')
+    produto_id = request.data.get('produto_id')
+    quantidade = request.data.get('quantidade', 1)  
 
-            # Verificando os valores recebidos
-            print(f"Dados recebidos - user_id: {user_id}, produto_id: {produto_id}, quantidade: {quantidade}")
-            
-            # Buscando o cliente
-            cliente = Cliente.objects.get(user_id=user_id)
-            print(f"Cliente encontrado: {cliente}")
+    try:
+        cliente = Cliente.objects.get(user_id=user_id)
+        produto = Produto.objects.get(id=produto_id)
+    except Cliente.DoesNotExist:
+        return Response({"error": "Cliente não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+    except Produto.DoesNotExist:
+        return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
-            # Buscando o produto
-            produto = Produto.objects.get(id=produto_id)
-            print(f"Produto encontrado: {produto}")
+    # Verificar se o cliente já tem um carrinho
+    carrinho, created = Carrinho.objects.get_or_create(cliente=cliente)
 
-            # Criando ou pegando o carrinho do cliente
-            carrinho, created = Carrinho.objects.get_or_create(cliente=cliente)
-            print(f"Carrinho encontrado/criado: {carrinho}, criado: {created}")
+    # Verificar se o produto já está no carrinho
+    carrinho_produto, created = CarrinhoProduto.objects.get_or_create(carrinho=carrinho, produto=produto)
+    
+    if not created:
+        # Se o produto já existe no carrinho, atualizar a quantidade
+        carrinho_produto.quantidade += quantidade
+        carrinho_produto.save()
+        return Response({"message": f"Produto atualizado no carrinho. Quantidade total: {carrinho_produto.quantidade}"}, status=status.HTTP_200_OK)
+    
+    # Se o produto não existe no carrinho, criamos um novo item
+    carrinho_produto.quantidade = quantidade
+    carrinho_produto.save()
 
-            # Verificando se o produto já existe no carrinho
-            carrinho_produto = CarrinhoProduto.objects.filter(carrinho=carrinho, produto=produto).first()
+    # Atualizar o total do carrinho
+    carrinho.total = sum([item.quantidade * item.produto.preco for item in CarrinhoProduto.objects.filter(carrinho=carrinho)])
+    carrinho.save()
 
-            if carrinho_produto:
-                # Atualizando a quantidade do produto no carrinho
-                carrinho_produto.quantidade += quantidade
-                carrinho_produto.save()
-                print(f"Produto {produto.nome} quantidade atualizada para: {carrinho_produto.quantidade}")
-            else:
-                # Adicionando o produto ao carrinho
-                carrinho_produto = CarrinhoProduto.objects.create(carrinho=carrinho, produto=produto, quantidade=quantidade)
-                print(f"Produto {produto.nome} adicionado ao carrinho com quantidade: {quantidade}")
-
-            # Recalculando o total do carrinho
-            total = 0
-            for item in CarrinhoProduto.objects.filter(carrinho=carrinho):
-                total += item.produto.preco * item.quantidade
-            carrinho.total = total
-            carrinho.save()
-            print(f"Total do carrinho atualizado: {total}")
-
-            return JsonResponse({'message': 'Produto adicionado ao carrinho com sucesso!', 'total': total}, status=200)
-
-        except Cliente.DoesNotExist:
-            print("Cliente não encontrado")
-            return JsonResponse({'error': 'Cliente não encontrado'}, status=404)
-        except Produto.DoesNotExist:
-            print("Produto não encontrado")
-            return JsonResponse({'error': 'Produto não encontrado'}, status=404)
-        except Exception as e:
-            print(f"Erro inesperado: {e}")
-            return JsonResponse({'error': str(e)}, status=400)
-    else:
-        return JsonResponse({'error': 'Método não permitido'}, status=405)
+    return Response({"message": "Produto adicionado ao carrinho com sucesso!"}, status=status.HTTP_201_CREATED)

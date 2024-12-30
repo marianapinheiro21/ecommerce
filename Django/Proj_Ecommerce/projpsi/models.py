@@ -136,12 +136,12 @@ class Carrinho(models.Model):
       #  db_table = 'favorito'
 
 class Favorito(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, db_column='id_cliente', default=1)
     produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('cliente', 'produto')  
-                
+        db_table = 'favorito'
 
 class Venda(models.Model):
     id = models.AutoField(primary_key=True)

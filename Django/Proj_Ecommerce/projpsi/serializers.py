@@ -144,3 +144,8 @@ class FavoritoSerializer(serializers.Serializer):
     class Meta:
         fields = ['user', 'produto_id']
 
+class CarrinhoProdutoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarrinhoProduto
+        fields = ['carrinho', 'produto', 'quantidade']
+
