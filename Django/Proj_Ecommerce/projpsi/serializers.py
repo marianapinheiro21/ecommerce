@@ -123,10 +123,18 @@ class ProdutoImagemSerializer(serializers.ModelSerializer):
 class ProdutoSerializer(serializers.ModelSerializer):
     lojista = LojistaSerializer(read_only=True)
     imagens = ProdutoImagemSerializer(source='imagem', many=True, required=False)
-    
+    categoria = serializers.CharField(required=False)
+
     class Meta:
         model = Produto
-<<<<<<< HEAD
+        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens','categoria']
+    def create(self, validated_data):
+        imagens_data = validated_data.pop('imagens', [])
+        produto = Produto.objects.create(**validated_data)
+        for image_data in imagens_data:
+            ProdutoImagem.objects.create(produto=produto, **image_data)
+        return produto
+
         fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
 
 class FavoritoSerializer(serializers.Serializer):
@@ -135,13 +143,4 @@ class FavoritoSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['user', 'produto_id']
-=======
-        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens','categoria']
-        
-    def create(self, validated_data):
-        imagens_data = validated_data.pop('imagens', [])
-        produto = Produto.objects.create(**validated_data)
-        for image_data in imagens_data:
-            ProdutoImagem.objects.create(produto=produto, **image_data)
-        return produto
->>>>>>> 7cfc6582d9f818e51be29737c135b9b9ad0b6585
+
