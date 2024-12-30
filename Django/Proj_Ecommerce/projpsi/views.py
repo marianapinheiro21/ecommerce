@@ -16,6 +16,10 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from .models import *
 from .forms import *
 from .serializers import *
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from projpsi.models import Cliente, Produto, Carrinho, CarrinhoProduto
 
 import logging
 
@@ -274,10 +278,79 @@ def produto(request):
 
 @api_view(['POST'])
 def adicionar_favorito(request):
-    if request.method == 'POST':
-        serializer = FavoritoSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()  # Aqui é suposto salvar o novo favorito no banco de dados
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    user_id = request.data.get('user')  
+    produto_id = request.data.get('produto_id')  
+
+    try:
+        user_id = Cliente.objects.get(user_id=user_id)  
+        produto_id = Produto.objects.get(id=produto_id)  
+        # Aqui você pode adicionar a lógica para marcar o produto como favorito para o cliente.
+        # Exemplo, se você tiver uma relação de favoritos entre Cliente e Produto:
+        # cliente.favoritos.add(produto)
+
+        return Response({"message": "Produto adicionado aos favoritos com sucesso!"}, status=200)
+
+    except Cliente.DoesNotExist:
+        return Response({"error": "Cliente não encontrado"}, status=404)
+    except Produto.DoesNotExist:
+        return Response({"error": "Produto não encontrado"}, status=404)
    
+@csrf_exempt
+def adicionar_ao_carrinho(request):
+    if request.method == 'POST':
+        try:
+            # Carregando os dados recebidos
+            data = json.loads(request.body)
+            user_id = data.get('user')
+            produto_id = data.get('produto_id')
+            quantidade = data.get('quantidade', 1)  # Default 1 caso não informado
+
+            # Verificando os valores recebidos
+            print(f"Dados recebidos - user_id: {user_id}, produto_id: {produto_id}, quantidade: {quantidade}")
+            
+            # Buscando o cliente
+            cliente = Cliente.objects.get(user_id=user_id)
+            print(f"Cliente encontrado: {cliente}")
+
+            # Buscando o produto
+            produto = Produto.objects.get(id=produto_id)
+            print(f"Produto encontrado: {produto}")
+
+            # Criando ou pegando o carrinho do cliente
+            carrinho, created = Carrinho.objects.get_or_create(cliente=cliente)
+            print(f"Carrinho encontrado/criado: {carrinho}, criado: {created}")
+
+            # Verificando se o produto já existe no carrinho
+            carrinho_produto = CarrinhoProduto.objects.filter(carrinho=carrinho, produto=produto).first()
+
+            if carrinho_produto:
+                # Atualizando a quantidade do produto no carrinho
+                carrinho_produto.quantidade += quantidade
+                carrinho_produto.save()
+                print(f"Produto {produto.nome} quantidade atualizada para: {carrinho_produto.quantidade}")
+            else:
+                # Adicionando o produto ao carrinho
+                carrinho_produto = CarrinhoProduto.objects.create(carrinho=carrinho, produto=produto, quantidade=quantidade)
+                print(f"Produto {produto.nome} adicionado ao carrinho com quantidade: {quantidade}")
+
+            # Recalculando o total do carrinho
+            total = 0
+            for item in CarrinhoProduto.objects.filter(carrinho=carrinho):
+                total += item.produto.preco * item.quantidade
+            carrinho.total = total
+            carrinho.save()
+            print(f"Total do carrinho atualizado: {total}")
+
+            return JsonResponse({'message': 'Produto adicionado ao carrinho com sucesso!', 'total': total}, status=200)
+
+        except Cliente.DoesNotExist:
+            print("Cliente não encontrado")
+            return JsonResponse({'error': 'Cliente não encontrado'}, status=404)
+        except Produto.DoesNotExist:
+            print("Produto não encontrado")
+            return JsonResponse({'error': 'Produto não encontrado'}, status=404)
+        except Exception as e:
+            print(f"Erro inesperado: {e}")
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Método não permitido'}, status=405)

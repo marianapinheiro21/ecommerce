@@ -28,6 +28,7 @@ urlpatterns = [
     path('carrinho/', carrinho, name='carrinho'),
     path('favoritos/', favoritos, name='favoritos'),
     path('adicionar_favorito/', views.adicionar_favorito, name='adicionar_favorito'),
+    path('api/adicionar_ao_carrinho/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
     path('produto/', produto, name='produto'),
     path('produto/computadores/', produtos_computadores, name='produtos_computadores'),
     path('produto/acessorios/', produtos_acessorios, name='produtos_acessorios'),

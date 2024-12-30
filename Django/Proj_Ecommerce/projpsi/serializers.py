@@ -107,10 +107,9 @@ class ProdutoSerializer(serializers.ModelSerializer):
         model = Produto
         fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
 
-class FavoritoSerializer(serializers.ModelSerializer):
-    id_cliente = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all(), source='cliente')
-    produto_id = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all(), source='produto')
+class FavoritoSerializer(serializers.Serializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # Usa 'user' ao invés de 'id_cliente'
+    produto_id = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())  # Campo para o produto
 
     class Meta:
-        model = Favorito
-        fields = ['id', 'id_cliente', 'produto_id']
+        fields = ['user', 'produto_id']
