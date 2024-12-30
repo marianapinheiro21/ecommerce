@@ -42,7 +42,8 @@ class ClienteRegistrationSerializer(BaseRegistrationSerializer):
 
     def create(self, validated_data):
         user = super().create(validated_data)
-        Cliente.objects.create(user=user)
+        cliente=Cliente.objects.create(user=user)
+        Carrinho.objects.create(cliente=cliente, total=0.0)
         return user
 
 class LojistaRegistrationSerializer(BaseRegistrationSerializer):
@@ -91,6 +92,26 @@ class LojistaSerializer(serializers.ModelSerializer):
         model = Lojista
         fields = ['user']
 
+
+class ClienteSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=Utilizador.objects.all())
+
+    class Meta:
+        model = Cliente
+        fields = ['user', 'nif', 'ntelefone', 'morada']
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+
+        instance.nif = validated_data.get('nif', instance.nif)
+        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
+        instance.morada = validated_data.get('morada', instance.morada)
+        instance.save()
+        return instance
+
         
         
 class ProdutoImagemSerializer(serializers.ModelSerializer):
@@ -101,10 +122,11 @@ class ProdutoImagemSerializer(serializers.ModelSerializer):
 
 class ProdutoSerializer(serializers.ModelSerializer):
     lojista = LojistaSerializer(read_only=True)
-    imagens = ProdutoImagemSerializer(source='imagem', many=True)
+    imagens = ProdutoImagemSerializer(source='imagem', many=True, required=False)
     
     class Meta:
         model = Produto
+<<<<<<< HEAD
         fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
 
 class FavoritoSerializer(serializers.Serializer):
@@ -113,3 +135,13 @@ class FavoritoSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['user', 'produto_id']
+=======
+        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens','categoria']
+        
+    def create(self, validated_data):
+        imagens_data = validated_data.pop('imagens', [])
+        produto = Produto.objects.create(**validated_data)
+        for image_data in imagens_data:
+            ProdutoImagem.objects.create(produto=produto, **image_data)
+        return produto
+>>>>>>> 7cfc6582d9f818e51be29737c135b9b9ad0b6585
