@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
 from .forms import *
 from .serializers import *
@@ -175,16 +176,20 @@ def lojista_login(request):
 
 class ProdutoCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
+    parser_classes = (MultiPartParser, FormParser)
     def post(self, request, *args, **kwargs):
+        print(request.data)
         if not hasattr(request.user, 'lojista'):
             return Response({"error": "Only Lojistas can add products."}, status=status.HTTP_403_FORBIDDEN)
         
-        serializer = ProdutoSerializer(data=request.data)
+        serializer = ProdutoSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            serializer.save(lojista=request.user.lojista)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            #produto = serializer.save(lojista=request.user.lojista)
+            produto = serializer.save()
+            return Response({"message": "Product created successfully.", "product_id": produto.id}, status=201)
+        else:
+            print("Serializer Errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 class ProdutoPorCategoriaAPIView(APIView):

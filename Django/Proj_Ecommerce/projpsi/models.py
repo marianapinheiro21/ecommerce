@@ -108,7 +108,7 @@ class Produto(models.Model):
 
 class ProdutoImagem(models.Model):
     id = models.AutoField(primary_key=True)
-    produto = models.ForeignKey(Produto, related_name='imagem', on_delete=models.CASCADE)
+    produto = models.ForeignKey(Produto, related_name='imagens', on_delete=models.CASCADE)
     imagem = models.ImageField(upload_to='produtos_imagens/')
     
     class Meta:
