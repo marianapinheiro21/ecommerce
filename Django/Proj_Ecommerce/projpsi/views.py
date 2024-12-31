@@ -270,20 +270,20 @@ def adicionar_produto(request):
         formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
     return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 
-class ProdutoListaView(generics.ListAPIView):
-    queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
-    serializer_class = ProdutoSerializer
+#class ProdutoListaView(generics.ListAPIView):
+#    queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
+#    serializer_class = ProdutoSerializer
     
-    def get_serializer_context(self):
-        return {'request': self.request}
+#    def get_serializer_context(self):
+#        return {'request': self.request}
     
 
-class LojistaListaView(generics.ListAPIView):
-    queryset = Lojista.objects.all().select_related('user')
-    serializer_class = LojistaSerializer
+#class LojistaListaView(generics.ListAPIView):
+#    queryset = Lojista.objects.all().select_related('user')
+#    serializer_class = LojistaSerializer
 
-    def get_serializer_context(self):
-        return {'request': self.request}
+#    def get_serializer_context(self):
+#        return {'request': self.request}
 
 
 def dashboard(request):
