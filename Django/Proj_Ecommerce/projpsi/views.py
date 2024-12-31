@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.db.models import Sum
-from django.db import transaction
 from django.http import HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils.timezone import now
@@ -207,74 +206,50 @@ class ProdutoPorCategoriaAPIView(APIView):
 
 class ClienteUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    parser_classes = (MultiPartParser, FormParser)
-    serializer_class = ClienteSerializer
-    def post(self, request, *args, **kwargs):
-        print(request.data)
-        if not hasattr(request.user, 'cliente'):
-            return Response({"error": "Apenas clientes podem aceder esta área."}, status=status.HTTP_403_FORBIDDEN)
-        cliente = request.user.cliente
-        serializer = self.serializer_class(cliente, data=request.data, partial=True)
+
+    def get_object(self, pk, user):
+        try:
+            cliente = Cliente.objects.get(pk=pk)
+            if cliente.user != user:
+                return None  
+            return cliente
+        except Cliente.DoesNotExist:
+            return None
+
+    def put(self, request, pk, format=None):
+        cliente = self.get_object(pk, request.user)
+        if cliente is None:
+            return Response({"error": "Cliente não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ClienteSerializer(cliente, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
+            return Response({"message": "Cliente atualizado com sucesso!", "cliente": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
 
 class LojistaUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    parser_classes = (MultiPartParser, FormParser)
-    serializer_class = LojistaSerializer
-    def post(self, request, *args, **kwargs):
-        print(request.data)
-        if not hasattr(request.user, 'lojista'):
-            return Response({"error": "Apenas lojistas podem aceder esta área."}, status=status.HTTP_403_FORBIDDEN)
-        lojista = request.user.lojista
-        serializer = self.serializer_class(lojista, data=request.data, partial=True)
+
+    def get_object(self, pk, user):
+        try:
+            lojista = Lojista.objects.get(pk=pk)
+            if lojista.user != user:
+                return None 
+            return lojista
+        except Lojista.DoesNotExist:
+            return None
+
+    def put(self, request, pk, format=None):
+        lojista = self.get_object(pk, request.user)
+        if lojista is None:
+            return Response({"error": "Lojista não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = LojistaSerializer(lojista, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
+            return Response({"message": "Lojista atualizado com sucesso!", "lojista": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-    
-@login_required
-def adicionar_produto(request): 
-    if not hasattr(request.user, 'lojista'):
-
-        return HttpResponseForbidden("Apenas Lojistas podem adicionar produtos.")
-
-    
-    if request.method == 'POST':
-        form = ProdutoForm(request.POST, request.FILES)  
-        formset = ProdutoImagemFormSet(request.POST, request.FILES, queryset=ProdutoImagem.objects.none())  
-        
-        
-        if form.is_valid() and formset.is_valid():
-            produto = form.save(commit=False)
-            produto.lojista = request.user.lojista
-            produto.save() 
-            imagens = formset.save(commit=False)
-            for imagem in imagens:
-                imagem.produto = produto  
-                imagem.save()  
-            return redirect('adicionar_produto_successo')
-            #return redirect ('sucesso') #Tenho que criar outra página de sucesso
-        else: 
-            print("Form errors:", form.errors)
-            print("Formset errors:", formset.errors)
-    else:
-        form = ProdutoForm()
-        formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
-    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
-
-#class ProdutoListaView(generics.ListAPIView):
-#    queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
-#    serializer_class = ProdutoSerializer
-
     
 
 
@@ -312,20 +287,32 @@ def adicionar_produto(request):
 #    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 #
 #class ProdutoListaView(generics.ListAPIView):
-#    queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
-#    serializer_class = ProdutoSerializer
-
-#    def get_serializer_context(self):
-#        return {'request': self.request}
+    queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
+    serializer_class = ProdutoSerializer
+    
+    def get_serializer_context(self):
+        return {'request': self.request}
     
 
-#class LojistaListaView(generics.ListAPIView):
-#    queryset = Lojista.objects.all().select_related('user')
-#    serializer_class = LojistaSerializer
+class LojistaListaView(generics.ListAPIView):
+    queryset = Lojista.objects.all().select_related('user')
+    serializer_class = LojistaSerializer
 
-#    def get_serializer_context(self):
-#        return {'request': self.request}
+    def get_serializer_context(self):
+        return {'request': self.request}
 
+
+
+def  lojista(request):
+    lojista = Lojista.objects.all()
+    context = {
+        'lojista': lojista,
+    }
+    
+    return render(request, 'projpsi/lojista_list.html', context)
+
+def lojista_dados(request):
+    return render(request, 'projpsi/lojista_dados.html')
 
 def dashboard(request):
     total_lucro = CarrinhoProduto.objects.aaggregate(price=Sum('price'))

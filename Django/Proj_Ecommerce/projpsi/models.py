@@ -82,8 +82,8 @@ class Lojista(models.Model):
         managed = False
         db_table = 'lojista'
  
-    #def lojista_dados(request):
-    #   return render(request, 'projpsi/lojista_dados.html')
+    def lojista_dados(request):
+        return render(request, 'projpsi/lojista_dados.html')
 
 
 class Produto(models.Model):
