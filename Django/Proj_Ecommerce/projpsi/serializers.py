@@ -145,15 +145,50 @@ class ProdutoSerializer(serializers.ModelSerializer):
         return produto
 
 class FavoritoSerializer(serializers.Serializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # Usa 'user' ao invés de 'id_cliente'
+    produto_id = serializers.PrimaryKeyRelatedField(source='produto', queryset=Produto.objects.all())
+   # quantidade = serializers.IntegerField(default=1)user = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # Usa 'user' ao invés de 'id_cliente'
     produto_id = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())  # Campo para o produto
 
     class Meta:
         fields = ['user', 'produto_id']
 
 class CarrinhoProdutoSerializer(serializers.ModelSerializer):
+    produto = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())
+    quantidade = serializers.IntegerField(default=1)
     class Meta:
         model = CarrinhoProduto
         fields = ['carrinho', 'produto', 'quantidade']
+        
+    def create(self, validated_data):
+        carrinho=validated_data.get('carrinho')
+        produto=validated_data['produto']
+        quantidade=validated_data.get('quantidade', 1)
 
-
+        carrinhoproduto, created = CarrinhoProduto.objects.get_or_create(
+            carrinho=carrinho, 
+            produto=produto,
+            defaults={'quantidade': quantidade}    
+        )
+        if not created:
+            carrinhoproduto.quantidade+=quantidade
+            carrinhoproduto.save()
+        else:
+            carrinhoproduto.quantidade=quantidade
+            carrinhoproduto.save()
+        
+        carrinho.total=sum(item.quantidade * item.produto.preco for item in CarrinhoProduto.objects.filter(carrinho=carrinho))
+        carrinho.save()
+        
+        return carrinhoproduto
+    
+    def validate(self, attrs):
+        cliente=self.context['request'].user.cliente
+        carrinho=Carrinho.objects.filter(cliente=cliente).exclude(id__in=Venda.objects.values_list('carrinho_id', flat=True)
+        ).first()
+        if not carrinho:
+            raise serializers.ValidationError("Este cliente não tem carrinhos")
+        if Venda.objects.filter(carrinho=carrinho).exists():
+            raise serializers.ValidationError("A sale has already been completed for this cart. No further modifications are allowed.")
+        attrs['carrinho']=carrinho
+        return attrs
+            
