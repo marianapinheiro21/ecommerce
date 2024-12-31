@@ -221,11 +221,6 @@ class ClienteUpdateAPIView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
-class LojistaListAPIView(generics.ListAPIView):
-    queryset = Lojista.objects.all() 
-    serializer_class = LojistaSerializer
-    permission_classes = [IsAuthenticated] 
 
 
 class LojistaUpdateAPIView(APIView):
@@ -290,21 +285,6 @@ class LojistaListaView(generics.ListAPIView):
     def get_serializer_context(self):
         return {'request': self.request}
 
-
-
-#def  lojista(request):
-#    lojista = Lojista.objects.all()
-#    context = {
-#        'lojista': lojista,
-#    }
-#    
-#    return render(request, 'projpsi/lojista_list.html', context)
-
-
-
-
-#def lojista_dados(request):
-#   return render(request, 'projpsi/lojista_dados.html')
 
 def dashboard(request):
     total_lucro = CarrinhoProduto.objects.aaggregate(price=Sum('price'))
