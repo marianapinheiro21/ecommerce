@@ -16,10 +16,14 @@ urlpatterns = [
     path('api/login/lojista/', LojistaLoginAPIView.as_view(), name='lojista_login'),
     path('api/logout/', LogoutAPIView.as_view(), name='logout'),
     path('api/produtos/create/', ProdutoCreateAPIView.as_view(), name='produto-create'),
+
+    path('api/clientes/update/', ClienteUpdateAPIView.as_view(), name='cliente-update'),
+    path('api/lojistas/update/', LojistaUpdateAPIView.as_view(), name='lojista-update'),
+
     path('api/add-to-cart/', AddToCarrinhoAPIView.as_view(), name='add-to-cart'),
-    path('api/clientes/<int:pk>/', ClienteUpdateAPIView.as_view(), name='cliente-update'),
-    path('api/lojistas/<int:pk>/', LojistaUpdateAPIView.as_view(), name='lojista-update'),
+    
     path('api/produtos/categoria/<str:categoria>/',ProdutoPorCategoriaAPIView.as_view(), name='produtos-por-categoria'),
+    path('api/lojistas/', LojistaListAPIView.as_view(), name='lojista-list'),
     #path('registar/lojista/', novoLojista, name='novoLojista'),
     #path('sucesso/', sucesso, name='sucesso'), 
     path('criar_login/', criar_login, name='criar_login'),
@@ -29,7 +33,7 @@ urlpatterns = [
     #path('lojista/addProduto/', adicionar_produto, name='adicionar_produto'), 
     #path('products/', ProdutoListaView.as_view(), name='produtos-lista'),
     path('lojista/', LojistaListaView.as_view(), name='lojista-lista'),
-    path('lojista_dados/', lojista_dados, name='lojista_dados'),
+    #path('lojista_dados/', lojista_dados, name='lojista_dados'),
     path('carrinho/', carrinho, name='carrinho'),
     path('favoritos/', favoritos, name='favoritos'),
     path('adicionar_favorito/', views.adicionar_favorito, name='adicionar_favorito'),
