@@ -115,27 +115,34 @@ class ClienteSerializer(serializers.ModelSerializer):
         
         
 class ProdutoImagemSerializer(serializers.ModelSerializer):
+    #produto = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all(), write_only=True)
+    #imagem = serializers.ImageField()
+    
     class Meta:
         model = ProdutoImagem
+        #fields = ['produto', 'imagem']  
         fields = ['imagem']  
 
 
 class ProdutoSerializer(serializers.ModelSerializer):
-    lojista = LojistaSerializer(read_only=True)
-    imagens = ProdutoImagemSerializer(source='imagem', many=True, required=False)
-    categoria = serializers.CharField(required=False)
 
+    imagens = ProdutoImagemSerializer(many=True, read_only=True)
+    lojista = serializers.PrimaryKeyRelatedField(read_only=True)
+    
     class Meta:
         model = Produto
-        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens','categoria']
+        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'categoria', 'imagens']
+        
     def create(self, validated_data):
-        imagens_data = validated_data.pop('imagens', [])
-        produto = Produto.objects.create(**validated_data)
-        for image_data in imagens_data:
-            ProdutoImagem.objects.create(produto=produto, **image_data)
+        print("Full Validated Data:", validated_data)
+        #imagens_data = validated_data.pop('imagens', [])
+        lojista = self.context['request'].user.lojista
+        
+        produto = Produto.objects.create(**validated_data, lojista=lojista)
+        image_files=self.context['request'].FILES
+        for image_data in image_files.values():
+            ProdutoImagem.objects.create(produto=produto, imagem=image_data)
         return produto
-
-        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
 
 class FavoritoSerializer(serializers.Serializer):
     user = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # Usa 'user' ao invés de 'id_cliente'
@@ -148,4 +155,5 @@ class CarrinhoProdutoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CarrinhoProduto
         fields = ['carrinho', 'produto', 'quantidade']
+
 
