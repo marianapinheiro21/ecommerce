@@ -306,8 +306,11 @@ def  lojista(request):
     
     return render(request, 'projpsi/lojista_list.html', context)
 
-def lojista_dados(request):
-    return render(request, 'projpsi/lojista_dados.html')
+
+
+
+#def lojista_dados(request):
+#   return render(request, 'projpsi/lojista_dados.html')
 
 def dashboard(request):
     total_lucro = CarrinhoProduto.objects.aaggregate(price=Sum('price'))
