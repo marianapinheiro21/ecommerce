@@ -239,6 +239,7 @@ class LojistaUpdateAPIView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
     
 @login_required
 def adicionar_produto(request): 
@@ -273,7 +274,47 @@ def adicionar_produto(request):
 #class ProdutoListaView(generics.ListAPIView):
 #    queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
 #    serializer_class = ProdutoSerializer
+
     
+
+
+
+#
+#    
+#@login_required
+#def adicionar_produto(request): 
+#    if not hasattr(request.user, 'lojista'):
+#
+#        return HttpResponseForbidden("Apenas Lojistas podem adicionar produtos.")
+#
+#    
+#    if request.method == 'POST':
+#        form = ProdutoForm(request.POST, request.FILES)  
+#        formset = ProdutoImagemFormSet(request.POST, request.FILES, queryset=ProdutoImagem.objects.none())  
+#        
+#        
+#        if form.is_valid() and formset.is_valid():
+#            produto = form.save(commit=False)
+#            produto.lojista = request.user.lojista
+#            produto.save() 
+#            imagens = formset.save(commit=False)
+#            for imagem in imagens:
+#                imagem.produto = produto  
+#                imagem.save()  
+#            return redirect('adicionar_produto_successo')
+#            #return redirect ('sucesso') #Tenho que criar outra página de sucesso
+#        else: 
+#            print("Form errors:", form.errors)
+#            print("Formset errors:", formset.errors)
+#    else:
+#        form = ProdutoForm()
+#        formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
+#    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
+#
+#class ProdutoListaView(generics.ListAPIView):
+#    queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
+#    serializer_class = ProdutoSerializer
+
 #    def get_serializer_context(self):
 #        return {'request': self.request}
     
@@ -376,38 +417,16 @@ def remover_favorito(request):
         return Response({"error": "Favorito não encontrado"}, status=404)
 
 
-@api_view(['POST'])
-def adicionar_ao_carrinho(request):
-    user_id = request.data.get('user')
-    produto_id = request.data.get('produto_id')
-    quantidade = request.data.get('quantidade', 1)  
-
-    try:
-        cliente = Cliente.objects.get(user_id=user_id)
-        produto = Produto.objects.get(id=produto_id)
-    except Cliente.DoesNotExist:
-        return Response({"error": "Cliente não encontrado."}, status=status.HTTP_404_NOT_FOUND)
-    except Produto.DoesNotExist:
-        return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
-
-    # Verificar se o cliente já tem um carrinho
-    carrinho, created = Carrinho.objects.get_or_create(cliente=cliente)
-
-    # Verificar se o produto já está no carrinho
-    carrinho_produto, created = CarrinhoProduto.objects.get_or_create(carrinho=carrinho, produto=produto)
+class AddToCarrinhoAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     
-    if not created:
-        # Se o produto já existe no carrinho, atualizar a quantidade
-        carrinho_produto.quantidade += quantidade
-        carrinho_produto.save()
-        return Response({"message": f"Produto atualizado no carrinho. Quantidade total: {carrinho_produto.quantidade}"}, status=status.HTTP_200_OK)
-    
-    # Se o produto não existe no carrinho, criamos um novo item
-    carrinho_produto.quantidade = quantidade
-    carrinho_produto.save()
+    def post(self, request, *args, **kwargs):
+        serializer=CarrinhoProdutoSerializer(data=request.data, context={'request':request})
 
-    # Atualizar o total do carrinho
-    carrinho.total = sum([item.quantidade * item.produto.preco for item in CarrinhoProduto.objects.filter(carrinho=carrinho)])
-    carrinho.save()
-
-    return Response({"message": "Produto adicionado ao carrinho com sucesso!"}, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            carrinhoproduto=serializer.save()
+            return Response({
+                    'message': 'Produto adicionado ao carrinho com sucesso!',
+                    'carrinhoProduto': CarrinhoProdutoSerializer(carrinhoproduto).data
+                }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

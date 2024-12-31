@@ -126,22 +126,15 @@ class Carrinho(models.Model):
         db_table = 'carrinho'
    
         
-#class Favorito(models.Model):
- #   id = models.AutoField(primary_key=True)
-  #  id_cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='id_cliente')
-   # produto_id = models.ForeignKey(Produto, models.DO_NOTHING)
-
-    #class Meta:
-     #   managed = False
-      #  db_table = 'favorito'
-
 class Favorito(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, db_column='id_cliente', default=1)
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True)
+    id_cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='id_cliente')
+    produto_id = models.ForeignKey(Produto, models.DO_NOTHING)
 
     class Meta:
-        unique_together = ('cliente', 'produto')  
+        managed = False
         db_table = 'favorito'
+
 
 class Venda(models.Model):
     id = models.AutoField(primary_key=True)
@@ -158,7 +151,7 @@ class CarrinhoProduto(models.Model):
     carrinho = models.ForeignKey(Carrinho, models.DO_NOTHING, db_column='carrinho_id', blank=True, null=True)
     venda = models.ForeignKey(Venda, models.DO_NOTHING, db_column='venda_id', blank=True, null=True)
     produto = models.ForeignKey(Produto, models.DO_NOTHING, db_column='produto_id', blank=True, null=True)
-    quantidade = models.IntegerField(blank=True, null=True)
+    quantidade = models.IntegerField(default=1, blank=True, null=True)
 
     class Meta:
         managed = False
