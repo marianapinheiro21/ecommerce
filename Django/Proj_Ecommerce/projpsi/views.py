@@ -209,74 +209,40 @@ class ClienteUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
     serializer_class = ClienteSerializer
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
+        print(request.data)
         if not hasattr(request.user, 'cliente'):
-            return Response(
-                {"error": "Apenas clientes podem aceder esta área."}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
-        try:
-            cliente = request.user.cliente
-            serializer = self.serializer_class(cliente)
-            return Response(serializer.data)
-        except Cliente.DoesNotExist:
-            return Response(
-                {"error": "Cliente não encontrado"}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-    def put(self, request, *args, **kwargs):
-        if not hasattr(request.user, 'cliente'):
-            return Response(
-                {"error": "Apenas clientes podem atualizar dados."}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
-
-        try:
-            cliente = request.user.cliente
-            serializer = self.serializer_class(
-                cliente,
-                data=request.data
-            )
-
-            with transaction.atomic():
-                if serializer.is_valid(raise_exception=True):
-                    serializer.save()
-                    return Response(
-                        {"message": "Dados atualizados com sucesso","data": serializer.data})
-        except Exception as e:
-            return Response(
-                {"error": str(e)}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "Apenas clientes podem aceder esta área."}, status=status.HTTP_403_FORBIDDEN)
+        cliente = request.user.cliente
+        serializer = self.serializer_class(cliente, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    
+class LojistaListAPIView(generics.ListAPIView):
+    queryset = Lojista.objects.all() 
+    serializer_class = LojistaSerializer
+    permission_classes = [IsAuthenticated] 
+
 
 class LojistaUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
-    def get_object(self, pk, user):
-        try:
-            lojista = Lojista.objects.get(pk=pk)
-            if lojista.user != user:
-                return None 
-            return lojista
-        except Lojista.DoesNotExist:
-            return None
-
-    def put(self, request, pk, format=None):
-        lojista = self.get_object(pk, request.user)
-        if lojista is None:
-            return Response({"error": "Lojista não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = LojistaSerializer(lojista, data=request.data)
+    parser_classes = (MultiPartParser, FormParser)
+    serializer_class = LojistaSerializer
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        if not hasattr(request.user, 'lojista'):
+            return Response({"error": "Apenas lojistas podem aceder esta área."}, status=status.HTTP_403_FORBIDDEN)
+        lojista = request.user.lojista
+        serializer = self.serializer_class(lojista, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Lojista atualizado com sucesso!", "lojista": serializer.data}, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-
-
-
 
     
 @login_required
@@ -326,13 +292,13 @@ class LojistaListaView(generics.ListAPIView):
 
 
 
-def  lojista(request):
-    lojista = Lojista.objects.all()
-    context = {
-        'lojista': lojista,
-    }
-    
-    return render(request, 'projpsi/lojista_list.html', context)
+#def  lojista(request):
+#    lojista = Lojista.objects.all()
+#    context = {
+#        'lojista': lojista,
+#    }
+#    
+#    return render(request, 'projpsi/lojista_list.html', context)
 
 
 
