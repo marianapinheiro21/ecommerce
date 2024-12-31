@@ -135,14 +135,26 @@ class ProdutoSerializer(serializers.ModelSerializer):
             ProdutoImagem.objects.create(produto=produto, **image_data)
         return produto
 
-        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
-
-class FavoritoSerializer(serializers.Serializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # Usa 'user' ao invés de 'id_cliente'
-    produto_id = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())  # Campo para o produto
-
+#class FavoritoSerializer(serializers.Serializer):
+class FavoritoSerializer(serializers.ModelSerializer):
+    
     class Meta:
-        fields = ['user', 'produto_id']
+        model = Favorito
+        fields = ['id_cliente', 'produto_id'] 
+    
+    def create(self, validated_data):
+        #user = validate_data['user']
+        #produto = validate_data['produto']
+        favorito = Favorito.objects.create(**validated_data)
+
+        #if Favorito.objects.filter(user=user, produto=produto).exists():
+            #raise serializers.ValidationError("Este produto já foi adicionado aos favoritos.")
+
+        # Criação do favorito
+        #favorito = Favorito.objects.create(user=user, produto=produto)
+        #favorito = Favorito.objects.create(**validate_data)
+        return favorito
+
 
 class CarrinhoProdutoSerializer(serializers.ModelSerializer):
     class Meta:

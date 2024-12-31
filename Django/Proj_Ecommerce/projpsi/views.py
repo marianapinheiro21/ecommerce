@@ -245,12 +245,7 @@ class LojistaUpdateAPIView(APIView):
             serializer.save()
             return Response({"message": "Lojista atualizado com sucesso!", "lojista": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-
-
-
-
-    
+        
 @login_required
 def adicionar_produto(request): 
     if not hasattr(request.user, 'lojista'):
@@ -358,24 +353,33 @@ def produto(request):
         return render(request, 'projpsi/produtos_portateis.html')
     else:
         return render(request, 'projpsi/produtos_geral.html')  # Página geral
-
-@api_view(['POST'])
-def adicionar_favorito(request):
-    user_id = request.data.get('user')  
-    produto_id = request.data.get('produto_id')  
-
-    try:
-        user_id = Cliente.objects.get(user_id=user_id)  
-        produto_id = Produto.objects.get(id=produto_id)  
-
-        return Response({"message": "Produto adicionado aos favoritos com sucesso!"}, status=200)
-
-    except Cliente.DoesNotExist:
-        return Response({"error": "Cliente não encontrado"}, status=404)
-    except Produto.DoesNotExist:
-        return Response({"error": "Produto não encontrado"}, status=404)
     
-@api_view(['DELETE'])
+    ###################################### API ADICIONAR FAVORITO #########################
+
+class AdicionarFavoritoAPIView(APIView):
+    permission_classes = [IsAuthenticated] #Quando for testar a API fazer login como um cliente, para não precisar passar o user, somente o produto
+    
+    def post(self, request, *args, **kwargs):
+        user_id = request.user.id
+        produto_id = request.data.get('produto_id')  
+        
+        if not produto_id:
+            return Response({"error": "produto_id é obrigatório."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            produto = Produto.objects.get(id=produto_id)
+        except Produto.DoesNotExist:
+            return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        if Favorito.objects.filter(id_cliente=user_id, produto_id=produto_id).exists():
+            return Response({"error": "Esta produto já foi adicionado aos favoritos"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = FavoritoSerializer(data={'id_cliente': user_id, 'produto_id': produto_id})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Produto adicionado aos favoritos com sucesso!"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
+        
 def remover_favorito(request):
     user_id = request.data.get('user')
     produto_id = request.data.get('produto_id')
@@ -413,14 +417,11 @@ def adicionar_ao_carrinho(request):
     except Produto.DoesNotExist:
         return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
 
-    # Verificar se o cliente já tem um carrinho
     carrinho, created = Carrinho.objects.get_or_create(cliente=cliente)
 
-    # Verificar se o produto já está no carrinho
     carrinho_produto, created = CarrinhoProduto.objects.get_or_create(carrinho=carrinho, produto=produto)
     
     if not created:
-        # Se o produto já existe no carrinho, atualizar a quantidade
         carrinho_produto.quantidade += quantidade
         carrinho_produto.save()
         return Response({"message": f"Produto atualizado no carrinho. Quantidade total: {carrinho_produto.quantidade}"}, status=status.HTTP_200_OK)
