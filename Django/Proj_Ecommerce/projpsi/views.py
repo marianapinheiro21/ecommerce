@@ -10,11 +10,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from .models import *
 from .forms import *
 from .serializers import *
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from projpsi.models import Cliente, Produto, Carrinho, CarrinhoProduto
 
 import logging
 
@@ -353,3 +358,79 @@ def produto(request):
         return render(request, 'projpsi/produtos_portateis.html')
     else:
         return render(request, 'projpsi/produtos_geral.html')  # Página geral
+
+@api_view(['POST'])
+def adicionar_favorito(request):
+    user_id = request.data.get('user')  
+    produto_id = request.data.get('produto_id')  
+
+    try:
+        user_id = Cliente.objects.get(user_id=user_id)  
+        produto_id = Produto.objects.get(id=produto_id)  
+
+        return Response({"message": "Produto adicionado aos favoritos com sucesso!"}, status=200)
+
+    except Cliente.DoesNotExist:
+        return Response({"error": "Cliente não encontrado"}, status=404)
+    except Produto.DoesNotExist:
+        return Response({"error": "Produto não encontrado"}, status=404)
+    
+@api_view(['DELETE'])
+def remover_favorito(request):
+    user_id = request.data.get('user')
+    produto_id = request.data.get('produto_id')
+
+    try:
+        # Alteração aqui, usando user_id para buscar o Cliente
+        cliente = Cliente.objects.get(user_id=user_id)  # Usa user_id como a chave primária
+        produto = Produto.objects.get(id=produto_id)
+
+        # Tente excluir o favorito
+        favorito = Favorito.objects.get(cliente=cliente, produto=produto)
+        favorito.delete()
+
+        return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=200)
+
+    except Cliente.DoesNotExist:
+        return Response({"error": "Cliente não encontrado"}, status=404)
+    except Produto.DoesNotExist:
+        return Response({"error": "Produto não encontrado"}, status=404)
+    except Favorito.DoesNotExist:
+        return Response({"error": "Favorito não encontrado"}, status=404)
+
+
+@api_view(['POST'])
+def adicionar_ao_carrinho(request):
+    user_id = request.data.get('user')
+    produto_id = request.data.get('produto_id')
+    quantidade = request.data.get('quantidade', 1)  
+
+    try:
+        cliente = Cliente.objects.get(user_id=user_id)
+        produto = Produto.objects.get(id=produto_id)
+    except Cliente.DoesNotExist:
+        return Response({"error": "Cliente não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+    except Produto.DoesNotExist:
+        return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Verificar se o cliente já tem um carrinho
+    carrinho, created = Carrinho.objects.get_or_create(cliente=cliente)
+
+    # Verificar se o produto já está no carrinho
+    carrinho_produto, created = CarrinhoProduto.objects.get_or_create(carrinho=carrinho, produto=produto)
+    
+    if not created:
+        # Se o produto já existe no carrinho, atualizar a quantidade
+        carrinho_produto.quantidade += quantidade
+        carrinho_produto.save()
+        return Response({"message": f"Produto atualizado no carrinho. Quantidade total: {carrinho_produto.quantidade}"}, status=status.HTTP_200_OK)
+    
+    # Se o produto não existe no carrinho, criamos um novo item
+    carrinho_produto.quantidade = quantidade
+    carrinho_produto.save()
+
+    # Atualizar o total do carrinho
+    carrinho.total = sum([item.quantidade * item.produto.preco for item in CarrinhoProduto.objects.filter(carrinho=carrinho)])
+    carrinho.save()
+
+    return Response({"message": "Produto adicionado ao carrinho com sucesso!"}, status=status.HTTP_201_CREATED)

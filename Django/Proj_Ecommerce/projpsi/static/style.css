@@ -12,7 +12,7 @@
 }
 
 #nav-content-block-criar_login {
-    margin-top: 8rem;
+    margin-top: 3rem;
 }
 
 header{
@@ -497,4 +497,66 @@ footer{
 
 #produtos-carrinho, th{
     font-size: 1.3rem;
+}
+
+/* PÁGINA CRIAR LOGIN */
+
+.container-criar_login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+    color: #4B4B4B;
+}
+
+#nav-content-block-criar_login a {
+    display: inline-block;
+    width: auto;
+    background-color: rgb(160, 150, 150);
+    cursor: pointer;
+    text-align: center; 
+    transition-duration: 0.4s; 
+    border-radius: 2rem; 
+}
+
+#nav-content-block-criar_login a:hover {
+    background-color: #C4C0D6; 
+    color: #4B4B4B;
+}
+
+#nav-content-block-criar_login a.button-2:hover {
+    background-color: #4B4B4B;
+    color: #fff;
+}
+
+.button1-criar_login {
+    display: grid;
+    margin-bottom: 5rem;
+}
+
+.button2-criar_login {
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: center;
+}
+
+.button, .button-2 {
+    background-color: #4B4B4B;
+    border: none;
+    color: white;
+    text-decoration: none; 
+    margin: 4px 2px;
+    text-align: center;
+}
+
+.button {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.button-2 {
+    padding: 0.7rem;
+    font-size: 1rem;
+    border-radius: 1rem; 
 }

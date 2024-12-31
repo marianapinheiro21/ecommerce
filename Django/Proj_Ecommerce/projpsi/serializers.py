@@ -3,6 +3,8 @@ from .models import *
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 
 
 class BaseRegistrationSerializer(serializers.ModelSerializer):
@@ -41,7 +43,7 @@ class ClienteRegistrationSerializer(BaseRegistrationSerializer):
     def create(self, validated_data):
         user = super().create(validated_data)
         cliente=Cliente.objects.create(user=user)
-        Carrinho.objects.create(cliente=cliente)
+        Carrinho.objects.create(cliente=cliente, total=0.0)
         return user
 
 class LojistaRegistrationSerializer(BaseRegistrationSerializer):
@@ -121,14 +123,29 @@ class ProdutoImagemSerializer(serializers.ModelSerializer):
 class ProdutoSerializer(serializers.ModelSerializer):
     lojista = LojistaSerializer(read_only=True)
     imagens = ProdutoImagemSerializer(source='imagem', many=True, required=False)
-    
+    categoria = serializers.CharField(required=False)
+
     class Meta:
         model = Produto
         fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens','categoria']
-        
     def create(self, validated_data):
         imagens_data = validated_data.pop('imagens', [])
         produto = Produto.objects.create(**validated_data)
         for image_data in imagens_data:
             ProdutoImagem.objects.create(produto=produto, **image_data)
         return produto
+
+        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens']
+
+class FavoritoSerializer(serializers.Serializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # Usa 'user' ao invés de 'id_cliente'
+    produto_id = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())  # Campo para o produto
+
+    class Meta:
+        fields = ['user', 'produto_id']
+
+class CarrinhoProdutoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarrinhoProduto
+        fields = ['carrinho', 'produto', 'quantidade']
+
