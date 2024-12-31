@@ -3,6 +3,8 @@ from .models import *
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 
 
 class BaseRegistrationSerializer(serializers.ModelSerializer):
@@ -90,6 +92,26 @@ class LojistaSerializer(serializers.ModelSerializer):
         model = Lojista
         fields = ['user']
 
+
+class ClienteSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=Utilizador.objects.all())
+
+    class Meta:
+        model = Cliente
+        fields = ['user', 'nif', 'ntelefone', 'morada']
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+
+        instance.nif = validated_data.get('nif', instance.nif)
+        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
+        instance.morada = validated_data.get('morada', instance.morada)
+        instance.save()
+        return instance
+
         
         
 class ProdutoImagemSerializer(serializers.ModelSerializer):
@@ -103,6 +125,7 @@ class ProdutoImagemSerializer(serializers.ModelSerializer):
 
 
 class ProdutoSerializer(serializers.ModelSerializer):
+
     imagens = ProdutoImagemSerializer(many=True, read_only=True)
     lojista = serializers.PrimaryKeyRelatedField(read_only=True)
     
@@ -120,3 +143,17 @@ class ProdutoSerializer(serializers.ModelSerializer):
         for image_data in image_files.values():
             ProdutoImagem.objects.create(produto=produto, imagem=image_data)
         return produto
+
+class FavoritoSerializer(serializers.Serializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # Usa 'user' ao invés de 'id_cliente'
+    produto_id = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())  # Campo para o produto
+
+    class Meta:
+        fields = ['user', 'produto_id']
+
+class CarrinhoProdutoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CarrinhoProduto
+        fields = ['carrinho', 'produto', 'quantidade']
+
+
