@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.db.models import Sum
+from django.db import transaction
 from django.http import HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils.timezone import now
@@ -206,26 +207,48 @@ class ProdutoPorCategoriaAPIView(APIView):
 
 class ClienteUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
-    def get_object(self, pk, user):
+    parser_classes = (MultiPartParser, FormParser)
+    serializer_class = ClienteSerializer
+    def get(self, request, *args, **kwargs):
+        if not hasattr(request.user, 'cliente'):
+            return Response(
+                {"error": "Apenas clientes podem aceder esta área."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
         try:
-            cliente = Cliente.objects.get(pk=pk)
-            if cliente.user != user:
-                return None  
-            return cliente
+            cliente = request.user.cliente
+            serializer = self.serializer_class(cliente)
+            return Response(serializer.data)
         except Cliente.DoesNotExist:
-            return None
+            return Response(
+                {"error": "Cliente não encontrado"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-    def put(self, request, pk, format=None):
-        cliente = self.get_object(pk, request.user)
-        if cliente is None:
-            return Response({"error": "Cliente não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
+    def put(self, request, *args, **kwargs):
+        if not hasattr(request.user, 'cliente'):
+            return Response(
+                {"error": "Apenas clientes podem atualizar dados."}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
 
-        serializer = ClienteSerializer(cliente, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Cliente atualizado com sucesso!", "cliente": serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            cliente = request.user.cliente
+            serializer = self.serializer_class(
+                cliente,
+                data=request.data
+            )
+
+            with transaction.atomic():
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    return Response(
+                        {"message": "Dados atualizados com sucesso","data": serializer.data})
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
     
 
 class LojistaUpdateAPIView(APIView):
