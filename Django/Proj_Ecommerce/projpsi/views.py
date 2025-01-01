@@ -210,13 +210,12 @@ class ClienteUpdateAPIView(APIView):
     serializer_class = ClienteSerializer
 
     def put(self, request, *args, **kwargs):
-        # Obtém o cliente associado ao usuário autenticado
         cliente = getattr(request.user, 'cliente', None)
         
         if cliente is None:
             return Response({"error": "Only registered clients can edit their data."}, status=status.HTTP_403_FORBIDDEN)
         
-        serializer = ClienteSerializer(cliente, data=request.data, partial=True)  # partial=True permite atualizações parciais
+        serializer = ClienteSerializer(cliente, data=request.data, partial=True)
         
         if serializer.is_valid():
             serializer.save()
@@ -229,13 +228,13 @@ class LojistaUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request, *args, **kwargs):
-        # Obtém o lojista associado ao usuário autenticado
+        
         lojista = getattr(request.user, 'lojista', None)
         
         if lojista is None:
             return Response({"error": "Only registered lojistas can edit their data."}, status=status.HTTP_403_FORBIDDEN)
         
-        serializer = LojistaSerializer(lojista, data=request.data, partial=True)  # partial=True permite atualizações parciais
+        serializer = LojistaSerializer(lojista, data=request.data, partial=True)  
         
         if serializer.is_valid():
             serializer.save()
