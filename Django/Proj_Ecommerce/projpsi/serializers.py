@@ -88,9 +88,23 @@ class UtilizadorSerializer(serializers.ModelSerializer):
 
 class LojistaSerializer(serializers.ModelSerializer):
     user = UtilizadorSerializer(read_only=True)
+    total_ganho = serializers.SerializerMethodField()
     class Meta:
         model = Lojista
-        fields = ['user']
+        fields = ['user','nif', 'ntelefone', 'morada','total_ganho']
+
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+
+        instance.nif = validated_data.get('nif', instance.nif)
+        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
+        instance.morada = validated_data.get('morada', instance.morada)
+        instance.save()
+        return instance
 
 
 class ClienteSerializer(serializers.ModelSerializer):
