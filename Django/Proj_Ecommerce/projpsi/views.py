@@ -436,27 +436,26 @@ class AdicionarFavoritoAPIView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
         
-def remover_favorito(request):
-    user_id = request.data.get('user')
-    produto_id = request.data.get('produto_id')
+class RemoverFavoritoAPIView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    try:
-        # Alteração aqui, usando user_id para buscar o Cliente
-        cliente = Cliente.objects.get(user_id=user_id)  # Usa user_id como a chave primária
-        produto = Produto.objects.get(id=produto_id)
+    def delete(self, request, *args, **kwargs):
+        user_id = request.user.id
+        produto_id = request.data.get ('produto_id')
 
-        # Tente excluir o favorito
-        favorito = Favorito.objects.get(cliente=cliente, produto=produto)
+        if not produto_id:
+            return Response({"error": "produto_id é obrigatório"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            produto = Produto.objects.get(id=produto_id)
+        except Produto.DoesNotExist:
+            return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        favorito = Favorito.objects.filter(id_cliente=user_id, produto_id=produto_id).first()
+        if not favorito:
+            return Response({"error": "Produto não encontrado nos seus favoritos."}, status=status.HTTP_404_NOT_FOUND)
         favorito.delete()
 
-        return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=200)
-
-    except Cliente.DoesNotExist:
-        return Response({"error": "Cliente não encontrado"}, status=404)
-    except Produto.DoesNotExist:
-        return Response({"error": "Produto não encontrado"}, status=404)
-    except Favorito.DoesNotExist:
-        return Response({"error": "Favorito não encontrado"}, status=404)
+        return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=status.HTTP_200_OK)
 
 class AddToCarrinhoAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -471,3 +470,4 @@ class AddToCarrinhoAPIView(APIView):
                     'carrinhoProduto': CarrinhoProdutoSerializer(carrinhoproduto).data
                 }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
