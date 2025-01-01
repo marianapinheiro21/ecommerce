@@ -88,13 +88,11 @@ class UtilizadorSerializer(serializers.ModelSerializer):
 
 class LojistaSerializer(serializers.ModelSerializer):
     user = UtilizadorSerializer(read_only=True)
+    total_ganho = serializers.SerializerMethodField()
     class Meta:
         model = Lojista
         fields = ['user','nif', 'ntelefone', 'morada','total_ganho']
 
-    def get_total_ganho(self, obj):
-        total = Venda.objects.filter(lojista=obj).aggregate(total=models.Sum('carrinho__total'))['total'] or 0
-        return total
 
     def update(self, instance, validated_data):
         user_data = validated_data.pop('user', {})
