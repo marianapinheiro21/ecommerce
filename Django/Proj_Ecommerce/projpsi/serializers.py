@@ -90,7 +90,23 @@ class LojistaSerializer(serializers.ModelSerializer):
     user = UtilizadorSerializer(read_only=True)
     class Meta:
         model = Lojista
-        fields = ['user']
+        fields = ['user','nif', 'ntelefone', 'morada','total_ganho']
+
+    def get_total_ganho(self, obj):
+        total = Venda.objects.filter(lojista=obj).aggregate(total=models.Sum('carrinho__total'))['total'] or 0
+        return total
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+
+        instance.nif = validated_data.get('nif', instance.nif)
+        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
+        instance.morada = validated_data.get('morada', instance.morada)
+        instance.save()
+        return instance
 
 
 class ClienteSerializer(serializers.ModelSerializer):
