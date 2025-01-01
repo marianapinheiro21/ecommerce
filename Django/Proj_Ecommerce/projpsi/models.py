@@ -108,7 +108,7 @@ class Produto(models.Model):
 
 class ProdutoImagem(models.Model):
     id = models.AutoField(primary_key=True)
-    produto = models.ForeignKey(Produto, related_name='imagem', on_delete=models.CASCADE)
+    produto = models.ForeignKey(Produto, related_name='imagens', on_delete=models.CASCADE)
     imagem = models.ImageField(upload_to='produtos_imagens/')
     
     class Meta:
@@ -124,6 +124,7 @@ class Carrinho(models.Model):
         managed = False
         db_table = 'carrinho'
    
+
 class Favorito(models.Model):
     id = models.AutoField(primary_key=True)
     id_cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='id_cliente')
@@ -132,6 +133,7 @@ class Favorito(models.Model):
     class Meta:
         managed = False
         db_table = 'favorito'
+
 
 class Venda(models.Model):
     id = models.AutoField(primary_key=True)
@@ -147,7 +149,7 @@ class CarrinhoProduto(models.Model):
     carrinho = models.ForeignKey(Carrinho, models.DO_NOTHING, db_column='carrinho_id', blank=True, null=True)
     venda = models.ForeignKey(Venda, models.DO_NOTHING, db_column='venda_id', blank=True, null=True)
     produto = models.ForeignKey(Produto, models.DO_NOTHING, db_column='produto_id', blank=True, null=True)
-    quantidade = models.IntegerField(blank=True, null=True)
+    quantidade = models.IntegerField(default=1, blank=True, null=True)
 
     class Meta:
         managed = False

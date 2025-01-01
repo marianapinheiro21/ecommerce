@@ -88,9 +88,23 @@ class UtilizadorSerializer(serializers.ModelSerializer):
 
 class LojistaSerializer(serializers.ModelSerializer):
     user = UtilizadorSerializer(read_only=True)
+    total_ganho = serializers.SerializerMethodField()
     class Meta:
         model = Lojista
-        fields = ['user']
+        fields = ['user','nif', 'ntelefone', 'morada','total_ganho']
+
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+
+        instance.nif = validated_data.get('nif', instance.nif)
+        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
+        instance.morada = validated_data.get('morada', instance.morada)
+        instance.save()
+        return instance
 
 
 class ClienteSerializer(serializers.ModelSerializer):
@@ -115,49 +129,83 @@ class ClienteSerializer(serializers.ModelSerializer):
         
         
 class ProdutoImagemSerializer(serializers.ModelSerializer):
+    #produto = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all(), write_only=True)
+    #imagem = serializers.ImageField()
+    
     class Meta:
         model = ProdutoImagem
+        #fields = ['produto', 'imagem']  
         fields = ['imagem']  
 
 
 class ProdutoSerializer(serializers.ModelSerializer):
-    lojista = LojistaSerializer(read_only=True)
-    imagens = ProdutoImagemSerializer(source='imagem', many=True, required=False)
-    categoria = serializers.CharField(required=False)
 
+    imagens = ProdutoImagemSerializer(many=True, read_only=True)
+    lojista = serializers.PrimaryKeyRelatedField(read_only=True)
+    
     class Meta:
         model = Produto
-        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'imagens','categoria']
+        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'categoria', 'imagens']
+        
     def create(self, validated_data):
-        imagens_data = validated_data.pop('imagens', [])
-        produto = Produto.objects.create(**validated_data)
-        for image_data in imagens_data:
-            ProdutoImagem.objects.create(produto=produto, **image_data)
+        print("Full Validated Data:", validated_data)
+        #imagens_data = validated_data.pop('imagens', [])
+        lojista = self.context['request'].user.lojista
+        
+        produto = Produto.objects.create(**validated_data, lojista=lojista)
+        image_files=self.context['request'].FILES
+        for image_data in image_files.values():
+            ProdutoImagem.objects.create(produto=produto, imagem=image_data)
         return produto
 
-#class FavoritoSerializer(serializers.Serializer):
+
 class FavoritoSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = Favorito
         fields = ['id_cliente', 'produto_id'] 
     
     def create(self, validated_data):
-        #user = validate_data['user']
-        #produto = validate_data['produto']
         favorito = Favorito.objects.create(**validated_data)
-
-        #if Favorito.objects.filter(user=user, produto=produto).exists():
-            #raise serializers.ValidationError("Este produto já foi adicionado aos favoritos.")
-
-        # Criação do favorito
-        #favorito = Favorito.objects.create(user=user, produto=produto)
-        #favorito = Favorito.objects.create(**validate_data)
         return favorito
 
 
 class CarrinhoProdutoSerializer(serializers.ModelSerializer):
+    produto = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())
+    quantidade = serializers.IntegerField(default=1)
     class Meta:
         model = CarrinhoProduto
         fields = ['carrinho', 'produto', 'quantidade']
+        
+    def create(self, validated_data):
+        carrinho=validated_data.get('carrinho')
+        produto=validated_data['produto']
+        quantidade=validated_data.get('quantidade', 1)
 
+        carrinhoproduto, created = CarrinhoProduto.objects.get_or_create(
+            carrinho=carrinho, 
+            produto=produto,
+            defaults={'quantidade': quantidade}    
+        )
+        if not created:
+            carrinhoproduto.quantidade+=quantidade
+            carrinhoproduto.save()
+        else:
+            carrinhoproduto.quantidade=quantidade
+            carrinhoproduto.save()
+        
+        carrinho.total=sum(item.quantidade * item.produto.preco for item in CarrinhoProduto.objects.filter(carrinho=carrinho))
+        carrinho.save()
+        
+        return carrinhoproduto
+    
+    def validate(self, attrs):
+        cliente=self.context['request'].user.cliente
+        carrinho=Carrinho.objects.filter(cliente=cliente).exclude(id__in=Venda.objects.values_list('carrinho_id', flat=True)
+        ).first()
+        if not carrinho:
+            raise serializers.ValidationError("Este cliente não tem carrinhos")
+        if Venda.objects.filter(carrinho=carrinho).exists():
+            raise serializers.ValidationError("A sale has already been completed for this cart. No further modifications are allowed.")
+        attrs['carrinho']=carrinho
+        return attrs
+            

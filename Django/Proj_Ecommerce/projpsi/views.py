@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
 from .forms import *
 from .serializers import *
@@ -175,16 +176,20 @@ def lojista_login(request):
 
 class ProdutoCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
+    parser_classes = (MultiPartParser, FormParser)
     def post(self, request, *args, **kwargs):
+        print(request.data)
         if not hasattr(request.user, 'lojista'):
             return Response({"error": "Only Lojistas can add products."}, status=status.HTTP_403_FORBIDDEN)
         
-        serializer = ProdutoSerializer(data=request.data)
+        serializer = ProdutoSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            serializer.save(lojista=request.user.lojista)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            #produto = serializer.save(lojista=request.user.lojista)
+            produto = serializer.save()
+            return Response({"message": "Product created successfully.", "product_id": produto.id}, status=201)
+        else:
+            print("Serializer Errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 class ProdutoPorCategoriaAPIView(APIView):
@@ -201,48 +206,39 @@ class ProdutoPorCategoriaAPIView(APIView):
 
 class ClienteUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
+    serializer_class = ClienteSerializer
 
-    def get_object(self, pk, user):
-        try:
-            cliente = Cliente.objects.get(pk=pk)
-            if cliente.user != user:
-                return None  
-            return cliente
-        except Cliente.DoesNotExist:
-            return None
-
-    def put(self, request, pk, format=None):
-        cliente = self.get_object(pk, request.user)
+    def put(self, request, *args, **kwargs):
+        cliente = getattr(request.user, 'cliente', None)
+        
         if cliente is None:
-            return Response({"error": "Cliente não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ClienteSerializer(cliente, data=request.data)
+            return Response({"error": "Only registered clients can edit their data."}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = ClienteSerializer(cliente, data=request.data, partial=True)
+        
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Cliente atualizado com sucesso!", "cliente": serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Client data updated successfully."}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 class LojistaUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_object(self, pk, user):
-        try:
-            lojista = Lojista.objects.get(pk=pk)
-            if lojista.user != user:
-                return None 
-            return lojista
-        except Lojista.DoesNotExist:
-            return None
-
-    def put(self, request, pk, format=None):
-        lojista = self.get_object(pk, request.user)
+    def put(self, request, *args, **kwargs):
+        
+        lojista = getattr(request.user, 'lojista', None)
+        
         if lojista is None:
-            return Response({"error": "Lojista não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = LojistaSerializer(lojista, data=request.data)
+            return Response({"error": "Only registered lojistas can edit their data."}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = LojistaSerializer(lojista, data=request.data, partial=True)  
+        
         if serializer.is_valid():
             serializer.save()
+
             return Response({"message": "Lojista atualizado com sucesso!", "lojista": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -276,6 +272,45 @@ def adicionar_produto(request):
         formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
     return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 
+ #           return Response({"message": "Lojista data updated successfully."}, status=status.HTTP_200_OK)
+  #      else:
+   #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+#
+#    
+#@login_required
+#def adicionar_produto(request): 
+#    if not hasattr(request.user, 'lojista'):
+#
+#        return HttpResponseForbidden("Apenas Lojistas podem adicionar produtos.")
+#
+#    
+#    if request.method == 'POST':
+#        form = ProdutoForm(request.POST, request.FILES)  
+#        formset = ProdutoImagemFormSet(request.POST, request.FILES, queryset=ProdutoImagem.objects.none())  
+#        
+#        
+#        if form.is_valid() and formset.is_valid():
+#            produto = form.save(commit=False)
+#            produto.lojista = request.user.lojista
+#            produto.save() 
+#            imagens = formset.save(commit=False)
+#            for imagem in imagens:
+#                imagem.produto = produto  
+#                imagem.save()  
+#            return redirect('adicionar_produto_successo')
+#            #return redirect ('sucesso') #Tenho que criar outra página de sucesso
+#        else: 
+#            print("Form errors:", form.errors)
+#            print("Formset errors:", formset.errors)
+#    else:
+#        form = ProdutoForm()
+#        formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
+#    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
+#
+
+
 class ProdutoListaView(generics.ListAPIView):
     queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
     serializer_class = ProdutoSerializer
@@ -284,12 +319,33 @@ class ProdutoListaView(generics.ListAPIView):
         return {'request': self.request}
     
 
-class LojistaListaView(generics.ListAPIView):
-    queryset = Lojista.objects.all().select_related('user')
+class LojistaListAPIView(generics.ListAPIView):
+    queryset = Lojista.objects.all() 
     serializer_class = LojistaSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get_serializer_context(self):
-        return {'request': self.request}
+    def get(self, request, format=None):
+        lojistas = Lojista.objects.all()
+        dados_lojistas = []
+
+        for lojista in lojistas:
+            # Calcular o total ganho
+            total_ganho = Produto.objects.filter(lojista=lojista).aggregate(total=models.Sum('preco'))['total'] or 0
+            
+            dados_lojistas.append({
+                'id': lojista.id,
+                'nome': lojista.nome,
+                'total_ganho': total_ganho
+            })
+
+        return Response(dados_lojistas, status=status.HTTP_200_OK)
+
+#class LojistaListaView(generics.ListAPIView):
+#    queryset = Lojista.objects.all().select_related('user')
+#    serializer_class = LojistaSerializer
+#
+#    def get_serializer_context(self):
+#        return {'request': self.request}
 
 
 
@@ -402,36 +458,16 @@ def remover_favorito(request):
     except Favorito.DoesNotExist:
         return Response({"error": "Favorito não encontrado"}, status=404)
 
-
-@api_view(['POST'])
-def adicionar_ao_carrinho(request):
-    user_id = request.data.get('user')
-    produto_id = request.data.get('produto_id')
-    quantidade = request.data.get('quantidade', 1)  
-
-    try:
-        cliente = Cliente.objects.get(user_id=user_id)
-        produto = Produto.objects.get(id=produto_id)
-    except Cliente.DoesNotExist:
-        return Response({"error": "Cliente não encontrado."}, status=status.HTTP_404_NOT_FOUND)
-    except Produto.DoesNotExist:
-        return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
-
-    carrinho, created = Carrinho.objects.get_or_create(cliente=cliente)
-
-    carrinho_produto, created = CarrinhoProduto.objects.get_or_create(carrinho=carrinho, produto=produto)
+class AddToCarrinhoAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     
-    if not created:
-        carrinho_produto.quantidade += quantidade
-        carrinho_produto.save()
-        return Response({"message": f"Produto atualizado no carrinho. Quantidade total: {carrinho_produto.quantidade}"}, status=status.HTTP_200_OK)
-    
-    # Se o produto não existe no carrinho, criamos um novo item
-    carrinho_produto.quantidade = quantidade
-    carrinho_produto.save()
+    def post(self, request, *args, **kwargs):
+        serializer=CarrinhoProdutoSerializer(data=request.data, context={'request':request})
 
-    # Atualizar o total do carrinho
-    carrinho.total = sum([item.quantidade * item.produto.preco for item in CarrinhoProduto.objects.filter(carrinho=carrinho)])
-    carrinho.save()
-
-    return Response({"message": "Produto adicionado ao carrinho com sucesso!"}, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            carrinhoproduto=serializer.save()
+            return Response({
+                    'message': 'Produto adicionado ao carrinho com sucesso!',
+                    'carrinhoProduto': CarrinhoProdutoSerializer(carrinhoproduto).data
+                }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

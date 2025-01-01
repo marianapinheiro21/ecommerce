@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'projpsi', #Mariana
     'rest_framework', #Mariana
+    'rest_framework_simplejwt', #mariana
     'rest_framework_simplejwt.token_blacklist', #Mariana
     ]
 
