@@ -282,3 +282,22 @@ class VendaSerializer(serializers.ModelSerializer):
             return value
         except Produto.DoesNotExist:
             raise serializers.ValidationError("The specified produto does not exist.")
+        
+
+
+class GetVendaSerializerLojista(serializers.ModelSerializer):
+    produtos = serializers.SerializerMethodField()
+    valor_total = serializers.SerializerMethodField() 
+
+    class Meta:
+        model = Venda
+        fields = ['id', 'data_venda', 'produtos', 'valor_total']
+
+    def get_produtos(self, obj):
+        produtos = CarrinhoProduto.objects.filter(venda=obj)
+        return [{'produto_id': CarrinhoProduto.produto.id, 'quantidade': CarrinhoProduto.quantidade} for CarrinhoProduto in produtos]
+
+    def get_valor_total(self, obj):
+        produtos = CarrinhoProduto.objects.filter(venda=obj)
+        total = sum(CarrinhoProduto.quantidade * CarrinhoProduto.produto.preco for CarrinhoProduto in produtos)  
+        return total
