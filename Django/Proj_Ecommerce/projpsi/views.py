@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
 from django.http import HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden
 from django.contrib.auth.models import AbstractBaseUser
@@ -6,7 +6,7 @@ from django.utils.timezone import now
 from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -17,12 +17,13 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
 from .forms import *
 from .serializers import *
+from .permissions import *
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from projpsi.models import Cliente, Produto, Carrinho, CarrinhoProduto
-
 import logging
+from django.conf import settings
 
 # Create your views here.
 
@@ -175,12 +176,9 @@ def lojista_login(request):
 
 
 class ProdutoCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsLojista]
     parser_classes = (MultiPartParser, FormParser)
     def post(self, request, *args, **kwargs):
-        print(request.data)
-        if not hasattr(request.user, 'lojista'):
-            return Response({"error": "Only Lojistas can add products."}, status=status.HTTP_403_FORBIDDEN)
         
         serializer = ProdutoSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -309,7 +307,6 @@ def adicionar_produto(request):
 #        formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
 #    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 #
-
 
 class ProdutoListaView(generics.ListAPIView):
     queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
@@ -457,12 +454,11 @@ class RemoverFavoritoAPIView(APIView):
 
         return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=status.HTTP_200_OK)
 
-class AddToCarrinhoAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+class CarrinhoProdutoAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         serializer=CarrinhoProdutoSerializer(data=request.data, context={'request':request})
-
         if serializer.is_valid():
             carrinhoproduto=serializer.save()
             return Response({
@@ -470,4 +466,16 @@ class AddToCarrinhoAPIView(APIView):
                     'carrinhoProduto': CarrinhoProdutoSerializer(carrinhoproduto).data
                 }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
+class CreateVendaAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+    def post(self, request):
+        serializer=VendaSerializer(data=request.data, context={'request':request})
+        if serializer.is_valid():
+            venda=serializer.save()
+            return Response({
+                'id':venda.id,
+                'message': 'Venda concluida!'
+            }, status=201)
+        return Response(serializer.errors, status=400)

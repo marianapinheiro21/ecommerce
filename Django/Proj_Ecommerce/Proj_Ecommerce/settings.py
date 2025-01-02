@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -68,6 +69,14 @@ AUTHENTICATION_BACKENDS = [
 
 AUTH_USER_MODEL = 'projpsi.Utilizador'
 
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'SIGNING_KEY': SECRET_KEY,  # Ensure this is correctly set if customizing
+    'ALGORITHM': 'HS256',
+    'AUDIENCE': None,
+    'ISSUER': None,
+}
 
 ROOT_URLCONF = 'Proj_Ecommerce.urls'
 
