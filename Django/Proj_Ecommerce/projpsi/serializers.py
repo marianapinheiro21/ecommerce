@@ -88,9 +88,23 @@ class UtilizadorSerializer(serializers.ModelSerializer):
 
 class LojistaSerializer(serializers.ModelSerializer):
     user = UtilizadorSerializer(read_only=True)
+    total_ganho = serializers.SerializerMethodField()
     class Meta:
         model = Lojista
-        fields = ['user']
+        fields = ['user','nif', 'ntelefone', 'morada','total_ganho']
+
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+
+        instance.nif = validated_data.get('nif', instance.nif)
+        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
+        instance.morada = validated_data.get('morada', instance.morada)
+        instance.save()
+        return instance
 
 
 class ClienteSerializer(serializers.ModelSerializer):
@@ -144,13 +158,16 @@ class ProdutoSerializer(serializers.ModelSerializer):
             ProdutoImagem.objects.create(produto=produto, imagem=image_data)
         return produto
 
-class FavoritoSerializer(serializers.Serializer):
-    produto_id = serializers.PrimaryKeyRelatedField(source='produto', queryset=Produto.objects.all())
-   # quantidade = serializers.IntegerField(default=1)user = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # Usa 'user' ao invés de 'id_cliente'
-    produto_id = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())  # Campo para o produto
 
+class FavoritoSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['user', 'produto_id']
+        model = Favorito
+        fields = ['id_cliente', 'produto_id'] 
+    
+    def create(self, validated_data):
+        favorito = Favorito.objects.create(**validated_data)
+        return favorito
+
 
 class CarrinhoProdutoSerializer(serializers.ModelSerializer):
     produto = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())
