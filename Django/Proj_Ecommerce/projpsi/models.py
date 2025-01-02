@@ -139,7 +139,7 @@ class Favorito(models.Model):
 class Venda(models.Model):
     id = models.AutoField(primary_key=True)
     carrinho = models.ForeignKey(Carrinho, models.DO_NOTHING, db_column='carrinho_id', blank=True, null=True)
-    data_venda = models.DateField(blank=True, null=True)
+    data_venda = models.DateField(auto_now_add=True)
 
     class Meta:
         managed = False
