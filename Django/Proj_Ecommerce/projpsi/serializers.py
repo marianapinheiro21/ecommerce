@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
+from django.db import transaction
 
 
 class BaseRegistrationSerializer(serializers.ModelSerializer):
@@ -88,9 +88,23 @@ class UtilizadorSerializer(serializers.ModelSerializer):
 
 class LojistaSerializer(serializers.ModelSerializer):
     user = UtilizadorSerializer(read_only=True)
+    total_ganho = serializers.SerializerMethodField()
     class Meta:
         model = Lojista
-        fields = ['user']
+        fields = ['user','nif', 'ntelefone', 'morada','total_ganho']
+
+
+    def update(self, instance, validated_data):
+        user_data = validated_data.pop('user', {})
+        for attr, value in user_data.items():
+            setattr(instance.user, attr, value)
+        instance.user.save()
+
+        instance.nif = validated_data.get('nif', instance.nif)
+        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
+        instance.morada = validated_data.get('morada', instance.morada)
+        instance.save()
+        return instance
 
 
 class ClienteSerializer(serializers.ModelSerializer):
@@ -144,13 +158,16 @@ class ProdutoSerializer(serializers.ModelSerializer):
             ProdutoImagem.objects.create(produto=produto, imagem=image_data)
         return produto
 
-class FavoritoSerializer(serializers.Serializer):
-    produto_id = serializers.PrimaryKeyRelatedField(source='produto', queryset=Produto.objects.all())
-   # quantidade = serializers.IntegerField(default=1)user = serializers.PrimaryKeyRelatedField(queryset=Cliente.objects.all())  # Usa 'user' ao invés de 'id_cliente'
-    produto_id = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())  # Campo para o produto
 
+class FavoritoSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['user', 'produto_id']
+        model = Favorito
+        fields = ['id_cliente', 'produto_id'] 
+    
+    def create(self, validated_data):
+        favorito = Favorito.objects.create(**validated_data)
+        return favorito
+
 
 class CarrinhoProdutoSerializer(serializers.ModelSerializer):
     produto = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())
@@ -171,17 +188,18 @@ class CarrinhoProdutoSerializer(serializers.ModelSerializer):
         )
         if not created:
             carrinhoproduto.quantidade+=quantidade
-            carrinhoproduto.save()
+            
         else:
             carrinhoproduto.quantidade=quantidade
-            carrinhoproduto.save()
+            
+        carrinhoproduto.save()
         
         carrinho.total=sum(item.quantidade * item.produto.preco for item in CarrinhoProduto.objects.filter(carrinho=carrinho))
         carrinho.save()
         
         return carrinhoproduto
     
-    def validate(self, attrs):
+    def validate_carrinho(self, attrs):
         cliente=self.context['request'].user.cliente
         carrinho=Carrinho.objects.filter(cliente=cliente).exclude(id__in=Venda.objects.values_list('carrinho_id', flat=True)
         ).first()
@@ -191,4 +209,76 @@ class CarrinhoProdutoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A sale has already been completed for this cart. No further modifications are allowed.")
         attrs['carrinho']=carrinho
         return attrs
+    
+    def validate_quantidade(self, value):
+        request = self.context.get('request')
+        produto_id = request.data.get('produto') #if request else None
+    
+        if produto_id:
+            produto = Produto.objects.get(id=produto_id)
+            if produto.stock < value:
+                raise serializers.ValidationError("Insufficient stock available.")
+            return value
+        raise serializers.ValidationError("Produto must be provided.")
             
+            
+class VendaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Venda
+        fields = ['id', 'data_venda']
+
+    def create(self, validated_data):
+        cliente=self.context['request'].user.cliente
+        carrinho= Carrinho.objects.filter(cliente=cliente).exclude(carrinhoproduto__venda__isnull=False).first()
+
+        if not carrinho:
+            raise serializers.ValidationError("No active cart available for this client that hasn't been turned into a sale.")
+        
+        with transaction.atomic():
+            venda = Venda.objects.create(carrinho=carrinho, **validated_data)
+
+            carrinho_produtos = CarrinhoProduto.objects.filter(carrinho=carrinho)
+            for item in carrinho_produtos:
+                if item.produto.stock < item.quantidade:
+                    raise serializers.ValidationError(f"Insufficient stock for product {item.produto.id}.")
+                item.produto.stock -= item.quantidade
+                item.produto.save()
+
+                item.venda = venda
+                item.save()
+            
+            novo_carrinho=Carrinho.objects.create(cliente=cliente, total=0.00)
+        return venda       
+    
+    def validate_carrinho(self, attrs):
+        cliente=self.context['request'].user.cliente
+        carrinho=Carrinho.objects.filter(cliente=cliente).exclude(id__in=Venda.objects.values_list('carrinho_id', flat=True)
+        ).first()
+        if not carrinho:
+            raise serializers.ValidationError("Este cliente não tem carrinhos")
+        if Venda.objects.filter(carrinho=carrinho).exists():
+            raise serializers.ValidationError("A sale has already been completed for this cart. No further modifications are allowed.")
+        if not CarrinhoProduto.objects.filter(carrinho=carrinho).exists():
+            raise serializers.ValidationError("There are no products in your Carrinho")
+        attrs['carrinho']=carrinho
+        return attrs
+    
+    def validate_quantidade(self, value):
+        cliente=self.context['request'].user.cliente
+        carrinho=Carrinho.objects.filter(cliente=cliente).exclude(id__in=Venda.objects.values_list('carrinho_id', flat=True)
+        ).first()
+        
+        if not carrinho:
+            raise serializers.ValidationError("Este cliente não tem carrinhos válidos disponíveis.")
+
+        produto_id = self.initial_data.get('produto_id')  # Adjust depending on how produto_id is being passed
+        if not produto_id:
+            raise serializers.ValidationError("Produto must be provided.")
+
+        try:
+            produto = Produto.objects.get(id=produto_id)
+            if produto.stock < value:
+                raise serializers.ValidationError("Insufficient stock available.")
+            return value
+        except Produto.DoesNotExist:
+            raise serializers.ValidationError("The specified produto does not exist.")

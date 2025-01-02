@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
 from django.http import HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden
 from django.contrib.auth.models import AbstractBaseUser
@@ -6,7 +6,7 @@ from django.utils.timezone import now
 from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -17,12 +17,13 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
 from .forms import *
 from .serializers import *
+from .permissions import *
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from projpsi.models import Cliente, Produto, Carrinho, CarrinhoProduto
-
 import logging
+from django.conf import settings
 
 # Create your views here.
 
@@ -175,12 +176,9 @@ def lojista_login(request):
 
 
 class ProdutoCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsLojista]
     parser_classes = (MultiPartParser, FormParser)
     def post(self, request, *args, **kwargs):
-        print(request.data)
-        if not hasattr(request.user, 'lojista'):
-            return Response({"error": "Only Lojistas can add products."}, status=status.HTTP_403_FORBIDDEN)
         
         serializer = ProdutoSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -206,53 +204,76 @@ class ProdutoPorCategoriaAPIView(APIView):
 
 class ClienteUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
+    serializer_class = ClienteSerializer
 
-    def get_object(self, pk, user):
-        try:
-            cliente = Cliente.objects.get(pk=pk)
-            if cliente.user != user:
-                return None  
-            return cliente
-        except Cliente.DoesNotExist:
-            return None
-
-    def put(self, request, pk, format=None):
-        cliente = self.get_object(pk, request.user)
+    def put(self, request, *args, **kwargs):
+        cliente = getattr(request.user, 'cliente', None)
+        
         if cliente is None:
-            return Response({"error": "Cliente não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = ClienteSerializer(cliente, data=request.data)
+            return Response({"error": "Only registered clients can edit their data."}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = ClienteSerializer(cliente, data=request.data, partial=True)
+        
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Cliente atualizado com sucesso!", "cliente": serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Client data updated successfully."}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 class LojistaUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_object(self, pk, user):
-        try:
-            lojista = Lojista.objects.get(pk=pk)
-            if lojista.user != user:
-                return None 
-            return lojista
-        except Lojista.DoesNotExist:
-            return None
-
-    def put(self, request, pk, format=None):
-        lojista = self.get_object(pk, request.user)
+    def put(self, request, *args, **kwargs):
+        
+        lojista = getattr(request.user, 'lojista', None)
+        
         if lojista is None:
-            return Response({"error": "Lojista não encontrado ou acesso negado."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = LojistaSerializer(lojista, data=request.data)
+            return Response({"error": "Only registered lojistas can edit their data."}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = LojistaSerializer(lojista, data=request.data, partial=True)  
+        
         if serializer.is_valid():
             serializer.save()
+
             return Response({"message": "Lojista atualizado com sucesso!", "lojista": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+@login_required
+def adicionar_produto(request): 
+    if not hasattr(request.user, 'lojista'):
+
+        return HttpResponseForbidden("Apenas Lojistas podem adicionar produtos.")
+
     
+    if request.method == 'POST':
+        form = ProdutoForm(request.POST, request.FILES)  
+        formset = ProdutoImagemFormSet(request.POST, request.FILES, queryset=ProdutoImagem.objects.none())  
+        
+        
+        if form.is_valid() and formset.is_valid():
+            produto = form.save(commit=False)
+            produto.lojista = request.user.lojista
+            produto.save() 
+            imagens = formset.save(commit=False)
+            for imagem in imagens:
+                imagem.produto = produto  
+                imagem.save()  
+            return redirect('adicionar_produto_successo')
+            #return redirect ('sucesso') #Tenho que criar outra página de sucesso
+        else: 
+            print("Form errors:", form.errors)
+            print("Formset errors:", formset.errors)
+    else:
+        form = ProdutoForm()
+        formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
+    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 
-
+ #           return Response({"message": "Lojista data updated successfully."}, status=status.HTTP_200_OK)
+  #      else:
+   #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 #
 #    
@@ -286,7 +307,8 @@ class LojistaUpdateAPIView(APIView):
 #        formset = ProdutoImagemFormSet(queryset=ProdutoImagem.objects.none())
 #    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 #
-#class ProdutoListaView(generics.ListAPIView):
+
+class ProdutoListaView(generics.ListAPIView):
     queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
     serializer_class = ProdutoSerializer
     
@@ -294,12 +316,33 @@ class LojistaUpdateAPIView(APIView):
         return {'request': self.request}
     
 
-class LojistaListaView(generics.ListAPIView):
-    queryset = Lojista.objects.all().select_related('user')
+class LojistaListAPIView(generics.ListAPIView):
+    queryset = Lojista.objects.all() 
     serializer_class = LojistaSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get_serializer_context(self):
-        return {'request': self.request}
+    def get(self, request, format=None):
+        lojistas = Lojista.objects.all()
+        dados_lojistas = []
+
+        for lojista in lojistas:
+            # Calcular o total ganho
+            total_ganho = Produto.objects.filter(lojista=lojista).aggregate(total=models.Sum('preco'))['total'] or 0
+            
+            dados_lojistas.append({
+                'id': lojista.id,
+                'nome': lojista.nome,
+                'total_ganho': total_ganho
+            })
+
+        return Response(dados_lojistas, status=status.HTTP_200_OK)
+
+#class LojistaListaView(generics.ListAPIView):
+#    queryset = Lojista.objects.all().select_related('user')
+#    serializer_class = LojistaSerializer
+#
+#    def get_serializer_context(self):
+#        return {'request': self.request}
 
 
 
@@ -363,53 +406,59 @@ def produto(request):
         return render(request, 'projpsi/produtos_portateis.html')
     else:
         return render(request, 'projpsi/produtos_geral.html')  # Página geral
-
-@api_view(['POST'])
-def adicionar_favorito(request):
-    user_id = request.data.get('user')  
-    produto_id = request.data.get('produto_id')  
-
-    try:
-        user_id = Cliente.objects.get(user_id=user_id)  
-        produto_id = Produto.objects.get(id=produto_id)  
-
-        return Response({"message": "Produto adicionado aos favoritos com sucesso!"}, status=200)
-
-    except Cliente.DoesNotExist:
-        return Response({"error": "Cliente não encontrado"}, status=404)
-    except Produto.DoesNotExist:
-        return Response({"error": "Produto não encontrado"}, status=404)
     
-@api_view(['DELETE'])
-def remover_favorito(request):
-    user_id = request.data.get('user')
-    produto_id = request.data.get('produto_id')
+    ###################################### API ADICIONAR FAVORITO #########################
 
-    try:
-        # Alteração aqui, usando user_id para buscar o Cliente
-        cliente = Cliente.objects.get(user_id=user_id)  # Usa user_id como a chave primária
-        produto = Produto.objects.get(id=produto_id)
-
-        # Tente excluir o favorito
-        favorito = Favorito.objects.get(cliente=cliente, produto=produto)
-        favorito.delete()
-
-        return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=200)
-
-    except Cliente.DoesNotExist:
-        return Response({"error": "Cliente não encontrado"}, status=404)
-    except Produto.DoesNotExist:
-        return Response({"error": "Produto não encontrado"}, status=404)
-    except Favorito.DoesNotExist:
-        return Response({"error": "Favorito não encontrado"}, status=404)
-
-
-class AddToCarrinhoAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+class AdicionarFavoritoAPIView(APIView):
+    permission_classes = [IsAuthenticated] #Quando for testar a API fazer login como um cliente, para não precisar passar o user, somente o produto
     
     def post(self, request, *args, **kwargs):
-        serializer=CarrinhoProdutoSerializer(data=request.data, context={'request':request})
+        user_id = request.user.id
+        produto_id = request.data.get('produto_id')  
+        
+        if not produto_id:
+            return Response({"error": "produto_id é obrigatório."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            produto = Produto.objects.get(id=produto_id)
+        except Produto.DoesNotExist:
+            return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        if Favorito.objects.filter(id_cliente=user_id, produto_id=produto_id).exists():
+            return Response({"error": "Esta produto já foi adicionado aos favoritos"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = FavoritoSerializer(data={'id_cliente': user_id, 'produto_id': produto_id})
 
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Produto adicionado aos favoritos com sucesso!"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
+        
+class RemoverFavoritoAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        user_id = request.user.id
+        produto_id = request.data.get ('produto_id')
+
+        if not produto_id:
+            return Response({"error": "produto_id é obrigatório"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            produto = Produto.objects.get(id=produto_id)
+        except Produto.DoesNotExist:
+            return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        
+        favorito = Favorito.objects.filter(id_cliente=user_id, produto_id=produto_id).first()
+        if not favorito:
+            return Response({"error": "Produto não encontrado nos seus favoritos."}, status=status.HTTP_404_NOT_FOUND)
+        favorito.delete()
+
+        return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=status.HTTP_200_OK)
+
+class CarrinhoProdutoAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+    
+    def post(self, request):
+        serializer=CarrinhoProdutoSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
             carrinhoproduto=serializer.save()
             return Response({
@@ -417,3 +466,16 @@ class AddToCarrinhoAPIView(APIView):
                     'carrinhoProduto': CarrinhoProdutoSerializer(carrinhoproduto).data
                 }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+class CreateVendaAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+    def post(self, request):
+        serializer=VendaSerializer(data=request.data, context={'request':request})
+        if serializer.is_valid():
+            venda=serializer.save()
+            return Response({
+                'id':venda.id,
+                'message': 'Venda concluida!'
+            }, status=201)
+        return Response(serializer.errors, status=400)

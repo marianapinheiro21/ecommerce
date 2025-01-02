@@ -3,7 +3,6 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf.urls import handler403, handler404, handler500
 from .views import *
-from .views import adicionar_favorito
 from . import views
 
 
@@ -12,11 +11,13 @@ urlpatterns = [
     #path('registar/cliente/', novoCliente, name='novoCliente'),
     path('api/cliente/registo/', ClienteRegistrationAPIView.as_view(), name='api_registro_cliente'),
     path('api/lojista/registo/', LojistaRegistrationAPIView.as_view(), name='api_registro_lojista'),
-    path('api/login/cliente/', ClienteLoginAPIView.as_view(), name='cliente_login'),
-    path('api/login/lojista/', LojistaLoginAPIView.as_view(), name='lojista_login'),
+    path('api/cliente/login/', ClienteLoginAPIView.as_view(), name='cliente_login'),
+    path('api/lojista/login/', LojistaLoginAPIView.as_view(), name='lojista_login'),
     path('api/logout/', LogoutAPIView.as_view(), name='logout'),
     path('api/produtos/create/', ProdutoCreateAPIView.as_view(), name='produto-create'),
-    path('api/add-to-cart/', AddToCarrinhoAPIView.as_view(), name='add-to-cart'),
+    path('api/add-to-cart/', CarrinhoProdutoAPIView.as_view(), name='add-to-cart'),
+    path('api/venda/create/', CreateVendaAPIView.as_view(), name='create-venda'),
+    path('api/lojistas/', LojistaListAPIView.as_view(), name='lojista-list'),
     path('api/clientes/<int:pk>/', ClienteUpdateAPIView.as_view(), name='cliente-update'),
     path('api/lojistas/<int:pk>/', LojistaUpdateAPIView.as_view(), name='lojista-update'),
     path('api/produtos/categoria/<str:categoria>/',ProdutoPorCategoriaAPIView.as_view(), name='produtos-por-categoria'),
@@ -28,12 +29,12 @@ urlpatterns = [
     #path('login/lojista/', lojista_login, name='lojista_login'), 
     #path('lojista/addProduto/', adicionar_produto, name='adicionar_produto'), 
     #path('products/', ProdutoListaView.as_view(), name='produtos-lista'),
-    path('lojista/', LojistaListaView.as_view(), name='lojista-lista'),
+    #path('lojista/', LojistaListaView.as_view(), name='lojista-lista'),
     path('lojista_dados/', lojista_dados, name='lojista_dados'),
     path('carrinho/', carrinho, name='carrinho'),
     path('favoritos/', favoritos, name='favoritos'),
-    path('adicionar_favorito/', views.adicionar_favorito, name='adicionar_favorito'),
-    path('api/remover/favorito/', views.remover_favorito, name='remover_favorito'),
+    path('api/adicionar_favorito/', AdicionarFavoritoAPIView.as_view(), name='adicionar_favorito'),
+    path('api/remover/favorito/', RemoverFavoritoAPIView.as_view(), name='remover_favorito'),
     path('produto/', produto, name='produto'),
     path('produto/computadores/', produtos_computadores, name='produtos_computadores'),
     path('produto/acessorios/', produtos_acessorios, name='produtos_acessorios'),

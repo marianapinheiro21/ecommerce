@@ -115,7 +115,6 @@ class ProdutoImagem(models.Model):
         managed = False
         db_table = 'produtoimagem'
         
-
 class Carrinho(models.Model):
     id = models.AutoField(primary_key=True)
     cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='id_cliente')
@@ -125,11 +124,11 @@ class Carrinho(models.Model):
         managed = False
         db_table = 'carrinho'
    
-        
+
 class Favorito(models.Model):
     id = models.AutoField(primary_key=True)
     id_cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='id_cliente')
-    produto_id = models.ForeignKey(Produto, models.DO_NOTHING)
+    produto_id = models.ForeignKey(Produto, models.DO_NOTHING, db_column='produto_id')
 
     class Meta:
         managed = False
@@ -139,12 +138,11 @@ class Favorito(models.Model):
 class Venda(models.Model):
     id = models.AutoField(primary_key=True)
     carrinho = models.ForeignKey(Carrinho, models.DO_NOTHING, db_column='carrinho_id', blank=True, null=True)
-    data_venda = models.DateField(blank=True, null=True)
+    data_venda = models.DateField(auto_now_add=True)
 
     class Meta:
         managed = False
         db_table = 'venda'
-        
         
 class CarrinhoProduto(models.Model):
     id = models.AutoField(primary_key=True)
