@@ -21,6 +21,7 @@ urlpatterns = [
     path('api/clientes/<int:pk>/', ClienteUpdateAPIView.as_view(), name='cliente-update'),
     path('api/lojistas/<int:pk>/', LojistaUpdateAPIView.as_view(), name='lojista-update'),
     path('api/produtos/categoria/<str:categoria>/',ProdutoPorCategoriaAPIView.as_view(), name='produtos-por-categoria'),
+    path('api/lojista/vendas/', LojistaVendasAPIView.as_view(), name='lojista-vendas'),
     #path('registar/lojista/', novoLojista, name='novoLojista'),
     #path('sucesso/', sucesso, name='sucesso'), 
     path('criar_login/', criar_login, name='criar_login'),
