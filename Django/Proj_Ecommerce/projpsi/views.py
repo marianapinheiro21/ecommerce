@@ -203,7 +203,7 @@ class ProdutoPorCategoriaAPIView(APIView):
     
 
 class ClienteUpdateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCliente]
     parser_classes = (MultiPartParser, FormParser)
     serializer_class = ClienteSerializer
 
@@ -223,7 +223,7 @@ class ClienteUpdateAPIView(APIView):
     
 
 class LojistaUpdateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsLojista]
 
     def put(self, request, *args, **kwargs):
         
@@ -479,3 +479,13 @@ class CreateVendaAPIView(APIView):
                 'message': 'Venda concluida!'
             }, status=201)
         return Response(serializer.errors, status=400)
+    
+class LojistaVendasAPIView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, IsLojista]
+    serializer_class = GetVendaSerializerLojista
+
+    def get_queryset(self):
+        lojista = getattr(self.request.user, 'lojista', None)
+        if not lojista:
+            return Venda.objects.none()
+        return Venda.objects.filter(carrinho__cliente__id=lojista.user.id)
