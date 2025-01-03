@@ -4,8 +4,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from django.db import transaction
-
+from django.db import transaction 
 
 class BaseRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -129,12 +128,9 @@ class ClienteSerializer(serializers.ModelSerializer):
         
         
 class ProdutoImagemSerializer(serializers.ModelSerializer):
-    #produto = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all(), write_only=True)
-    #imagem = serializers.ImageField()
     
     class Meta:
         model = ProdutoImagem
-        #fields = ['produto', 'imagem']  
         fields = ['imagem']  
 
 
@@ -145,7 +141,7 @@ class ProdutoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Produto
-        fields = ['lojista', 'nome', 'preco', 'descricao', 'stock', 'categoria', 'imagens']
+        fields = ['id', 'lojista', 'nome', 'preco', 'descricao', 'stock', 'categoria', 'imagens']
         
     def create(self, validated_data):
         print("Full Validated Data:", validated_data)
@@ -172,10 +168,14 @@ class FavoritoSerializer(serializers.ModelSerializer):
 class CarrinhoProdutoSerializer(serializers.ModelSerializer):
     produto = serializers.PrimaryKeyRelatedField(queryset=Produto.objects.all())
     quantidade = serializers.IntegerField(default=1)
+    #preco_produto = serializers.SerializerMethodField() 
+    total_carrinho = serializers.ReadOnlyField(source='carrinho.total')
+
     class Meta:
         model = CarrinhoProduto
-        fields = ['carrinho', 'produto', 'quantidade']
+        fields = ['carrinho', 'produto', 'quantidade', 'total_carrinho']
         
+
     def create(self, validated_data):
         carrinho=validated_data.get('carrinho')
         produto=validated_data['produto']
@@ -201,16 +201,19 @@ class CarrinhoProdutoSerializer(serializers.ModelSerializer):
     
     def validate_carrinho(self, attrs):
         cliente=self.context['request'].user.cliente
-        carrinho=Carrinho.objects.filter(cliente=cliente).exclude(id__in=Venda.objects.values_list('carrinho_id', flat=True)
-        ).first()
+        carrinho=Carrinho.objects.filter(cliente=cliente, venda__isnull=True).first()
         if not carrinho:
             raise serializers.ValidationError("Este cliente não tem carrinhos")
         if Venda.objects.filter(carrinho=carrinho).exists():
             raise serializers.ValidationError("A sale has already been completed for this cart. No further modifications are allowed.")
-        attrs['carrinho']=carrinho
+        
+        attrs.carrinho=carrinho
         return attrs
     
     def validate_quantidade(self, value):
+        if value < 1:
+            raise serializers.ValidationError("Quantity must be at least 1.")
+        
         request = self.context.get('request')
         produto_id = request.data.get('produto') #if request else None
     
@@ -218,8 +221,14 @@ class CarrinhoProdutoSerializer(serializers.ModelSerializer):
             produto = Produto.objects.get(id=produto_id)
             if produto.stock < value:
                 raise serializers.ValidationError("Insufficient stock available.")
+            
             return value
         raise serializers.ValidationError("Produto must be provided.")
+    
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['produto'] = ProdutoSerializer(instance.produto).data
+        return response
             
             
 class VendaSerializer(serializers.ModelSerializer):
@@ -252,8 +261,7 @@ class VendaSerializer(serializers.ModelSerializer):
     
     def validate_carrinho(self, attrs):
         cliente=self.context['request'].user.cliente
-        carrinho=Carrinho.objects.filter(cliente=cliente).exclude(id__in=Venda.objects.values_list('carrinho_id', flat=True)
-        ).first()
+        carrinho = Carrinho.objects.filter(cliente=cliente, venda__isnull=True).first()
         if not carrinho:
             raise serializers.ValidationError("Este cliente não tem carrinhos")
         if Venda.objects.filter(carrinho=carrinho).exists():
