@@ -458,6 +458,13 @@ class CarrinhoProdutoAPIView(APIView):
     permission_classes = [IsAuthenticated, IsCliente]
     
     def post(self, request):
+        cliente=request.user.cliente
+        
+        carrinho=Carrinho.objects.filter(cliente=cliente, venda__isnull=True).first()
+        if not carrinho:
+            return Response({"error": "No active Carrinho available"}, status=status.HTTP_404_NOT_FOUND)
+
+        request.data['carrinho']=carrinho.id
         serializer=CarrinhoProdutoSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
             carrinhoproduto=serializer.save()
@@ -479,6 +486,26 @@ class CreateVendaAPIView(APIView):
                 'message': 'Venda concluida!'
             }, status=201)
         return Response(serializer.errors, status=400)
+    
+    
+class ProdutosNoCarrinhoAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+
+    def get(self, request):
+        cliente = request.user.cliente
+        carrinho_produtos = CarrinhoProduto.objects.filter(carrinho__cliente=cliente, venda__isnull=True)
+        serializer = CarrinhoProdutoSerializer(carrinho_produtos, many=True)
+        return Response(serializer.data)
+    
+class ProdutosCompradosAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+
+    def get(self, request):
+        cliente = request.user.cliente
+        carrinho_produtos = CarrinhoProduto.objects.filter(carrinho__cliente=cliente, venda__isnull=False)
+        serializer = CarrinhoProdutoSerializer(carrinho_produtos, many=True)
+        return Response(serializer.data)
+    
     
 class LojistaVendasAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsLojista]
