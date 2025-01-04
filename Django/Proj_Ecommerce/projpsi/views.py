@@ -24,6 +24,7 @@ from django.views.decorators.csrf import csrf_exempt
 from projpsi.models import Cliente, Produto, Carrinho, CarrinhoProduto
 import logging
 from django.conf import settings
+from django.db.models import Q #Consultas na barra de navegação
 
 # Create your views here.
 
@@ -577,3 +578,20 @@ class LojistaVendasAPIView(generics.ListAPIView):
         if not lojista:
             return Venda.objects.none()
         return Venda.objects.filter(carrinho__cliente__id=lojista.user.id)
+
+class BuscarProdutosAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        query = request.query_params.get('q', None)
+
+        if not query:
+            return Response({"error": "Parâmetro obrigatório"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        palavras = query.split()
+        filtro = Q()
+        for palavra in palavras:
+            filtro |= Q(nome__icontains=palavra) | Q(descricao__icontains=palavra) | Q(categoria__icontains=palavra)
+
+        produto_id = Produto.objects.filter(filtro).distinct()
+
+        serializer = ProdutoSerializer(produto_id, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
