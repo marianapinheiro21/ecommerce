@@ -5,6 +5,7 @@ backcall==0.2.0
 backports.zoneinfo==0.2.1
 decorator==4.4.2
 Django==4.2.16
+django-cors-headers==4.4.0
 django-debug-toolbar==2.2
 django-dirtyfields==1.9.3
 django-extensions==3.0.8

@@ -410,7 +410,7 @@ def produto(request):
     ###################################### API ADICIONAR FAVORITO #########################
 
 class AdicionarFavoritoAPIView(APIView):
-    permission_classes = [IsAuthenticated] #Quando for testar a API fazer login como um cliente, para não precisar passar o user, somente o produto
+    permission_classes = [IsAuthenticated, IsCliente] 
     
     def post(self, request, *args, **kwargs):
         user_id = request.user.id
@@ -434,7 +434,7 @@ class AdicionarFavoritoAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
         
 class RemoverFavoritoAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCliente]
 
     def delete(self, request, *args, **kwargs):
         user_id = request.user.id
@@ -453,11 +453,41 @@ class RemoverFavoritoAPIView(APIView):
         favorito.delete()
 
         return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=status.HTTP_200_OK)
+    
+class GetFavoritosAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+
+        favoritos = Favorito.objects.filter(id_cliente=user_id)
+
+        if not favoritos.exists():
+            return Response({"message": "Nenhum produto encontrado nos seus favoritos."}, status=status.HTTP_404_NOT_FOUND)
+
+        produtos_favoritos = []
+        for favorito in favoritos:
+            produto = favorito.produto_id  
+            produtos_favoritos.append({
+                "Produto": produto.nome,
+                "Descricao": produto.descricao,
+                "Preço": produto.preco,
+                "categoria": produto.categoria,
+            })
+        return Response({"favoritos": produtos_favoritos}, status=status.HTTP_200_OK)
+
 
 class CarrinhoProdutoAPIView(APIView):
     permission_classes = [IsAuthenticated, IsCliente]
     
     def post(self, request):
+        cliente=request.user.cliente
+        
+        carrinho=Carrinho.objects.filter(cliente=cliente, venda__isnull=True).first()
+        if not carrinho:
+            return Response({"error": "No active Carrinho available"}, status=status.HTTP_404_NOT_FOUND)
+
+        request.data['carrinho']=carrinho.id
         serializer=CarrinhoProdutoSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
             carrinhoproduto=serializer.save()
@@ -467,6 +497,44 @@ class CarrinhoProdutoAPIView(APIView):
                 }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class RemoverProdutosCarrinhoAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+
+    def delete(self, request, *args, **kwargs):
+        user_id = request.user.id
+        produto_id = request.data.get('produto_id')
+
+        if not produto_id:
+            return Response({"error": "produto_id é obrigatório."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            carrinho_produto = CarrinhoProduto.objects.get(
+                carrinho__cliente=user_id,
+                produto_id=produto_id
+            )
+        except CarrinhoProduto.DoesNotExist:
+            return Response({"error": "Produto não encontrado no carrinho."}, status=status.HTTP_404_NOT_FOUND)
+
+        if carrinho_produto.venda is not None:
+            return Response({"error": "Este produto já está associado a uma venda e não pode ser removido."}, status=status.HTTP_400_BAD_REQUEST)
+
+        carrinho = carrinho_produto.carrinho
+        if not carrinho:
+            return Response({"error": "Carrinho não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        preco_produto = carrinho_produto.produto.preco  
+        total_antigo = carrinho.total or 0
+        novo_total = total_antigo - (preco_produto * carrinho_produto.quantidade)
+
+        if novo_total < 0:
+            novo_total = 0
+
+        carrinho_produto.delete()
+
+        carrinho.total = novo_total
+        carrinho.save()
+
+        return Response({"message": "Produto removido do carrinho e total atualizado com sucesso!"}, status=status.HTTP_200_OK)
     
 class CreateVendaAPIView(APIView):
     permission_classes = [IsAuthenticated, IsCliente]
@@ -479,6 +547,26 @@ class CreateVendaAPIView(APIView):
                 'message': 'Venda concluida!'
             }, status=201)
         return Response(serializer.errors, status=400)
+    
+    
+class ProdutosNoCarrinhoAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+
+    def get(self, request):
+        cliente = request.user.cliente
+        carrinho_produtos = CarrinhoProduto.objects.filter(carrinho__cliente=cliente, venda__isnull=True)
+        serializer = CarrinhoProdutoSerializer(carrinho_produtos, many=True)
+        return Response(serializer.data)
+    
+class ProdutosCompradosAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+
+    def get(self, request):
+        cliente = request.user.cliente
+        carrinho_produtos = CarrinhoProduto.objects.filter(carrinho__cliente=cliente, venda__isnull=False)
+        serializer = CarrinhoProdutoSerializer(carrinho_produtos, many=True)
+        return Response(serializer.data)
+    
     
 class LojistaVendasAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsLojista]
