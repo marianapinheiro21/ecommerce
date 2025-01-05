@@ -43,6 +43,7 @@ urlpatterns = [
     path('api/adicionar_favorito/', AdicionarFavoritoAPIView.as_view(), name='adicionar_favorito'),
     path('api/remover/favorito/', RemoverFavoritoAPIView.as_view(), name='remover_favorito'),
     path('api/listar/favorito/', GetFavoritosAPIView.as_view(), name='listar_favorito'),
+    path('api/buscar/produto/', BuscarProdutosAPIView.as_view(), name='buscar_produto'),
     path('produto/', produto, name='produto'),
     path('produto/computadores/', produtos_computadores, name='produtos_computadores'),
     path('produto/acessorios/', produtos_acessorios, name='produtos_acessorios'),
