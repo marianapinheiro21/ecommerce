@@ -25,8 +25,8 @@ from projpsi.models import Cliente, Produto, Carrinho, CarrinhoProduto
 import logging
 from django.conf import settings
 from django.db.models import Q #Consultas na barra de navegação
-
-
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 logger = logging.getLogger(__name__)
 
 # Create your views here.
@@ -193,15 +193,31 @@ class ProdutoCreateAPIView(APIView):
             print("Serializer Errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class CategoriaChoicesAPIView(APIView):
+    """
+    API para listar todas as opções de categorias disponíveis.
+    """
+    def get(self, request, format=None):
+        categorias = dict(Produto.campos)  # Converte os choices em um dicionário
+        return Response(categorias, status=status.HTTP_200_OK)
+    
+#####Configuração do parâmetro de categoria#####
+categoria_param = openapi.Parameter(
+    'categoria',
+    openapi.IN_PATH,
+    description="Escolha uma categoria",
+    type=openapi.TYPE_STRING,
+    enum=[choice[0] for choice in Produto.campos],  # Lista de categorias predefinidas
+)
+    
 
 class ProdutoPorCategoriaAPIView(APIView):
-    
+    """
+    API para listar produtos de uma categoria específica.
+    """
+    @swagger_auto_schema(manual_parameters=[categoria_param])
     def get(self, request, categoria, format=None):
         produtos = Produto.objects.filter(categoria=categoria)
-        
-        if not produtos.exists():
-            return Response({"error": "Nenhum produto encontrado para esta categoria."}, status=status.HTTP_404_NOT_FOUND)
-        
         serializer = ProdutoSerializer(produtos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -382,26 +398,34 @@ class ProdutoListaView(generics.ListAPIView):
         return {'request': self.request}
     
 
-class LojistaListAPIView(generics.ListAPIView):
-    queryset = Lojista.objects.all() 
-    serializer_class = LojistaSerializer
+class PublicLojistaListAPIView(APIView):
+    """
+    API para listar todos os lojistas (dados básicos).
+    Não requer autenticação.
+    """
+    def get(self, request, format=None):
+        lojistas = Lojista.objects.select_related('user').all()
+        serializer = PublicLojistaSerializer(lojistas, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class PrivateLojistaAPIView(APIView):
+    """
+    API para obter os dados completos do lojista autenticado.
+    Requer autenticação.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        lojistas = Lojista.objects.all()
-        dados_lojistas = []
-
-        for lojista in lojistas:
-            # Calcular o total ganho
-            total_ganho = Produto.objects.filter(lojista=lojista).aggregate(total=models.Sum('preco'))['total'] or 0
-            
-            dados_lojistas.append({
-                'id': lojista.id,
-                'nome': lojista.nome,
-                'total_ganho': total_ganho
-            })
-
-        return Response(dados_lojistas, status=status.HTTP_200_OK)
+        try:
+            lojista = Lojista.objects.select_related('user').get(user=request.user)
+        except Lojista.DoesNotExist:
+            return Response(
+                {"detail": "Lojista não encontrado para o usuário autenticado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        serializer = PrivateLojistaSerializer(lojista)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 #class LojistaListaView(generics.ListAPIView):
 #    queryset = Lojista.objects.all().select_related('user')
@@ -660,3 +684,6 @@ class BuscarProdutosAPIView(APIView):
 
         serializer = ProdutoSerializer(produto_id, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
