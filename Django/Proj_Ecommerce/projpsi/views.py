@@ -24,6 +24,10 @@ from django.views.decorators.csrf import csrf_exempt
 from projpsi.models import Cliente, Produto, Carrinho, CarrinhoProduto
 import logging
 from django.conf import settings
+from django.db.models import Q #Consultas na barra de navegação
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -189,56 +193,134 @@ class ProdutoCreateAPIView(APIView):
             print("Serializer Errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class CategoriaChoicesAPIView(APIView):
+    """
+    API para listar todas as opções de categorias disponíveis.
+    """
+    def get(self, request, format=None):
+        categorias = dict(Produto.campos)  # Converte os choices em um dicionário
+        return Response(categorias, status=status.HTTP_200_OK)
+    
+#####Configuração do parâmetro de categoria#####
+categoria_param = openapi.Parameter(
+    'categoria',
+    openapi.IN_PATH,
+    description="Escolha uma categoria",
+    type=openapi.TYPE_STRING,
+    enum=[choice[0] for choice in Produto.campos],  # Lista de categorias predefinidas
+)
+    
 
 class ProdutoPorCategoriaAPIView(APIView):
-    
+    """
+    API para listar produtos de uma categoria específica.
+    """
+    @swagger_auto_schema(manual_parameters=[categoria_param])
     def get(self, request, categoria, format=None):
         produtos = Produto.objects.filter(categoria=categoria)
-        
-        if not produtos.exists():
-            return Response({"error": "Nenhum produto encontrado para esta categoria."}, status=status.HTTP_404_NOT_FOUND)
-        
         serializer = ProdutoSerializer(produtos, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+
 
 class ClienteUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated, IsCliente]
     parser_classes = (MultiPartParser, FormParser)
     serializer_class = ClienteSerializer
 
+    def get(self, request, *args, **kwargs):
+        """
+        Permite que o cliente obtenha os seus dados.
+        """
+        cliente = getattr(request.user, 'cliente', None)
+        if cliente is None:
+            logger.warning(f"Tentativa de acesso não autorizada aos dados do cliente pelo usuário: {request.user.id}")
+            return Response({"error": "Apenas clientes registados podem aceder aos seus dados."}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = ClienteSerializer(cliente)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def put(self, request, *args, **kwargs):
+        """
+        Atualiza completamente os dados do cliente.
+        """
+        return self._update(request, partial=False)
+
+    def patch(self, request, *args, **kwargs):
+        """
+        Atualiza parcialmente os dados do cliente.
+        """
+        return self._update(request, partial=True)
+
+    def _update(self, request, partial):
+        """
+        Função auxiliar para realizar a atualização parcial ou completa.
+        """
         cliente = getattr(request.user, 'cliente', None)
         
         if cliente is None:
-            return Response({"error": "Only registered clients can edit their data."}, status=status.HTTP_403_FORBIDDEN)
+            logger.error(f"Tentativa de atualização não autorizada dos dados do cliente pelo usuário: {request.user.id}")
+            return Response({"error": "Apenas clientes registados podem editar os seus dados."}, status=status.HTTP_403_FORBIDDEN)
         
-        serializer = ClienteSerializer(cliente, data=request.data, partial=True)
+        serializer = ClienteSerializer(cliente, data=request.data, partial=partial)
         
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Client data updated successfully."}, status=status.HTTP_200_OK)
+            logger.info(f"Dados do cliente {cliente.user.email} atualizados com sucesso!")
+            return Response({"message": "Dados do cliente atualizados com sucesso."}, status=status.HTTP_200_OK)
         else:
+            logger.error(f"Erro ao atualizar os dados do cliente {cliente.user.email}: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 class LojistaUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated, IsLojista]
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Retorna os dados do lojista autenticado.
+        """
+        lojista = getattr(request.user, 'lojista', None)
+        if lojista is None:
+            logger.warning(f"Tentativa de acesso não autorizada aos dados do lojista pelo usuário: {request.user.id}")
+            return Response({"error": "Apenas lojistas registados podem aceder aos seus dados."}, status=status.HTTP_403_FORBIDDEN)
+        
+        serializer = LojistaSerializer(lojista)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, *args, **kwargs):
-        
+        """
+        Atualiza todos os dados do lojista.
+        """
+        return self._update(request, partial=False)
+
+    def patch(self, request, *args, **kwargs):
+        """
+        Atualiza parcialmente os dados do lojista.
+        """
+        return self._update(request, partial=True)
+
+    def _update(self, request, partial):
+        """
+        Função auxiliar para realizar a atualização parcial ou completa.
+        """
         lojista = getattr(request.user, 'lojista', None)
         
         if lojista is None:
-            return Response({"error": "Only registered lojistas can edit their data."}, status=status.HTTP_403_FORBIDDEN)
+            logger.error(f"Tentativa de atualização não autorizada dos dados do lojista pelo usuário: {request.user.id}")
+            return Response({"error": "Apenas lojistas registados podem editar os seus dados."}, status=status.HTTP_403_FORBIDDEN)
         
-        serializer = LojistaSerializer(lojista, data=request.data, partial=True)  
+        serializer = LojistaSerializer(lojista, data=request.data, partial=partial)
         
         if serializer.is_valid():
             serializer.save()
+            logger.info(f"Dados do lojista {lojista.user.email} atualizados com sucesso!")
+            return Response({"message": "Dados do lojista atualizados com sucesso."}, status=status.HTTP_200_OK)
+        else:
+            logger.error(f"Erro ao atualizar os dados do lojista {lojista.user.email}: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            return Response({"message": "Lojista atualizado com sucesso!", "lojista": serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 @login_required
 def adicionar_produto(request): 
@@ -316,26 +398,34 @@ class ProdutoListaView(generics.ListAPIView):
         return {'request': self.request}
     
 
-class LojistaListAPIView(generics.ListAPIView):
-    queryset = Lojista.objects.all() 
-    serializer_class = LojistaSerializer
+class PublicLojistaListAPIView(APIView):
+    """
+    API para listar todos os lojistas (dados básicos).
+    Não requer autenticação.
+    """
+    def get(self, request, format=None):
+        lojistas = Lojista.objects.select_related('user').all()
+        serializer = PublicLojistaSerializer(lojistas, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class PrivateLojistaAPIView(APIView):
+    """
+    API para obter os dados completos do lojista autenticado.
+    Requer autenticação.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        lojistas = Lojista.objects.all()
-        dados_lojistas = []
-
-        for lojista in lojistas:
-            # Calcular o total ganho
-            total_ganho = Produto.objects.filter(lojista=lojista).aggregate(total=models.Sum('preco'))['total'] or 0
-            
-            dados_lojistas.append({
-                'id': lojista.id,
-                'nome': lojista.nome,
-                'total_ganho': total_ganho
-            })
-
-        return Response(dados_lojistas, status=status.HTTP_200_OK)
+        try:
+            lojista = Lojista.objects.select_related('user').get(user=request.user)
+        except Lojista.DoesNotExist:
+            return Response(
+                {"detail": "Lojista não encontrado para o usuário autenticado."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        serializer = PrivateLojistaSerializer(lojista)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 #class LojistaListaView(generics.ListAPIView):
 #    queryset = Lojista.objects.all().select_related('user')
@@ -410,7 +500,7 @@ def produto(request):
     ###################################### API ADICIONAR FAVORITO #########################
 
 class AdicionarFavoritoAPIView(APIView):
-    permission_classes = [IsAuthenticated] #Quando for testar a API fazer login como um cliente, para não precisar passar o user, somente o produto
+    permission_classes = [IsAuthenticated, IsCliente] 
     
     def post(self, request, *args, **kwargs):
         user_id = request.user.id
@@ -434,7 +524,7 @@ class AdicionarFavoritoAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
         
 class RemoverFavoritoAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCliente]
 
     def delete(self, request, *args, **kwargs):
         user_id = request.user.id
@@ -453,6 +543,29 @@ class RemoverFavoritoAPIView(APIView):
         favorito.delete()
 
         return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=status.HTTP_200_OK)
+    
+class GetFavoritosAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+
+    def get(self, request, *args, **kwargs):
+        user_id = request.user.id
+
+        favoritos = Favorito.objects.filter(id_cliente=user_id)
+
+        if not favoritos.exists():
+            return Response({"message": "Nenhum produto encontrado nos seus favoritos."}, status=status.HTTP_404_NOT_FOUND)
+
+        produtos_favoritos = []
+        for favorito in favoritos:
+            produto = favorito.produto_id  
+            produtos_favoritos.append({
+                "Produto": produto.nome,
+                "Descricao": produto.descricao,
+                "Preço": produto.preco,
+                "categoria": produto.categoria,
+            })
+        return Response({"favoritos": produtos_favoritos}, status=status.HTTP_200_OK)
+
 
 class CarrinhoProdutoAPIView(APIView):
     permission_classes = [IsAuthenticated, IsCliente]
@@ -474,6 +587,44 @@ class CarrinhoProdutoAPIView(APIView):
                 }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class RemoverProdutosCarrinhoAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+
+    def delete(self, request, *args, **kwargs):
+        user_id = request.user.id
+        produto_id = request.data.get('produto_id')
+
+        if not produto_id:
+            return Response({"error": "produto_id é obrigatório."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            carrinho_produto = CarrinhoProduto.objects.get(
+                carrinho__cliente=user_id,
+                produto_id=produto_id
+            )
+        except CarrinhoProduto.DoesNotExist:
+            return Response({"error": "Produto não encontrado no carrinho."}, status=status.HTTP_404_NOT_FOUND)
+
+        if carrinho_produto.venda is not None:
+            return Response({"error": "Este produto já está associado a uma venda e não pode ser removido."}, status=status.HTTP_400_BAD_REQUEST)
+
+        carrinho = carrinho_produto.carrinho
+        if not carrinho:
+            return Response({"error": "Carrinho não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        preco_produto = carrinho_produto.produto.preco  
+        total_antigo = carrinho.total or 0
+        novo_total = total_antigo - (preco_produto * carrinho_produto.quantidade)
+
+        if novo_total < 0:
+            novo_total = 0
+
+        carrinho_produto.delete()
+
+        carrinho.total = novo_total
+        carrinho.save()
+
+        return Response({"message": "Produto removido do carrinho e total atualizado com sucesso!"}, status=status.HTTP_200_OK)
     
 class CreateVendaAPIView(APIView):
     permission_classes = [IsAuthenticated, IsCliente]
@@ -516,3 +667,23 @@ class LojistaVendasAPIView(generics.ListAPIView):
         if not lojista:
             return Venda.objects.none()
         return Venda.objects.filter(carrinho__cliente__id=lojista.user.id)
+
+class BuscarProdutosAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        query = request.query_params.get('q', None)
+
+        if not query:
+            return Response({"error": "Parâmetro obrigatório"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        palavras = query.split()
+        filtro = Q()
+        for palavra in palavras:
+            filtro |= Q(nome__icontains=palavra) | Q(descricao__icontains=palavra) | Q(categoria__icontains=palavra)
+
+        produto_id = Produto.objects.filter(filtro).distinct()
+
+        serializer = ProdutoSerializer(produto_id, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+

@@ -86,43 +86,156 @@ class UtilizadorSerializer(serializers.ModelSerializer):
 
 
 class LojistaSerializer(serializers.ModelSerializer):
-    user = UtilizadorSerializer(read_only=True)
+    user = serializers.PrimaryKeyRelatedField(queryset=Utilizador.objects.all())
     total_ganho = serializers.SerializerMethodField()
+    nome = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+    nif = serializers.SerializerMethodField()
+    ntelefone = serializers.SerializerMethodField()
+    morada = serializers.SerializerMethodField()
+
     class Meta:
         model = Lojista
-        fields = ['user','nif', 'ntelefone', 'morada','total_ganho']
+        fields = ['user', 'nome', 'email', 'nif', 'ntelefone', 'morada', 'total_ganho']
 
+    def validate_email(self, value):
+        """
+        Valida se o email já está em uso.
+        """
+        lojista_atual = self.instance
+        if Utilizador.objects.filter(email=value).exclude(pk=lojista_atual.pk).exists():
+            raise serializers.ValidationError("Este email já está em uso por outro lojista.")
+        return value
+
+    def validate_nif(self, value):
+        """
+        Valida o NIF.
+        """
+        if len(str(value)) != 9 or not str(value).isdigit():
+            raise serializers.ValidationError("O NIF deve ter exatamente 9 dígitos numéricos.")
+        lojista_atual = self.instance
+        if Lojista.objects.filter(user__nif=value).exclude(pk=lojista_atual.pk).exists():
+            raise serializers.ValidationError("Este NIF já está em uso por outro lojista.")
+        return value
 
     def update(self, instance, validated_data):
+        """
+        Atualiza os dados do lojista.
+        """
         user_data = validated_data.pop('user', {})
+        
+        # Atualiza os dados do utilizador associado
         for attr, value in user_data.items():
             setattr(instance.user, attr, value)
         instance.user.save()
 
-        instance.nif = validated_data.get('nif', instance.nif)
-        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
-        instance.morada = validated_data.get('morada', instance.morada)
+        # Atualiza os próprios dados do lojista
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         instance.save()
+        
         return instance
+    
+
+class PublicLojistaSerializer(serializers.ModelSerializer):
+    """
+    Serializer para exibir apenas dados básicos dos lojistas (público).
+    """
+    id = serializers.IntegerField(source='user.id')  
+    nome = serializers.CharField(source='user.nome')
+    nif = serializers.DecimalField(source='user.nif',max_digits=9, decimal_places=0)
+    email = serializers.EmailField(source='user.email')
+    ntelefone = serializers.DecimalField(source='user.ntelefone', max_digits=9, decimal_places=0)
+    morada = serializers.CharField(source='user.morada')
+
+    class Meta:
+        model = Lojista
+        fields = ['id', 'nome','email', 'nif', 'ntelefone', 'morada']
+
+    def get_nome(self, obj):
+        return obj.user.nome
+    
+class PrivateLojistaSerializer(serializers.ModelSerializer):
+    """
+    Serializer para exibir os dados completos do lojista autenticado.
+    """
+    id = serializers.IntegerField(source='user.id')
+    total_ganho = serializers.SerializerMethodField()
+    nome = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+    nif = serializers.SerializerMethodField()
+    ntelefone = serializers.SerializerMethodField()
+    morada = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Lojista
+        fields = ['user', 'nome', 'email', 'nif', 'ntelefone', 'morada', 'total_ganho']
+
+    def get_nome(self, obj):
+        return obj.user.nome
+
+    def get_email(self, obj):
+        return obj.user.email
+
+    def get_nif(self, obj):
+        return obj.user.nif
+
+    def get_ntelefone(self, obj):
+        return obj.user.ntelefone
+
+    def get_morada(self, obj):
+        return obj.user.morada
+
+    def get_total_ganho(self, obj):
+        from .models import Produto
+        total_ganho = Produto.objects.filter(lojista=obj).aggregate(total=models.Sum('preco'))['total'] or 0
+        return total_ganho
 
 
 class ClienteSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=Utilizador.objects.all())
+    nome = serializers.SerializerMethodField()
 
     class Meta:
         model = Cliente
-        fields = ['user', 'nif', 'ntelefone', 'morada']
+        fields = ['user', 'nome', 'email', 'nif', 'ntelefone', 'morada']
+
+    def validate_email(self, value):
+        """
+        Valida se o email já está em uso por outro cliente.
+        """
+        cliente_atual = self.instance
+        if Utilizador.objects.filter(email=value).exclude(pk=cliente_atual.pk).exists():
+            raise serializers.ValidationError("Este email já está em uso por outro cliente.")
+        return value
+
+    def validate_nif(self, value):
+        """
+        Valida se o NIF está correto e não duplicado.
+        """
+        if len(str(value)) != 9 or not str(value).isdigit():
+            raise serializers.ValidationError("O NIF deve ter exatamente 9 dígitos")
+        cliente_atual = self.instance
+        if Cliente.objects.filter(user__nif=value).exclude(pk=cliente_atual.pk).exists():
+            raise serializers.ValidationError("Este NIF já está em uso por outro cliente.")
+        return value
 
     def update(self, instance, validated_data):
+        """
+        Atualiza os dados do cliente.
+        """
         user_data = validated_data.pop('user', {})
+        
+        # Atualiza os dados do utilizador associado
         for attr, value in user_data.items():
             setattr(instance.user, attr, value)
         instance.user.save()
 
-        instance.nif = validated_data.get('nif', instance.nif)
-        instance.ntelefone = validated_data.get('ntelefone', instance.ntelefone)
-        instance.morada = validated_data.get('morada', instance.morada)
+        # Atualiza os próprios dados do cliente (se necessário)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         instance.save()
+        
         return instance
 
         
