@@ -135,6 +135,61 @@ class LojistaSerializer(serializers.ModelSerializer):
         instance.save()
         
         return instance
+    
+
+class PublicLojistaSerializer(serializers.ModelSerializer):
+    """
+    Serializer para exibir apenas dados básicos dos lojistas (público).
+    """
+    id = serializers.IntegerField(source='user.id')  
+    nome = serializers.CharField(source='user.nome')
+    nif = serializers.DecimalField(source='user.nif',max_digits=9, decimal_places=0)
+    email = serializers.EmailField(source='user.email')
+    ntelefone = serializers.DecimalField(source='user.ntelefone', max_digits=9, decimal_places=0)
+    morada = serializers.CharField(source='user.morada')
+
+    class Meta:
+        model = Lojista
+        fields = ['id', 'nome','email', 'nif', 'ntelefone', 'morada']
+
+    def get_nome(self, obj):
+        return obj.user.nome
+    
+class PrivateLojistaSerializer(serializers.ModelSerializer):
+    """
+    Serializer para exibir os dados completos do lojista autenticado.
+    """
+    id = serializers.IntegerField(source='user.id')
+    total_ganho = serializers.SerializerMethodField()
+    nome = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+    nif = serializers.SerializerMethodField()
+    ntelefone = serializers.SerializerMethodField()
+    morada = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Lojista
+        fields = ['user', 'nome', 'email', 'nif', 'ntelefone', 'morada', 'total_ganho']
+
+    def get_nome(self, obj):
+        return obj.user.nome
+
+    def get_email(self, obj):
+        return obj.user.email
+
+    def get_nif(self, obj):
+        return obj.user.nif
+
+    def get_ntelefone(self, obj):
+        return obj.user.ntelefone
+
+    def get_morada(self, obj):
+        return obj.user.morada
+
+    def get_total_ganho(self, obj):
+        from .models import Produto
+        total_ganho = Produto.objects.filter(lojista=obj).aggregate(total=models.Sum('preco'))['total'] or 0
+        return total_ganho
 
 
 class ClienteSerializer(serializers.ModelSerializer):
