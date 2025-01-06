@@ -28,8 +28,33 @@ from django.db.models import Q #Consultas na barra de navegação
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 logger = logging.getLogger(__name__)
+from rest_framework import status
+from rest_framework.permissions import AllowAny 
+
+
+
+
+
+#####Parâmetro para o JWT#####
+token_param_config = openapi.Parameter(
+    'Authorization',
+    openapi.IN_HEADER,
+    description="Token de autenticação JWT. Exemplo: Bearer <access_token>",
+    type=openapi.TYPE_STRING
+)
+
+
+#####Configuração do parâmetro de categoria####
+categoria_param = openapi.Parameter(
+    'categoria',
+    openapi.IN_PATH,
+    description="Escolha uma categoria",
+    type=openapi.TYPE_STRING,
+    enum=[choice[0] for choice in Produto.campos],  # Lista de categorias predefinidas
+)
 
 # Create your views here.
+
 
 def denied_access(request, exception=None):
     #return render(request,'403.html', status=403)
@@ -201,14 +226,7 @@ class CategoriaChoicesAPIView(APIView):
         categorias = dict(Produto.campos)  # Converte os choices em um dicionário
         return Response(categorias, status=status.HTTP_200_OK)
     
-#####Configuração do parâmetro de categoria#####
-categoria_param = openapi.Parameter(
-    'categoria',
-    openapi.IN_PATH,
-    description="Escolha uma categoria",
-    type=openapi.TYPE_STRING,
-    enum=[choice[0] for choice in Produto.campos],  # Lista de categorias predefinidas
-)
+
     
 
 class ProdutoPorCategoriaAPIView(APIView):
@@ -223,54 +241,75 @@ class ProdutoPorCategoriaAPIView(APIView):
     
 
 
+
 class ClienteUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated, IsCliente]
-    parser_classes = (MultiPartParser, FormParser)
-    serializer_class = ClienteSerializer
 
-    def get(self, request, *args, **kwargs):
-        """
-        Permite que o cliente obtenha os seus dados.
-        """
+    def get_cliente(self, request):
+        """Obtém o cliente autenticado a partir do usuário."""
         cliente = getattr(request.user, 'cliente', None)
         if cliente is None:
-            logger.warning(f"Tentativa de acesso não autorizada aos dados do cliente pelo usuário: {request.user.id}")
-            return Response({"error": "Apenas clientes registados podem aceder aos seus dados."}, status=status.HTTP_403_FORBIDDEN)
-        
-        serializer = ClienteSerializer(cliente)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            return None, Response({"error": "Cliente não encontrado."}, status=404)
+        return cliente, None
 
+    @swagger_auto_schema(
+        manual_parameters=[token_param_config],
+        operation_description="Obter os dados do cliente autenticado",
+        responses={
+            200: ClienteSerializer,
+            404: openapi.Response("Cliente não encontrado."),
+        },
+    )
+    def get(self, request, *args, **kwargs):
+        cliente, error_response = self.get_cliente(request)
+        if error_response:
+            return error_response
+
+        serializer = ClienteSerializer(cliente)
+        return Response(serializer.data, status=200)
+
+    @swagger_auto_schema(
+        manual_parameters=[token_param_config],
+        request_body=ClienteSerializer,
+        operation_description="Atualizar os dados do cliente autenticado",
+        responses={
+            200: ClienteSerializer,
+            400: openapi.Response("Erro na validação dos dados."),
+            404: openapi.Response("Cliente não encontrado."),
+        },
+    )
     def put(self, request, *args, **kwargs):
-        """
-        Atualiza completamente os dados do cliente.
-        """
         return self._update(request, partial=False)
 
+    @swagger_auto_schema(
+        manual_parameters=[token_param_config],
+        request_body=ClienteSerializer,
+        operation_description="Atualizar parcialmente os dados do cliente autenticado",
+        responses={
+            200: ClienteSerializer,
+            400: openapi.Response("Erro na validação dos dados."),
+            404: openapi.Response("Cliente não encontrado."),
+        },
+    )
     def patch(self, request, *args, **kwargs):
-        """
-        Atualiza parcialmente os dados do cliente.
-        """
         return self._update(request, partial=True)
 
     def _update(self, request, partial):
-        """
-        Função auxiliar para realizar a atualização parcial ou completa.
-        """
-        cliente = getattr(request.user, 'cliente', None)
-        
-        if cliente is None:
-            logger.error(f"Tentativa de atualização não autorizada dos dados do cliente pelo usuário: {request.user.id}")
-            return Response({"error": "Apenas clientes registados podem editar os seus dados."}, status=status.HTTP_403_FORBIDDEN)
-        
-        serializer = ClienteSerializer(cliente, data=request.data, partial=partial)
-        
+        cliente, error_response = self.get_cliente(request)
+        if error_response:
+            return error_response
+
+        # Atualiza os dados do cliente autenticado
+        serializer = ClienteSerializer(cliente, data=request.data, partial=partial, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            logger.info(f"Dados do cliente {cliente.user.email} atualizados com sucesso!")
-            return Response({"message": "Dados do cliente atualizados com sucesso."}, status=status.HTTP_200_OK)
-        else:
-            logger.error(f"Erro ao atualizar os dados do cliente {cliente.user.email}: {serializer.errors}")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=200)
+
+        # Retorna mensagens de erro detalhadas
+        return Response({
+            "error": "Erro na validação dos dados.",
+            "details": serializer.errors
+        }, status=400)
     
 
 class LojistaUpdateAPIView(APIView):
@@ -403,6 +442,8 @@ class PublicLojistaListAPIView(APIView):
     API para listar todos os lojistas (dados básicos).
     Não requer autenticação.
     """
+    permission_classes = [AllowAny]
+
     def get(self, request, format=None):
         lojistas = Lojista.objects.select_related('user').all()
         serializer = PublicLojistaSerializer(lojistas, many=True)
