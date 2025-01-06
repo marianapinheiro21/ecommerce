@@ -222,6 +222,7 @@ class CategoriaChoicesAPIView(APIView):
     """
     API para listar todas as opções de categorias disponíveis.
     """
+    permission_classes = [AllowAny]
     def get(self, request, format=None):
         categorias = dict(Produto.campos)  # Converte os choices em um dicionário
         return Response(categorias, status=status.HTTP_200_OK)
@@ -233,6 +234,7 @@ class ProdutoPorCategoriaAPIView(APIView):
     """
     API para listar produtos de uma categoria específica.
     """
+    permission_classes = [AllowAny]
     @swagger_auto_schema(manual_parameters=[categoria_param])
     def get(self, request, categoria, format=None):
         produtos = Produto.objects.filter(categoria=categoria)
@@ -279,6 +281,9 @@ class ClienteUpdateAPIView(APIView):
         },
     )
     def put(self, request, *args, **kwargs):
+        """
+        Atualiza todos os campos do cliente autenticado.
+        """
         return self._update(request, partial=False)
 
     @swagger_auto_schema(
@@ -292,6 +297,9 @@ class ClienteUpdateAPIView(APIView):
         },
     )
     def patch(self, request, *args, **kwargs):
+        """
+        Atualiza parcialmente os campos do cliente autenticado.
+        """
         return self._update(request, partial=True)
 
     def _update(self, request, partial):
@@ -316,15 +324,23 @@ class LojistaUpdateAPIView(APIView):
     permission_classes = [IsAuthenticated, IsLojista]
     parser_classes = (MultiPartParser, FormParser)
 
+    def get_lojista(self, request):
+        """
+        Obtém o lojista autenticado.
+        """
+        lojista = getattr(request.user, 'lojista', None)
+        if lojista is None:
+            return None, Response({"error": "Apenas lojistas registados podem aceder ou editar os seus dados."}, status=status.HTTP_403_FORBIDDEN)
+        return lojista, None
+
     def get(self, request, *args, **kwargs):
         """
         Retorna os dados do lojista autenticado.
         """
-        lojista = getattr(request.user, 'lojista', None)
-        if lojista is None:
-            logger.warning(f"Tentativa de acesso não autorizada aos dados do lojista pelo usuário: {request.user.id}")
-            return Response({"error": "Apenas lojistas registados podem aceder aos seus dados."}, status=status.HTTP_403_FORBIDDEN)
-        
+        lojista, error_response = self.get_lojista(request)
+        if error_response:
+            return error_response
+
         serializer = LojistaSerializer(lojista)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -342,23 +358,21 @@ class LojistaUpdateAPIView(APIView):
 
     def _update(self, request, partial):
         """
-        Função auxiliar para realizar a atualização parcial ou completa.
+        Função auxiliar para atualização de dados do lojista.
         """
-        lojista = getattr(request.user, 'lojista', None)
-        
-        if lojista is None:
-            logger.error(f"Tentativa de atualização não autorizada dos dados do lojista pelo usuário: {request.user.id}")
-            return Response({"error": "Apenas lojistas registados podem editar os seus dados."}, status=status.HTTP_403_FORBIDDEN)
-        
+        lojista, error_response = self.get_lojista(request)
+        if error_response:
+            return error_response
+
         serializer = LojistaSerializer(lojista, data=request.data, partial=partial)
-        
         if serializer.is_valid():
             serializer.save()
-            logger.info(f"Dados do lojista {lojista.user.email} atualizados com sucesso!")
-            return Response({"message": "Dados do lojista atualizados com sucesso."}, status=status.HTTP_200_OK)
-        else:
-            logger.error(f"Erro ao atualizar os dados do lojista {lojista.user.email}: {serializer.errors}")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Dados do lojista atualizados com sucesso.", "data": serializer.data}, status=status.HTTP_200_OK)
+
+        return Response({
+            "error": "Erro ao atualizar os dados do lojista.",
+            "details": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
 
         
 @login_required
@@ -430,6 +444,7 @@ def adicionar_produto(request):
 #
 
 class ProdutoListaView(generics.ListAPIView):
+    permission_classes = [AllowAny]
     queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
     serializer_class = ProdutoSerializer
     
@@ -454,7 +469,7 @@ class PrivateLojistaAPIView(APIView):
     API para obter os dados completos do lojista autenticado.
     Requer autenticação.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsLojista]
 
     def get(self, request, format=None):
         try:

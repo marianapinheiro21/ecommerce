@@ -92,17 +92,16 @@ class UtilizadorSerializer(serializers.ModelSerializer):
 
 
 class LojistaSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=Utilizador.objects.all())
-    total_ganho = serializers.SerializerMethodField()
-    nome = serializers.SerializerMethodField(source='user.nome')
-    email = serializers.SerializerMethodField(source='user.email')
-    nif = serializers.SerializerMethodField(source='user.nif')
-    ntelefone = serializers.SerializerMethodField(source='user.ntelefone')
-    morada = serializers.SerializerMethodField(source='user.morada')
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    nome = serializers.SerializerMethodField(source='user.nome',required=False)
+    email = serializers.SerializerMethodField(source='user.email',required=False)
+    nif = serializers.SerializerMethodField(source='user.nif',required=False)
+    ntelefone = serializers.SerializerMethodField(source='user.ntelefone',required=False)
+    morada = serializers.SerializerMethodField(source='user.morada',required=False)
 
     class Meta:
         model = Lojista
-        fields = ['user', 'nome', 'email', 'nif', 'ntelefone', 'morada', 'total_ganho']
+        fields = ['user', 'nome', 'email', 'nif', 'ntelefone', 'morada']
 
     def validate_email(self, value):
         """
@@ -126,18 +125,21 @@ class LojistaSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """
-        Atualiza os dados do lojista.
+        Atualiza os dados do lojista e do utilizador associado.
+        Ignora campos enviados como null ou vazios.
         """
-        user_data = validated_data.pop('user', {})
+        user_data = validated_data.pop('user', {}) if 'user' in validated_data else {}
         
         # Atualiza os dados do utilizador associado
         for attr, value in user_data.items():
-            setattr(instance.user, attr, value)
+            if value not in [None, ""]:  # Ignorar campos vazios
+                setattr(instance.user, attr, value)
         instance.user.save()
 
         # Atualiza os próprios dados do lojista
         for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+            if value not in [None, ""]:  # Ignorar campos vazios
+                setattr(instance, attr, value)
         instance.save()
         
         return instance
@@ -202,9 +204,8 @@ class ClienteSerializer(serializers.ModelSerializer):
 
     user = serializers.PrimaryKeyRelatedField(read_only=True)
 
-    
-    email = serializers.EmailField(source='user.email', required=True)
-    nome = serializers.CharField(source='user.nome', required=True)
+    email = serializers.EmailField(source='user.email', required=False)
+    nome = serializers.CharField(source='user.nome', required=False)
     nif = serializers.DecimalField(source='user.nif', max_digits=9, decimal_places=0, required=False)
     ntelefone = serializers.DecimalField(source='user.ntelefone', max_digits=9, decimal_places=0, required=False)
     morada = serializers.CharField(source='user.morada', required=False)
@@ -228,18 +229,21 @@ class ClienteSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         """
-        Atualiza os dados do cliente autenticado.
+        Atualiza os dados do cliente e do utilizador associado.
+        Ignora campos com valores vazios ou nulos.
         """
         user_data = validated_data.pop('user', {}) if 'user' in validated_data else {}
 
         # Atualiza os dados do utilizador associado
         for attr, value in user_data.items():
-            setattr(instance.user, attr, value)
+            if value not in [None, ""]:  # Ignorar campos sem valor
+                setattr(instance.user, attr, value)
         instance.user.save()
 
         # Atualiza os próprios dados do cliente
         for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+            if value not in [None, ""]:  # Ignorar campos sem valor
+                setattr(instance, attr, value)
         instance.save()
 
         return instance
