@@ -1,0 +1,43 @@
+.Toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* Ensure the toolbar spans the full width */
+  }
+  
+  .logo-container {
+    flex: 1; /* Adjust this as needed to balance */
+    display: flex;
+    justify-content: flex-start; /* Aligns logo to the start */
+  }
+  
+  .search-container {
+    position: relative;
+    display: flex;
+    align-items: center; /* Ensures vertical centering of the input and icon */
+    width: 50%;
+    margin-right: 20px;
+    margin-left: auto;
+  }
+
+  .SearchIcon {
+    position: absolute;
+    left: 10px; /* Positions icon from the left inside the container */
+    top: 50%; /* Centers icon vertically */
+    transform: translateY(-50%); /* Ensures the icon is perfectly centered */
+  }
+  
+  .icons-container {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end; /* Pushes icons to the end */
+  }
+
+  .InputBase {
+    color: black; /* Ensures text is visible against a light background */
+    padding-left: '50px';
+    width: '300px';
+    border-radius: '20px';
+    background: 'white';
+    border: 1px solid #ccc;
+  }
