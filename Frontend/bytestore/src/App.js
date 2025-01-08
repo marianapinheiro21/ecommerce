@@ -50,6 +50,7 @@ function App() {
         <Routes>
             <Route exact path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginForm />} />
+
             
           {/* Rota privada para o Dashboard do Cliente */}
           <Route
@@ -62,6 +63,10 @@ function App() {
           />
 
             {/* Add more routes as needed */}
+
+             {/*<Route path="/create-account" element={<CreateAccountForm />} />
+            Add more routes as needed */}
+
           </Routes>
           {/*<h1> Produtos Disponíveis </h1>
           <ul>

@@ -1,31 +1,51 @@
-import React from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Button, InputBase } from '@mui/material'
+import React, { useState }  from 'react';
+import { AppBar, Toolbar, IconButton, Modal, Typography, Button, InputBase } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import logo from '../assets/byte-store2.png'; 
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 
+import { Link, useNavigate } from 'react-router-dom';
 
 import { logoutUser } from '../services/Api'; 
+
+import './Header.css';
+
 const Header = () => {
-
-    const navigate = useNavigate();
+    
     const accessToken = localStorage.getItem('accessToken');
+    const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);  
 
-    const handleLoginLogout = () => {
+    const handleOpen = () => {
         if (accessToken) {
-            logoutUser().then(() => {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
-                navigate.push('/login'); // Redirect to login after logout 
-            }); 
+            navigate ('/dashboard');
         } else {
-            navigate.push('/login'); // Redirect to login page
+            setIsModalOpen(true);
         }
     };
+
+    const handleClose = () => setIsModalOpen(false);
+    
+    const handleLogin = () => {
+        handleClose();
+        navigate('/login');
+        
+    };
+
+    const handleCreateAccountCliente = () => {
+        handleClose();
+        navigate('/create-account');  // Redirects to create account page
+      };
+
+    const LoginModal = () => {
+        const [isModalOpen, setIsModalOpen] = useState(false);
+        const navigate = useNavigate(); 
+
+        const handleOpen = () => setIsModalOpen(true);
+        const handleClose = () => setIsModalOpen(false);
+    }
 
     return (
         <nav>
@@ -35,27 +55,64 @@ const Header = () => {
                         <MenuIcon />
                     </IconButton>
 
-                    <img src= {logo} alt="ByteStore Logo" style={{ height: '100px' }}/>
-                    <div style= {{ flexGrow: 1 }} />
+                    <div className='logo-container'>
+                        <Link to="/">
+                            <img src= {logo} alt="ByteStore Logo" style={{ height: '100px' }}/>
+                            <div style= {{ flexGrow: 1 }} />
+                        </Link>
+                    </div>
 
-                    <div style={{ position: 'relative', marginRight: '20px', marginLeft: '20px' }}>
-                        <div style={{ position: 'absolute', marginLeft: '10px', marginTop: '10px', pointerEvents: 'none' }} >
-                            <SearchIcon />
-                        </div>
+                    <div className="search-container">
+                        <SearchIcon style={{ 
+                            position: 'absolute', 
+                            left: '10px', 
+                            top: '50%', 
+                            transform: 'translateY(-50%)',
+                            color: 'white' /* Ensuring the icon is visible against a white background */
+                            }} />
                         <InputBase
                             placeholder="Search.."
-                            style={{ color: 'inherit', paddingLeft: '40px', width: '100%' }}
+                            style={{ 
+                                paddingLeft: '40px',
+                                width: '100%',
+                                borderRadius: '20px',
+                                background: 'white',
+                                color: 'gray'
+                            }} 
                         />
                     </div>
 
-                    <Button color="inherit" onClick={handleLoginLogout}>
-                        {accessToken ? 'Logout' : 'Login'}
-                        <AccountCircle />
-                        Login
-                    </Button>
-                    <IconButton color="inherit">
-                        <ShoppingCartIcon />
-                    </IconButton>
+                    <div className="icons-container">
+                        <Button color="inherit" onClick={handleOpen}>
+                            <AccountCircle />
+                        </Button>
+                    
+                        <Modal
+                          open={isModalOpen}
+                          onClose={handleClose}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                        >
+                          <div style={{ 
+                                position: 'absolute',  // Typically, modal content might be absolutely positioned.
+                                top: '50%',            // Centered vertically.
+                                left: '50%',           // Centered horizontally.
+                                transform: 'translate(-50%, -50%)', // Adjusts positioning to center.
+                                width: 400,            // Specifies a width for the modal.
+                                backgroundColor: 'white', // Background color of the modal.
+                                boxShadow: '0 3px 5px rgba(0, 0, 0, 0.2)', // Adds some shadow.
+                                padding: '20px'       // Padding inside the modal. 
+                                }}>
+                            <h2>Bem Vindo!</h2>
+                            <p>Inicia sessão ou cria conta para teres uma experiência personalizada!</p>
+                            <Button onClick={handleLogin}>Iniciar Sessão</Button>
+                            <Button onClick={handleCreateAccountCliente}>Criar Conta</Button>
+                          </div>
+                        </Modal>
+                        <IconButton color="inherit">
+                            <ShoppingCartIcon />
+                        </IconButton>
+                    </div>    
                 </Toolbar>
             </AppBar>
 
@@ -71,3 +128,4 @@ const Header = () => {
 };
 
 export default Header;
+

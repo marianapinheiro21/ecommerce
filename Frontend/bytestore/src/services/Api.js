@@ -38,14 +38,19 @@ export const loginCliente = async (credentials) => {
     console.log('Credentials being sent:', credentials);
 
     try {
-        const response = await axios.post(`${API_URL}/cliente/login/`, credentials);
-        const { access_token, refresh_token } = response.data;
-        localStorage.setItem('accessToken', access_token);
-        localStorage.setItem('refreshToken', refresh_token);
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+        const response=await axios.post(`${API_URL}/cliente/login/`, JSON.stringify(credentials), config);
+        //const { access_token, refresh_token } = response.data;
+        localStorage.setItem('accessToken', response.data.access_token);
+        //localStorage.setItem('refreshToken', refresh_token);
         return response.data; // Returns the data part of the response from server
     } catch (error) {
         console.error('Login error:', error.response);
-        throw error;
+        throw error.response.data;
     }
 };
 
@@ -74,7 +79,7 @@ export const logoutUser = async () => {
     } finally {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location = '/login';  // Redirect to login page
+        window.location = '/';  // Redirect to login page
     }
 };
 

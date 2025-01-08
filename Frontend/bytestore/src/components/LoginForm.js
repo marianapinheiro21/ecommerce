@@ -1,42 +1,86 @@
 import React, { useState } from 'react';
+ HEAD
 import { loginCliente } from '../services/Api'; // Import the API function
 import { useNavigate } from 'react-router-dom'; // Importa o hook useNavigate para navegação
+
+
+import { useNavigate } from 'react-router-dom';
+import { loginCliente, createCliente } from '../services/Api'; // Import the API function
+import './LoginForm.css';
 
 
 const LoginForm = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
+ HEAD
     const navigate = useNavigate(); // Usando o hook useNavigate
+
+
+
 
     const handleLogin = async (event) => {
         event.preventDefault();
+        setError('');
         try {
             const data = await loginCliente(credentials);
+
             localStorage.setItem('accessToken', data.access_token);
             /*window.location*/ navigate('/dashboard'); // Redireciona para a página do Dashboard após login bem-sucedido
+
+            if (data.access_token){
+                localStorage.setItem('acessToken', data.access_token)
+                console.log('Login Successful', data);
+                window.location.href='/dashboard';
+            }
+            else{
+                setError('Failed to Login. Please try again')
+            }
+
         } catch (error) {
-            setError('Failed to login.')
+            if(error.response && error.response.data){
+                setError(error.response.data.message)
+            } else{
+                setError('Failed to Login. Please try again later')
+            }
         }
     };
 
+    const handleChange = (event) => {
+        const {name, value} = event.target;
+        setCredentials(prev => ({ ...prev, [name]:value}))
+    };
+
+    const handleCreateAccount = () =>{
+        navigate('/create-account');
+    }
+
     return (
-        <form onSubmit={handleLogin}>
-            <label htmlFor="email">Email: </label>
-            <input
-                type="email"
-                id="email"
-                value={credentials.email}
-                onChange={(e) => setCredentials({...credentials, email: e.target.value})}
-            />
-            <input
-                type="password"
-                id="password"
-                value={credentials.password}
-                onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-            />
-            <button type="submit">Login</button>
-            {error && <p></p>}
-        </form>
+        <div className="login-form">
+            <form onSubmit={handleLogin}>
+                   
+                    <label htmlFor="email">Email: </label>
+                    <input
+                        type="email"
+                        id="email"
+                        name='email'
+                        value={credentials.email}
+                        onChange={handleChange}
+                    />
+                
+                <label htmlFor="password">Password: </label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={credentials.password}
+                        onChange={handleChange}
+                    />
+                
+                <button type="submit">Login</button>
+                {error && <p className="error">{error}</p>}
+            </form>
+            <button onClick={handleCreateAccount}>Create Account</button> 
+        </div>
     );
 };
 
