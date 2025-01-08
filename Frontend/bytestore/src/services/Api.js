@@ -120,7 +120,7 @@ export const listarFavoritos = async () => {
 // Função para buscar os dados pessoais
 export const getDadosPessoais = async () => {
     try {
-        const response = await api.get('/api/dados-pessoais/'); // Ajuste o endpoint para sua API
+        const response = await apiInstance.get('/api/dados-pessoais/'); // Ajuste o endpoint para sua API
         return response.data;
     } catch (error) {
         throw error;
@@ -130,7 +130,7 @@ export const getDadosPessoais = async () => {
 // Função para atualizar os dados do cliente
 export const updateCliente = async (dados) => {
     try {
-        const response = await api.put('/cliente/', dados); // Endpoint para atualização
+        const response = await apiInstance.put('/cliente/', dados); // Endpoint para atualização
         return response.data; // Dados atualizados retornados pela API
     } catch (error) {
         throw error;
