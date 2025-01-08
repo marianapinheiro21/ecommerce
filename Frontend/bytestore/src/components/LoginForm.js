@@ -1,18 +1,32 @@
 import React, { useState } from 'react';
+ HEAD
+import { loginCliente } from '../services/Api'; // Import the API function
+import { useNavigate } from 'react-router-dom'; // Importa o hook useNavigate para navegação
+
+
 import { useNavigate } from 'react-router-dom';
 import { loginCliente, createCliente } from '../services/Api'; // Import the API function
 import './LoginForm.css';
 
+
 const LoginForm = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+ HEAD
+    const navigate = useNavigate(); // Usando o hook useNavigate
+
+
+
 
     const handleLogin = async (event) => {
         event.preventDefault();
         setError('');
         try {
             const data = await loginCliente(credentials);
+
+            localStorage.setItem('accessToken', data.access_token);
+            /*window.location*/ navigate('/dashboard'); // Redireciona para a página do Dashboard após login bem-sucedido
+
             if (data.access_token){
                 localStorage.setItem('acessToken', data.access_token)
                 console.log('Login Successful', data);
@@ -21,6 +35,7 @@ const LoginForm = () => {
             else{
                 setError('Failed to Login. Please try again')
             }
+
         } catch (error) {
             if(error.response && error.response.data){
                 setError(error.response.data.message)

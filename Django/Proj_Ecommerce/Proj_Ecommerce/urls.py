@@ -22,6 +22,18 @@ from rest_framework import permissions
 from rest_framework.permissions import AllowAny
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+# Defina o esquema de autenticação (JWT)
+security_definitions = {
+    'Bearer': {
+        'type': 'apiKey',
+        'name': 'Authorization',
+        'in': 'header',
+        'description': 'Insira o token JWT no formato: Bearer (espaço) <access_token>',
+    }
+}
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -33,12 +45,16 @@ schema_view = get_schema_view(
         license=openapi.License(name="BSD License"),
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=[permissions.AllowAny],
+    authentication_classes=[SessionAuthentication, BasicAuthentication],
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('projpsi.urls')),
     path("api-docs/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc')
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
