@@ -6,6 +6,8 @@ import AccountCircle from '@mui/icons-material/AccountCircle'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import logo from '../assets/byte-store2.png'; 
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 
 import { logoutUser } from '../services/Api'; 
 const Header = () => {
@@ -56,6 +58,14 @@ const Header = () => {
                     </IconButton>
                 </Toolbar>
             </AppBar>
+
+
+            <nav>
+      <ul>
+        
+        <li><Link to="/login">Login</Link></li>
+      </ul>
+    </nav>
         </nav>
     );
 };

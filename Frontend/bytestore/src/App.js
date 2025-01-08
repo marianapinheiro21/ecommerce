@@ -4,14 +4,25 @@ import Header from './components/Header'; // Ensure you have this component
 import HomePage from './components/HomePage'; // Create or adjust this component as necessary
 import LoginForm from './components/LoginForm'; // Adjust path as necessary
 
+import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
+
 //import Dashboard from './components/Dashboard'; // Adjust path as necessary
 
 import './App.css';
 
-const PrivateRoute = ({ children }) => {
-  const location = useLocation(); // Get the current location to pass to Navigate for redirecting back after login
-  const accessToken = localStorage.getItem('accessToken'); // Check if the user is authenticated
+//const PrivateRoute = ({ children }) => {
+ // const location = useLocation(); // Get the current location to pass to Navigate for redirecting back after login
+  //const accessToken = localStorage.getItem('accessToken'); // Check if the user is authenticated
 
+ // return accessToken ? children : <Navigate to="/login" state={{ from: location }} replace />;
+//};
+
+
+const PrivateRoute = ({ children }) => {
+  const location = useLocation(); // Obter a localização atual
+  const accessToken = localStorage.getItem('accessToken'); // Verificar se o token de acesso está presente
+
+  // Se o usuário não estiver autenticado, redireciona para /login com o estado da localização atual
   return accessToken ? children : <Navigate to="/login" state={{ from: location }} replace />;
 };
 
@@ -39,6 +50,17 @@ function App() {
         <Routes>
             <Route exact path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginForm />} />
+            
+          {/* Rota privada para o Dashboard do Cliente */}
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+
             {/* Add more routes as needed */}
           </Routes>
           {/*<h1> Produtos Disponíveis </h1>

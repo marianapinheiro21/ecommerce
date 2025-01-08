@@ -1,0 +1,44 @@
+/* Footer.module.css */
+
+.footerContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background-color: #B6CDCC;
+    padding: 1.5rem 2rem;
+    position: sticky;
+    bottom: 0;
+    z-index: 1000;
+  }
+  
+.footerIcons {
+    display: flex;
+    gap: 3rem;
+    margin-top: 1rem;
+}
+  
+.footerLista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+  
+.footerInput {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+  
+.inputFooter {
+    display: flex;
+    align-items: center;
+    border-radius: 2px;
+}
+  
+.inputFooterInput {
+    padding: 0.2rem;
+    width: 60%;
+}
+  
+
+  

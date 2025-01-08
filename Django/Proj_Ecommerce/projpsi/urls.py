@@ -10,6 +10,7 @@ urlpatterns = [
     path('', index, name='index'),
     #path('registar/cliente/', novoCliente, name='novoCliente'),
     path('api/cliente/registo/', ClienteRegistrationAPIView.as_view(), name='api_registro_cliente'),
+    path('api/cliente/dados/', ClienteDadosView.as_view(), name='cliente-dados'),
     path('api/lojista/registo/', LojistaRegistrationAPIView.as_view(), name='api_registro_lojista'),
     path('api/cliente/login/', ClienteLoginAPIView.as_view(), name='cliente_login'),
     path('api/lojista/login/', LojistaLoginAPIView.as_view(), name='lojista_login'),
