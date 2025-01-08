@@ -107,6 +107,7 @@ class LojistaRegistrationAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ClienteLoginAPIView(APIView):
+    permission_classes = [AllowAny]   ############################## 
     def post(self, request, *args, **kwargs):
         request.data.update({'user_type': 'cliente'})
         serializer = LoginSerializer(data=request.data)
@@ -741,5 +742,20 @@ class BuscarProdutosAPIView(APIView):
         serializer = ProdutoSerializer(produto_id, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+class ClienteDadosView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        try:
+            cliente = Cliente.objects.get(user=request.user)
+            data = {
+                'nome': cliente.user.first_name,
+                'email': cliente.user.email,
+                'nif': cliente.nif,
+                'ntelefone': cliente.ntelefone,
+                'morada': cliente.morada
+            }
+            return Response(data)
+        except Cliente.DoesNotExist:
+            return Response({'error': 'Cliente não encontrado'}, status=404)
 
