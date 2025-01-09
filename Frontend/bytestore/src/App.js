@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate, useLocation} from 're
 import Header from './components/Header'; // Ensure you have this component
 import HomePage from './components/HomePage'; // Create or adjust this component as necessary
 import LoginForm from './components/LoginForm'; // Adjust path as necessary
+import TodosProdutos from './components/TodosProdutos';
 import ErrorBoundary from './ErrorBoundary'; 
 import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
 import ProdutoDetalhe from './pages/ProdutoDetalhe';
@@ -27,7 +28,8 @@ function App() {
 
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginForm />} />
-           <Route path="/produto/:id" element={<ProdutoDetalhe />} />
+          <Route path="/produto/:id" element={<ProdutoDetalhe />} />
+          <Route path="/produtos" element={<TodosProdutos />} />
 
 
           {/* Rota privada para o Dashboard do Cliente */}
