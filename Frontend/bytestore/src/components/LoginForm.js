@@ -1,22 +1,13 @@
 import React, { useState } from 'react';
- HEAD
-import { loginCliente } from '../services/Api'; // Import the API function
+import { loginCliente, createCliente } from '../services/Api'; // Agora importa as duas funções corretamente
 import { useNavigate } from 'react-router-dom'; // Importa o hook useNavigate para navegação
-
-
-import { useNavigate } from 'react-router-dom';
-import { loginCliente, createCliente } from '../services/Api'; // Import the API function
-import './LoginForm.css';
+import './LoginForm.css'
 
 
 const LoginForm = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
- HEAD
     const navigate = useNavigate(); // Usando o hook useNavigate
-
-
-
 
     const handleLogin = async (event) => {
         event.preventDefault();
