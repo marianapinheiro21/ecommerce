@@ -3,6 +3,12 @@ import { BrowserRouter as Router, Route, Routes, Navigate, useLocation} from 're
 import Header from './components/Header'; // Ensure you have this component
 import HomePage from './components/HomePage'; // Create or adjust this component as necessary
 import LoginForm from './components/LoginForm'; // Adjust path as necessary
+import TodosProdutos from './components/TodosProdutos';
+import ProdutosComputadorFixo from './components/ProdutosComputadorFixo';
+import ProdutosAcessorios from './components/ProdutosAcessorios';
+import ProdutosComputadorPortatil from './components/ProdutosComputadorPortatil';
+import ProdutosPeriferico from './components/ProdutosPeriferico';
+
 import ErrorBoundary from './ErrorBoundary'; 
 import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
 import ProdutoDetalhe from './pages/ProdutoDetalhe';
@@ -27,7 +33,12 @@ function App() {
 
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginForm />} />
-           <Route path="/produto/:id" element={<ProdutoDetalhe />} />
+          <Route path="/produto/:id" element={<ProdutoDetalhe />} />
+          <Route path="/produtos" element={<TodosProdutos />} />
+          <Route path="/produtos/acessorios" element={<ProdutosAcessorios />} />
+          <Route path="/produtos/computadoresfixos" element={<ProdutosComputadorFixo />} />
+          <Route path="/produtos/portateis" element={<ProdutosComputadorPortatil />} />
+          <Route path="/produtos/perifericos" element={<ProdutosPeriferico />} />
 
 
           {/* Rota privada para o Dashboard do Cliente */}
