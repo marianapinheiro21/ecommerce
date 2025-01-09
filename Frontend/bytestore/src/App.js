@@ -5,6 +5,7 @@ import HomePage from './components/HomePage'; // Create or adjust this component
 import LoginForm from './components/LoginForm'; // Adjust path as necessary
 
 import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
+import ProdutoDetalhe from './pages/ProdutoDetalhe';
 
 //import Dashboard from './components/Dashboard'; // Adjust path as necessary
 
@@ -41,6 +42,7 @@ function App() {
         <Routes>
             <Route exact path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginForm />} />
+            <Route path="/produto/:id" element={<ProdutoDetalhe />} />
 
           {/* Rota privada para o Dashboard do Cliente */}
           <Route
