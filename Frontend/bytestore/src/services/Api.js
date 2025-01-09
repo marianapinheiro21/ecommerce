@@ -104,6 +104,7 @@ export const fetchCarrinho = async () => {
 /////////////// PRODUTOS FAVORITOS ////////////////////
 
 export const listarFavoritos = async () => {
+    console.log(localStorage.getItem('accessToken')); 
     const token = localStorage.getItem('accessToken'); // Pegando o token do localStorage
     try {
         const response = await axios.get('/api/listar/favorito/', {

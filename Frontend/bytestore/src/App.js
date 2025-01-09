@@ -5,6 +5,7 @@ import HomePage from './components/HomePage'; // Create or adjust this component
 import LoginForm from './components/LoginForm'; // Adjust path as necessary
 import ErrorBoundary from './ErrorBoundary'; 
 import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
+import ProdutoDetalhe from './pages/ProdutoDetalhe';
 
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
@@ -23,8 +24,12 @@ function App() {
       <Header />
       <ErrorBoundary>
         <Routes>
+
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginForm />} />
+           <Route path="/produto/:id" element={<ProdutoDetalhe />} />
+
+
           {/* Rota privada para o Dashboard do Cliente */}
           <Route path="/dashboard" element={<PrivateRoute allowedRoles={['cliente']}><Dashboard /></PrivateRoute>}  />
           {/* Add more routes as needed */}
