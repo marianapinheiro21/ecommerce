@@ -1,4 +1,4 @@
-import React, { useState }  from 'react';
+import React, { useState, useEffect }  from 'react';
 import { AppBar, Toolbar, IconButton, Modal, Typography, Button, InputBase } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
@@ -14,16 +14,23 @@ import './Header.css';
 
 const Header = () => {
     
-    const accessToken = localStorage.getItem('accessToken');
+    //const accessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);  
 
-    const handleOpen = () => {
-        if (accessToken) {
-            navigate ('/dashboard');
-        } else {
-            setIsModalOpen(true);
+
+    useEffect(() => {
+        if (localStorage.getItem('accessToken')) {
+            navigate('/dashboard');
         }
+    }, [navigate]);
+
+    const handleOpen = () => {
+       // if (localStorage.getItem('accessToken')) {
+         //   navigate ('/dashboard');
+        //} else {
+            setIsModalOpen(true);
+        //}
     };
 
     const handleClose = () => setIsModalOpen(false);
@@ -39,13 +46,6 @@ const Header = () => {
         navigate('/create-account');  // Redirects to create account page
       };
 
-    const LoginModal = () => {
-        const [isModalOpen, setIsModalOpen] = useState(false);
-        const navigate = useNavigate(); 
-
-        const handleOpen = () => setIsModalOpen(true);
-        const handleClose = () => setIsModalOpen(false);
-    }
 
     return (
         <nav>
