@@ -118,10 +118,7 @@ const Header = () => {
 
 
             <nav>
-      <ul>
-        
-        <li><Link to="/login">Login</Link></li>
-      </ul>
+      
     </nav>
         </nav>
     );

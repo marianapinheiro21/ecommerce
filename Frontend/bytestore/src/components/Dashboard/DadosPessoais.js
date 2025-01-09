@@ -1,158 +1,142 @@
 import React, { useState, useEffect } from 'react';
-import { getDadosPessoais, updateCliente } from '../../services/Api';
+import axios from 'axios';
 
-function DadosPessoais() {
-    // Estado para armazenar os dados do cliente
+const DadosPessoais = () => {
     const [dados, setDados] = useState({
         nome: '',
         email: '',
-        nif: '',
-        ntelefone: '',
-        morada: '',
-        password: '', // Caso você precise de senha
+        telefone: '',
     });
-    
-    const [editando, setEditando] = useState(false);
-    const [erro, setErro] = useState('');
+    const [isEditing, setIsEditing] = useState(false);  // Controla se o formulário de edição está visível
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
-        // Busca os dados pessoais quando o componente for montado
         const fetchDados = async () => {
+            const token = localStorage.getItem('accessToken');
             try {
-                const response = await getDadosPessoais();
-                setDados(response);
+                const response = await axios.get('/api/cliente/dados/', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setDados(response.data); // Preenche com os dados obtidos da API
             } catch (error) {
-                setErro('Erro ao buscar dados pessoais.');
+                setError('Erro ao carregar dados pessoais.');
+            } finally {
+                setLoading(false);
             }
         };
-        
+
         fetchDados();
     }, []);
 
-    // Função para alternar o modo de edição
-    const handleEditClick = () => {
-        setEditando(true);
-    };
+    // Função para enviar a atualização dos dados
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem('accessToken');
 
-    // Função para salvar as alterações
-    const handleSaveClick = async () => {
         try {
-            await updateCliente(dados); // Atualiza os dados do cliente
-            setEditando(false); // Sai do modo de edição após sucesso
+            const response = await axios.patch('/api/cliente/editar/', dados, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            setSuccess(true); // Indica que a atualização foi bem-sucedida
+            setError(null);
+            setIsEditing(false); // Volta para o modo de visualização após salvar
         } catch (error) {
-            setErro('Erro ao salvar alterações.');
+            setError('Erro ao atualizar dados pessoais.');
+            setSuccess(false);
         }
     };
 
-    // Função para lidar com a mudança nos campos de entrada
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setDados((prevDados) => ({
-            ...prevDados,
-            [name]: value,
-        }));
-    };
-
+    // Exibe o formulário de edição ou os dados do cliente
     return (
         <div>
-            <h2>Dados Pessoais</h2>
-            {erro && <div style={{ color: 'red' }}>{erro}</div>}
-
-            <div>
-                <div>
-                    <label>Nome:</label>
-                    {editando ? (
-                        <input
-                            type="text"
-                            name="nome"
-                            value={dados.nome}
-                            onChange={handleInputChange}
-                        />
+            {loading ? (
+                <div>Carregando...</div>
+            ) : (
+                <>
+                    {!isEditing ? (
+                        // Exibe os dados pessoais
+                        <div>
+                            <p><strong>Nome:</strong> {dados.nome}</p>
+                            <p><strong>Email:</strong> {dados.email}</p>
+                            <p><strong>Nif:</strong> {dados.nif}</p>
+                            <p><strong>Telefone:</strong> {dados.ntelefone}</p>
+                            <p><strong>Morada:</strong> {dados.morada}</p>
+                            <button class="alterar-dados-pessoais" onClick={() => setIsEditing(true)}>Alterar Dados Pessoais</button>
+                        </div>
                     ) : (
-                        <p>{dados.nome}</p>
-                    )}
-                </div>
+                        // Exibe o formulário de edição
+                        <form onSubmit={handleSubmit}>
+                            <div>
+                                <label htmlFor="nome">Nome</label>
+                                <input
+                                    type="text"
+                                    id="nome"
+                                    value={dados.nome}
+                                    onChange={(e) => setDados({ ...dados, nome: e.target.value })}
+                                    required
+                                />
+                            </div>
 
-                <div>
-                    <label>Email:</label>
-                    {editando ? (
-                        <input
-                            type="email"
-                            name="email"
-                            value={dados.email}
-                            onChange={handleInputChange}
-                        />
-                    ) : (
-                        <p>{dados.email}</p>
-                    )}
-                </div>
+                            <div>
+                                <label htmlFor="email">Email</label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    value={dados.email}
+                                    onChange={(e) => setDados({ ...dados, email: e.target.value })}
+                                    required
+                                />
+                            </div>
 
-                <div>
-                    <label>NIF:</label>
-                    {editando ? (
-                        <input
-                            type="text"
-                            name="nif"
-                            value={dados.nif}
-                            onChange={handleInputChange}
-                        />
-                    ) : (
-                        <p>{dados.nif}</p>
-                    )}
-                </div>
+                            <div>
+                                <label htmlFor="nif">Nif</label>
+                                <input
+                                    type="number"
+                                    id="nif"
+                                    value={dados.nif}
+                                    onChange={(e) => setDados({ ...dados, nif: e.target.value })}
+                                    required
+                                />
+                            </div>
 
-                <div>
-                    <label>Telefone:</label>
-                    {editando ? (
-                        <input
-                            type="text"
-                            name="ntelefone"
-                            value={dados.ntelefone}
-                            onChange={handleInputChange}
-                        />
-                    ) : (
-                        <p>{dados.ntelefone}</p>
-                    )}
-                </div>
+                            <div>
+                                <label htmlFor="telefone">Telefone</label>
+                                <input
+                                    type="number"
+                                    id="telefone"
+                                    value={dados.ntelefone}
+                                    onChange={(e) => setDados({ ...dados, telefone: e.target.value })}
+                                    required
+                                />
+                            </div>
 
-                <div>
-                    <label>Endereço:</label>
-                    {editando ? (
-                        <input
-                            type="text"
-                            name="morada"
-                            value={dados.morada}
-                            onChange={handleInputChange}
-                        />
-                    ) : (
-                        <p>{dados.morada}</p>
+                            <div>
+                                <label htmlFor="morada">Morada</label>
+                                <input
+                                    type="text"
+                                    id="morada"
+                                    value={dados.morada}
+                                    onChange={(e) => setDados({ ...dados, morada: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <button type="submit">Salvar</button>
+                        </form>
                     )}
-                </div>
 
-                <div>
-                    <label>Senha:</label>
-                    {editando ? (
-                        <input
-                            type="password"
-                            name="password"
-                            value={dados.password}
-                            onChange={handleInputChange}
-                        />
-                    ) : (
-                        <p>******</p> // Ocultando a senha para segurança
-                    )}
-                </div>
-
-                <div>
-                    {editando ? (
-                        <button onClick={handleSaveClick}>Salvar Alterações</button>
-                    ) : (
-                        <button onClick={handleEditClick}>Editar Dados Pessoais</button>
-                    )}
-                </div>
-            </div>
+                    {error && <div style={{ color: 'red' }}>{error}</div>}
+                    {success && <div style={{ color: 'green' }}>Dados atualizados com sucesso!</div>}
+                </>
+            )}
         </div>
     );
-}
+};
 
 export default DadosPessoais;

@@ -307,6 +307,23 @@ class ClienteUpdateAPIView(APIView):
         cliente, error_response = self.get_cliente(request)
         if error_response:
             return error_response
+        
+        ###############
+
+ # Atualizando dados do Utilizador também
+        usuario = cliente.user  # 'user' é a relação OneToOne entre Cliente e Utilizador
+        if 'nome' in request.data:
+            usuario.nome = request.data['nome']
+        if 'email' in request.data:
+            usuario.email = request.data['email']
+        if 'ntelefone' in request.data:
+            usuario.ntelefone = request.data['ntelefone']
+    # Aqui você pode adicionar outros campos que deseja atualizar diretamente no Utilizador.
+
+    # Atualiza o Utilizador antes de salvar o Cliente
+        usuario.save()
+
+        ################
 
         # Atualiza os dados do cliente autenticado
         serializer = ClienteSerializer(cliente, data=request.data, partial=partial, context={'request': request})
@@ -749,11 +766,11 @@ class ClienteDadosView(APIView):
         try:
             cliente = Cliente.objects.get(user=request.user)
             data = {
-                'nome': cliente.user.first_name,
+                'nome': cliente.user.nome,
                 'email': cliente.user.email,
-                'nif': cliente.nif,
-                'ntelefone': cliente.ntelefone,
-                'morada': cliente.morada
+                'nif': cliente.user.nif,
+                'ntelefone': cliente.user.ntelefone,
+                'morada': cliente.user.morada
             }
             return Response(data)
         except Cliente.DoesNotExist:
