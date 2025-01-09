@@ -218,6 +218,17 @@ class ProdutoCreateAPIView(APIView):
         else:
             print("Serializer Errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProdutoDetalheView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
+        try:
+            # Busca o produto pelo ID 
+            produto = Produto.objects.get(pk=pk)
+            serializer = ProdutoSerializer(produto)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Produto.DoesNotExist:
+            return Response({"error": "Produto não encontrado"}, status=status.HTTP_404_NOT_FOUND)
     
 class CategoriaChoicesAPIView(APIView):
     """
@@ -308,34 +319,28 @@ class ClienteUpdateAPIView(APIView):
         if error_response:
             return error_response
         
-        ###############
-
- # Atualizando dados do Utilizador também
-        usuario = cliente.user  # 'user' é a relação OneToOne entre Cliente e Utilizador
+        ################ Atualiza dados do Utilizador também
+        usuario = cliente.user  # 'user' é a relação OneToOne 
         if 'nome' in request.data:
             usuario.nome = request.data['nome']
         if 'email' in request.data:
             usuario.email = request.data['email']
         if 'ntelefone' in request.data:
             usuario.ntelefone = request.data['ntelefone']
-    # Aqui você pode adicionar outros campos que deseja atualizar diretamente no Utilizador.
+    # podemos adicionar par atualizar no Utilizador.
 
-    # Atualiza o Utilizador antes de salvar o Cliente
+    
         usuario.save()
 
-        ################
-
-        # Atualiza os dados do cliente autenticado
+        ################# Atualiza os dados do cliente autenticado
         serializer = ClienteSerializer(cliente, data=request.data, partial=partial, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
 
-        # Retorna mensagens de erro detalhadas
+        # Retorna mensagens de erro
         return Response({
-            "error": "Erro na validação dos dados.",
-            "details": serializer.errors
-        }, status=400)
+            "error": "Erro na validação dos dados.","details": serializer.errors}, status=400)
     
 
 class LojistaUpdateAPIView(APIView):
