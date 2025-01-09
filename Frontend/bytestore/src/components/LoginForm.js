@@ -8,16 +8,18 @@ const LoginForm = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate(); // Usando o hook useNavigate
+
     const handleLogin = async (event) => {
         event.preventDefault();
         setError('');
         try {
             const data = await loginCliente(credentials);
-
             if (data.access_token){
-                localStorage.setItem('acessToken', data.access_token)
+                localStorage.setItem('accessToken', data.access_token)
+                localStorage.setItem('refreshToken', data.refresh_token); // Certificando-se de que o refresh token está armazenado
                 console.log('Login Successful', data);
-                window.location.href='/dashboard';
+                //window.location.href='/dashboard';
+                navigate('/dashboard') //para acessar o dashboard corretamente
             }
             else{
                 setError('Failed to Login. Please try again')

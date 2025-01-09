@@ -1,12 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DadosPessoais from './DadosPessoais'; 
 import HistoricoCompras from './HistoricoCompras';
 import ProdutosFavoritos from './ProdutosFavoritos';
+import axios from 'axios';
+import './Dashboard.css';
 
 function Dashboard() {
+    const [error, setError] = useState('');  // Declarando o state para o erro
     const navigate = useNavigate(); // Usando useNavigate
 
+    // Efeito para garantir que o usuário esteja autenticado
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) {
@@ -15,25 +19,62 @@ function Dashboard() {
         }
     }, [navigate]);
 
+
+    const handleLogout = async () => {
+        const refreshToken = localStorage.getItem('refreshToken'); // Pegue o refresh token armazenado
+        const accessToken = localStorage.getItem('accessToken'); // Pegue o access token armazenado
+        if (!refreshToken) {
+            console.error('Refresh token não encontrado');
+            return;
+        }
+    
+        try {
+            // Envia o refresh token no corpo da requisição POST
+            const response = await axios.post('/api/logout/', 
+                { refresh: refreshToken }, // Aqui enviamos o refresh token no corpo
+                {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}` // Usando o access token para autorização
+                    }
+                }
+            );
+    
+            // Se o logout for bem-sucedido, remova ambos os tokens
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+    
+            // Redireciona o usuário para a página de login
+            navigate('/login');
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error.response ? error.response.data : error.message);
+            setError('Erro ao fazer logout');
+        }
+    };
+
     return (
-        <div>
+        <div class="div-container">
+
             <h1>Dashboard do Cliente</h1>
             {/* Seção de dados pessoais */}
-            <section>
+            <section class="dados-pessoais">
                 <h2>Dados Pessoais</h2>
                 <DadosPessoais />
             </section>
 
             {/* Seção de histórico de compras */}
-            <section>
+            <section class="historico-compras">
                 <h2>Histórico de Compras</h2>
                 <HistoricoCompras />
             </section>
 
             {/* Seção de produtos favoritos */}
-            <section>
-                <h2>Produtos Favoritos</h2>
+            <section class="produtos-favoritos">
                 <ProdutosFavoritos />
+            </section>
+
+            {/* Logout */}
+            <section >
+                <button class="button-logout" onClick={handleLogout}>Logout</button>
             </section>
         </div>
     );

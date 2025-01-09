@@ -1,0 +1,49 @@
+.div-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+}
+
+section {
+    margin: 1rem;
+    padding: 1rem;
+}
+
+.dados-pessoais {
+    background-color: #B6CDCC;
+    
+}
+
+.historico-compras {
+    background-color: #d3d4d4;
+   
+}
+
+.produtos-favoritos {
+    background-color: #B6CDCC;
+
+}
+
+.button-logout {
+    background-color: red;  
+    color: white;  
+    padding: 12px 20px;  
+    border: none;  
+    border-radius: 8px;  
+    cursor: pointer;  
+    font-size: 16px; 
+    transition: background-color 0.3s ease;  
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 1rem;
+}
+
+.alterar-dados-pessoais {
+    background-color: #fff;
+    padding: 10px 15px;  
+    border: black;  
+    border-radius: 8px;
+    cursor: pointer;  
+}
+
