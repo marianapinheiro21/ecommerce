@@ -36,6 +36,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<ClienteRegistrationForm />} />
+          <Route path="/login/lojista" element={<LoginForm />} />
           <Route path="/register/lojista" element={<LojistaRegistrationForm />} />
           <Route path="/produto/:id" element={<ProdutoDetalhe />} />
           <Route path="/produtos" element={<TodosProdutos />} />
@@ -43,8 +44,6 @@ function App() {
           <Route path="/produtos/computadoresfixos" element={<ProdutosComputadorFixo />} />
           <Route path="/produtos/portateis" element={<ProdutosComputadorPortatil />} />
           <Route path="/produtos/perifericos" element={<ProdutosPeriferico />} />
-
-
           {/* Rota privada para o Dashboard do Cliente */}
           <Route path="/dashboard" element={<PrivateRoute allowedRoles={['cliente']}><Dashboard /></PrivateRoute>}  />
         </Routes>
