@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate, useLocation} from 're
 import Header from './components/Header/Header'; // Ensure you have this component
 import HomePage from './components/HomePage/HomePage'; // Create or adjust this component as necessary
 import LoginForm from './components/Login/Cliente/LoginForm'; // Adjust path as necessary
-import ClienteRegistrationForm from './components/CreateAccount/Cliente/CreateAccountForm';
+import ClienteRegistrationForm from './components/CreateAccount/Cliente/ClienteRegistrationForm';
 import TodosProdutos from './components/PaginasProdutos/TodosProdutos';
 import ProdutosComputadorFixo from './components/PaginasProdutos/ProdutosComputadorFixo';
 import ProdutosAcessorios from './components/PaginasProdutos/ProdutosAcessorios';
