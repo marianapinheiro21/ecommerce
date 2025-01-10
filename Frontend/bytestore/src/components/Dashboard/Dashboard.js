@@ -61,12 +61,6 @@ function Dashboard() {
                 <DadosPessoais />
             </section>
 
-            {/* Seção de histórico de compras */}
-            <section class="historico-compras">
-                <h2>Histórico de Compras</h2>
-                <HistoricoCompras />
-            </section>
-
             {/* Seção de produtos favoritos */}
             <section class="produtos-favoritos">
                 <ProdutosFavoritos />

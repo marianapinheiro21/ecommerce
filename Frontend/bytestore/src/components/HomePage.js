@@ -1,10 +1,15 @@
 import React from 'react';
 import Footer from './Footer';
+import Carrossel from './Carrossel/Carrossel';
+
+
 
 const HomePage = () => {
   return (
     <div>
+      <Carrossel />
       <h1>Welcome to the Home Page</h1>
+      
       {/* Additional homepage content */}
       {/*<h1> Produtos Disponíveis </h1>
           <ul>

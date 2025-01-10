@@ -1,0 +1,50 @@
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .title {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .swiper-slide {
+    display: flex;
+    justify-content: center; /* Centraliza as imagens dentro dos slides */
+    align-items: center;
+  }
+  
+  .slide-image {
+    width: 100%;
+    max-width: 100%; /* Garante que a largura não ultrapasse o container */
+    height: auto;
+    object-fit: contain; /* Ajusta a imagem sem cortar ou deformar */
+    border-radius: 10px; /* Opcional: bordas arredondadas */
+  }
+  
+  /* Para telas menores */
+  @media (max-width: 768px) {
+    .title {
+      font-size: 1.5em;
+    }
+  
+    .container {
+      padding: 10px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .title {
+      font-size: 1.2em;
+    }
+  
+    .container {
+      max-width: 100%;
+    }
+  }
+  
