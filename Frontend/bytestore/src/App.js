@@ -16,6 +16,7 @@ import ProdutoDetalhe from './pages/ProdutoDetalhe';
 
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
+import LojistaRegistrationForm from './components/CreateAccount/Lojista/LojistaRegistrationForm';
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<ClienteRegistrationForm />} />
+          <Route path="/register/lojista" element={<LojistaRegistrationForm />} />
           <Route path="/produto/:id" element={<ProdutoDetalhe />} />
           <Route path="/produtos" element={<TodosProdutos />} />
           <Route path="/produtos/acessorios" element={<ProdutosAcessorios />} />

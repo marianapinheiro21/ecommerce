@@ -64,6 +64,16 @@ export const registerCliente = async (credentials) => {
     }
 };
 
+export const registerLojista = async (credentials) => {
+    try {
+        const response = await axios.post(`${API_URL}/lojista/registo/`, credentials);
+        return response.data;
+    } catch (error) {
+        console.error('Error registering lojista:', error);
+        throw error;
+    }
+};
+
 export const loginLojista = async (credentials) => {
     try {
         const response = await axios.post(`${API_URL}/lojista/login/`, credentials);
