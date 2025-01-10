@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginCliente, createCliente } from '../../../services/Api'; // Import the API function
+import { loginCliente } from '../../../services/Api'; // Import the API function
 import { useAuth } from '../../../context/AuthContext';
 import './LoginForm.css';
 
@@ -48,12 +48,12 @@ const LoginForm = () => {
     };
 
     const handleCreateAccount = () =>{
-        navigate('/create-account');
+        navigate('/register');
     }
 
     return (
-        <div className="login-form">
-            <form onSubmit={handleLogin}>
+        <div className="login-container">
+            <form className="login-form" onSubmit={handleLogin}>
                    
                     <label htmlFor="email">Email: </label>
                     <input
@@ -75,8 +75,11 @@ const LoginForm = () => {
                 
                 <button type="submit">Login</button>
                 {error && <p className="error">{error}</p>}
+
+                <button onClick={handleCreateAccount}>Create Account</button> 
             </form>
-            <button onClick={handleCreateAccount}>Create Account</button> 
+
+            
         </div>
     );
 };
