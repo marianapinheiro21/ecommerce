@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import Header from "./Header";
+import Header from "../Header/Header";
 import { BrowserRouter as Router } from "react-router-dom";
 
-function ProdutosPeriferico(){
+function ProdutosAcessorios(){
     
     const [produtos, setProdutos] = useState([]); // Initializing state to hold products
 
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const response = await fetch('http://localhost:8000/api/produtos/categoria/perif%C3%A9rico')
+            const response = await fetch('http://localhost:8000/api/produtos/categoria/acess%C3%B3rio')
             const data =await response.json();
             setProdutos(data);
           } catch(error) {
@@ -43,4 +43,4 @@ function ProdutosPeriferico(){
         </div>
     )
 }
-export default ProdutosPeriferico;
+export default ProdutosAcessorios;
