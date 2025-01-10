@@ -31,21 +31,41 @@ const ProdutosFavoritos = () => {
 
     const removerFavorito = async (produtoId) => {
         const token = localStorage.getItem('accessToken');
+        
+        if (!token) {
+            setError('Você precisa estar logado para remover um favorito');
+            return;
+        }
+        
         try {
-            await axios.delete('/api/remover/favorito/', {
+            // Verifique se o produtoId está sendo passado corretamente
+            console.log('Produto ID enviado:', produtoId);
+    
+            // Enviar a requisição DELETE com o produto_id no corpo
+            const response = await axios.delete('/api/remover/favorito/', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json' // Certifique-se de que o cabeçalho correto está definido
+                    'Content-Type': 'application/json'
                 },
-                data: { produto_id: produtoId } // Enviando produto_id no corpo da requisição
+                data: { produto_id: produtoId } // Enviar produto_id no corpo da requisição
             });
-            setFavoritos(favoritos.filter(produto => produto.id !== produtoId)); // Atualiza o estado para remover o favorito
+    
+            setFavoritos(favoritos.filter(produto => produto.id !== produtoId));
+            console.log('Produto removido com sucesso:', response.data);
         } catch (err) {
-            console.error('Erro ao remover favorito:', err.response ? err.response.data : err.message);
-            setError('Erro ao remover favorito');
+            console.error('Erro ao remover favorito:', err);
+    
+            if (err.response) {
+                console.log('Erro detalhes:', err.response.data);
+                setError(`Erro: ${err.response.data.error || err.response.data.detail}`);
+            } else {
+                setError('Erro desconhecido ao remover favorito');
+            }
         }
     };
-
+    
+ 
+    
     // Verifique se está carregando ou se houve erro
     if (loading) return <div>Carregando...</div>;
     if (error) return <div>{error}</div>;

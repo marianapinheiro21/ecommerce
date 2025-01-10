@@ -5,7 +5,7 @@ const DadosPessoais = () => {
     const [dados, setDados] = useState({
         nome: '',
         email: '',
-        telefone: '',
+        ntelefone: '',
     });
     const [isEditing, setIsEditing] = useState(false);  // Controla se o formulário de edição está visível
     const [loading, setLoading] = useState(true);
