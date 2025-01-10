@@ -4,11 +4,11 @@ import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import logo from '../assets/byte-store2.png'; 
+import logo from '../../assets/byte-store2.png'; 
 
 import { Link, useNavigate } from 'react-router-dom';
 
-import { logoutUser } from '../services/Api'; 
+import { logoutUser } from '../../services/Api'; 
 
 import './Header.css';
 

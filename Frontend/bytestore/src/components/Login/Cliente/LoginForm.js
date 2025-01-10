@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginCliente, createCliente } from '../services/Api'; // Import the API function
-import { useAuth } from '../context/AuthContext';
+import { loginCliente, createCliente } from '../../../services/Api'; // Import the API function
+import { useAuth } from '../../../context/AuthContext';
 import './LoginForm.css';
 
 

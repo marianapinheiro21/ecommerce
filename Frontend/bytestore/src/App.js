@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation} from 'react-router-dom';
-import Header from './components/Header'; // Ensure you have this component
-import HomePage from './components/HomePage'; // Create or adjust this component as necessary
-import LoginForm from './components/LoginForm'; // Adjust path as necessary
-import TodosProdutos from './components/TodosProdutos';
-import ProdutosComputadorFixo from './components/ProdutosComputadorFixo';
-import ProdutosAcessorios from './components/ProdutosAcessorios';
-import ProdutosComputadorPortatil from './components/ProdutosComputadorPortatil';
-import ProdutosPeriferico from './components/ProdutosPeriferico';
+import Header from './components/Header/Header'; // Ensure you have this component
+import HomePage from './components/HomePage/HomePage'; // Create or adjust this component as necessary
+import LoginForm from './components/Login/Cliente/LoginForm'; // Adjust path as necessary
+import TodosProdutos from './components/PaginasProdutos/TodosProdutos';
+import ProdutosComputadorFixo from './components/PaginasProdutos/ProdutosComputadorFixo';
+import ProdutosAcessorios from './components/PaginasProdutos/ProdutosAcessorios';
+import ProdutosComputadorPortatil from './components/PaginasProdutos/ProdutosComputadorPortatil';
+import ProdutosPeriferico from './components/PaginasProdutos/ProdutosPeriferico';
 
 import ErrorBoundary from './ErrorBoundary'; 
 import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
