@@ -43,7 +43,7 @@ const Header = () => {
 
     const handleCreateAccountCliente = () => {
         handleClose();
-        navigate('/create-account');  // Redirects to create account page
+        navigate('/register');  // Redirects to create account page
       };
 
 

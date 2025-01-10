@@ -85,6 +85,7 @@ def novoCliente(request):
     return render(request, 'newClient.html', {'form':form})
 
 class ClienteRegistrationAPIView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, *args, **kwargs):
         return Response({"message": "Use POST with nome, email, password, nif, ntelefone, and morada to register a new client."})
     

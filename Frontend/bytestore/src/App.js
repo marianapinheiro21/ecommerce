@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate, useLocation} from 're
 import Header from './components/Header/Header'; // Ensure you have this component
 import HomePage from './components/HomePage/HomePage'; // Create or adjust this component as necessary
 import LoginForm from './components/Login/Cliente/LoginForm'; // Adjust path as necessary
+import ClienteRegistrationForm from './components/CreateAccount/Cliente/CreateAccountForm';
 import TodosProdutos from './components/PaginasProdutos/TodosProdutos';
 import ProdutosComputadorFixo from './components/PaginasProdutos/ProdutosComputadorFixo';
 import ProdutosAcessorios from './components/PaginasProdutos/ProdutosAcessorios';
@@ -33,6 +34,7 @@ function App() {
 
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<ClienteRegistrationForm />} />
           <Route path="/produto/:id" element={<ProdutoDetalhe />} />
           <Route path="/produtos" element={<TodosProdutos />} />
           <Route path="/produtos/acessorios" element={<ProdutosAcessorios />} />
@@ -43,9 +45,6 @@ function App() {
 
           {/* Rota privada para o Dashboard do Cliente */}
           <Route path="/dashboard" element={<PrivateRoute allowedRoles={['cliente']}><Dashboard /></PrivateRoute>}  />
-          {/* Add more routes as needed */}
-          {/*<Route path="/create-account" element={<CreateAccountForm />} />
-          Add more routes as needed */}
         </Routes>
       </ErrorBoundary> 
     </div>
