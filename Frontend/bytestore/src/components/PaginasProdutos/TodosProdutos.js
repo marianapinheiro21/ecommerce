@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../Header/Header";
 import { BrowserRouter as Router } from "react-router-dom";
-import './TodosProdutos.css';
+import '../TodosProdutos.css';
 
 function TodosProdutos() {
   const [produtos, setProdutos] = useState([]); // Estado para produtos
