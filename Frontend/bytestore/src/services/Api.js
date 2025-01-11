@@ -74,24 +74,34 @@ export const registerLojista = async (credentials) => {
     }
 };
 
+
 export const loginLojista = async (credentials) => {
+    console.log('Credentials being sent:', credentials);
+
     try {
-        const response = await axios.post(`${API_URL}/lojista/login/`, credentials);
-        const { access_token, refresh_token } = response.data;
-        localStorage.setItem('accessToken', access_token);
-        localStorage.setItem('refreshToken', refresh_token);
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+        const response=await axios.post(`${API_URL}/lojista/login/`, JSON.stringify(credentials), config);
+        //const { access_token, refresh_token } = response.data;
+        localStorage.setItem('accessToken', response.data.access_token);
+        localStorage.setItem('refreshToken', response.data.refresh_token);
         return response.data; // Returns the data part of the response from server
     } catch (error) {
         console.error('Login error:', error.response);
-        throw error;
+        throw error.response.data;
     }
 };
+
 
 
 export const logoutUser = async () => {
     try {
         const token = getAccessToken();
-        await apiInstance.post('/logout/', {}, {
+        const refreshToken = localStorage.getItem('refreshToken'); 
+        await apiInstance.post('/logout/', {refresh: refreshToken}, {
             headers: { Authorization: `Bearer ${token}` }
         });
     } catch (error) {

@@ -1,32 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginCliente } from '../../../services/Api'; // Import the API function
+import { loginLojista } from '../../../services/Api';
 import { useAuth } from '../../../context/AuthContext';
-import './LoginForm.css';
+import './LoginLojistaForm.css';
 
 
-const LoginForm = () => {
+const LoginLojistaForm = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate(); 
-    const { login } = useAuth();
+    const { login, authToken, userType } = useAuth();
 
+    useEffect(() => {
+        if (authToken && userType === 'lojista') {
+          navigate('/dashboard/lojista');
+        }
+      }, [authToken, userType, navigate]);
 
     const handleLogin = async (event) => {
         event.preventDefault();
         setError('');
         try {
-            const data = await loginCliente(credentials);
+            const data = await loginLojista(credentials);
 
             console.log(data);  // To check the entire response object
             console.log(data.access_token);  // To ensure access token exists
             console.log(data.message);  // To check the message content
 
-            if (data.access_token && data.message === "Cliente login successful"){
+            if (data.access_token && data.message === "Lojista login successful"){
                 //localStorage.setItem('acessToken', data.access_token)
-                login(data.access_token, 'cliente');
-                //console.log('Login Successful', data);
-                navigate('/dashboard');
+                console.log('Login Successful', data);
+                login(data.access_token, 'lojista');
+                //navigate('/dashboard/lojista');
                 //login(data.access_token);
             }
             else{
@@ -48,13 +53,13 @@ const LoginForm = () => {
     };
 
     const handleCreateAccount = () =>{
-        navigate('/register');
+        navigate('/register/lojista');
     }
 
     return (
         <div className="login-container">
             <form className="login-form" onSubmit={handleLogin}>
-                   
+            <h1> Bem-Vindo!</h1>       
                     <label htmlFor="email">Email: </label>
                     <input
                         type="email"
@@ -84,4 +89,4 @@ const LoginForm = () => {
     );
 };
 
-export default LoginForm;
+export default LoginLojistaForm;
