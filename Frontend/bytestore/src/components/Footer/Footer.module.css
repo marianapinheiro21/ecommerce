@@ -1,11 +1,8 @@
-/* Footer.module.css */
-
 .footerContainer {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     background-color: #B6CDCC;
     padding: 1.5rem 2rem;
-    position: sticky;
     bottom: 0;
     z-index: 1000;
   }

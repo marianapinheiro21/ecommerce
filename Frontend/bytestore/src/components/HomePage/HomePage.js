@@ -1,6 +1,11 @@
 import React from 'react';
 import Footer from '../Footer/Footer';
 import Carrossel from './Carrossel/Carrossel';
+
+import TodosProdutos from '../PaginasProdutos/TodosProdutos'; 
+import CircleComponents from '../CircleComponents/CircleComponents';
+
+
 import Header from '../Header/Header';
 
 
@@ -8,8 +13,9 @@ const HomePage = () => {
   return (
     <div>
       <Carrossel />
+      <CircleComponents />
       <h1>Welcome to the Home Page</h1>
-      
+      <TodosProdutos />
       {/* Additional homepage content */}
       {/*<h1> Produtos Disponíveis </h1>
           <ul>

@@ -1,0 +1,27 @@
+.todos-produtos-ul {
+    display: flex;
+    flex-wrap: wrap; 
+    list-style-type: none; 
+    padding: 0; 
+    margin: 0; 
+    gap: 16px;
+  }
+  
+
+ .todos-produtos-li {
+    flex: 1 1 calc(33.333% - 16px); 
+    box-sizing: border-box; 
+    border: 1px solid #ddd; 
+    padding: 16px;
+    text-align: center;
+  }
+  
+  
+  img {
+    display: block;
+    margin: 0 auto 8px; 
+    width: 100px;
+    height: 100px;
+    object-fit: cover; 
+  }
+  
