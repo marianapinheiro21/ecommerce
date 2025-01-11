@@ -85,6 +85,7 @@ def novoCliente(request):
     return render(request, 'newClient.html', {'form':form})
 
 class ClienteRegistrationAPIView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, *args, **kwargs):
         return Response({"message": "Use POST with nome, email, password, nif, ntelefone, and morada to register a new client."})
     
@@ -96,6 +97,7 @@ class ClienteRegistrationAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LojistaRegistrationAPIView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, *args, **kwargs):
         return Response({"message": "Use POST with nome, email, password, nif, ntelefone, and morada to register a new client."})
     
@@ -121,6 +123,7 @@ class ClienteLoginAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LojistaLoginAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         request.data.update({'user_type': 'lojista'})
         serializer = LoginSerializer(data=request.data)

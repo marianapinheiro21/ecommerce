@@ -46,11 +46,31 @@ export const loginCliente = async (credentials) => {
         const response=await axios.post(`${API_URL}/cliente/login/`, JSON.stringify(credentials), config);
         //const { access_token, refresh_token } = response.data;
         localStorage.setItem('accessToken', response.data.access_token);
-        //localStorage.setItem('refreshToken', refresh_token);
+        localStorage.setItem('refreshToken', response.data.refresh_token);
         return response.data; // Returns the data part of the response from server
     } catch (error) {
         console.error('Login error:', error.response);
         throw error.response.data;
+    }
+};
+
+export const registerCliente = async (credentials) => {
+    try {
+        const response = await axios.post(`${API_URL}/cliente/registo/`, credentials);
+        return response.data;
+    } catch (error) {
+        console.error('Error registering cliente:', error);
+        throw error;
+    }
+};
+
+export const registerLojista = async (credentials) => {
+    try {
+        const response = await axios.post(`${API_URL}/lojista/registo/`, credentials);
+        return response.data;
+    } catch (error) {
+        console.error('Error registering lojista:', error);
+        throw error;
     }
 };
 

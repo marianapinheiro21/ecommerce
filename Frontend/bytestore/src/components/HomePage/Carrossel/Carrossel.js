@@ -8,9 +8,9 @@ import 'swiper/css/autoplay';
 
 
 
-import carouselLogo from '../../assets/carroussel_logo.png';
-import shop from '../../assets/shop.png';
-import entrega from '../../assets/entrega_imgg.png';
+import carouselLogo from '../../../assets/carroussel_logo.png';
+import shop from '../../../assets/shop.png';
+import entrega from '../../../assets/entrega_imgg.png';
 
 
 
