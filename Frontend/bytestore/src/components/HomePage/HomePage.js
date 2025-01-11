@@ -2,8 +2,9 @@ import React from 'react';
 import Footer from '../Footer/Footer';
 import Carrossel from './Carrossel/Carrossel';
 
-import TodosProdutos from './TodosProdutos';
-import CircleComponents from './CircleComponents/CircleComponents';
+import TodosProdutos from '../PaginasProdutos/TodosProdutos'; 
+import CircleComponents from '../CircleComponents/CircleComponents';
+
 
 import Header from '../Header/Header';
 
