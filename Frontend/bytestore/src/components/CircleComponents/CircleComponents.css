@@ -1,0 +1,85 @@
+.components-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.components-container .component{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: inherit;
+}
+
+.components-container .circle{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    border: 3px solid rgb(196, 192, 214);
+    transition: border-color 0.3s ease;
+ }
+
+.components-container img{
+    width: 200%;
+    height: auto;
+}
+
+.components-container .component:hover .circle{
+    border-color: rgb(43, 44, 44);
+}
+
+span{
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    text-decoration: none;
+}
+
+
+@media (max-width: 768px) {
+    .components-container {
+        flex-wrap: wrap; /* Permite que os itens quebrem linha */
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .components-container .circle {
+        width: 60px; /* Reduz o tamanho dos círculos */
+        height: 60px;
+    }
+
+    .components-container img {
+        width: 150%; /* Ajusta a largura da imagem */
+    }
+
+    .components-container span {
+        font-size: 0.9rem; /* Reduz um pouco o texto */
+    }
+}
+
+
+@media (max-width: 480px) {
+    .components-container {
+        flex-direction: column; 
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .components-container .circle {
+        width: 50px; 
+        height: 50px;
+    }
+
+    .components-container img {
+        width: 120%; 
+    }
+
+    .components-container span {
+        font-size: 0.8rem; 
+    }
+}
