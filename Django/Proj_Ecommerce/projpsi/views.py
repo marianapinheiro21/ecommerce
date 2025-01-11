@@ -608,7 +608,6 @@ class RemoverFavoritoAPIView(APIView):
     def delete(self, request, *args, **kwargs):
         user_id = request.user.id
         produto_id = request.data.get ('produto_id')
-
         if not produto_id:
             return Response({"error": "produto_id é obrigatório"}, status=status.HTTP_400_BAD_REQUEST)
         try:
@@ -619,9 +618,12 @@ class RemoverFavoritoAPIView(APIView):
         favorito = Favorito.objects.filter(id_cliente=user_id, produto_id=produto_id).first()
         if not favorito:
             return Response({"error": "Produto não encontrado nos seus favoritos."}, status=status.HTTP_404_NOT_FOUND)
+        
         favorito.delete()
 
         return Response({"message": "Produto removido dos favoritos com sucesso!"}, status=status.HTTP_200_OK)
+
+
     
 class GetFavoritosAPIView(APIView):
     permission_classes = [IsAuthenticated, IsCliente]
