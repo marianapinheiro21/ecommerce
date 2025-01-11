@@ -23,7 +23,7 @@
         "react-router-dom": "^7.1.1",
         "react-scripts": "5.0.1",
         "resolve-url-loader": "^5.0.0",
-        "swiper": "^11.2.0",
+        "swiper": "^11.2.1",
         "web-vitals": "^2.1.4"
     },
     "scripts": {
