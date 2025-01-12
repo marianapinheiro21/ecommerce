@@ -52,8 +52,11 @@ const Header = () => {
     const handleCreateAccountCliente = () => {
         handleClose();
         navigate('/register');  // Redirects to create account page
-      };
+    };
 
+    const irParaProdutosCarrinho = () => {
+        navigate('/produtos/carrinho')
+    }
 
     return (
         <nav>
@@ -118,7 +121,7 @@ const Header = () => {
                           </div>
                         </Modal>
                         <IconButton color="inherit">
-                            <ShoppingCartIcon />
+                            <ShoppingCartIcon onClick={irParaProdutosCarrinho}/>
                         </IconButton>
                     </div>    
                 </Toolbar>

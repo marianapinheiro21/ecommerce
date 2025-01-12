@@ -41,11 +41,13 @@ function CircleComponents() {
                     <span>Acessórios</span>
                 </Link> 
 
+
+
                 <Link to="/produtos" className="component">
                     <div className="circle">
                     <img src={todosImg} alt="Acessorio" />
                     </div>
-                    <span>Todos os Produtos</span>
+                    <span className="span">Todos os Produtos</span>
                 </Link> 
             </div>
         </section>

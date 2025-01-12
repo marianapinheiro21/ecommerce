@@ -19,6 +19,10 @@ function Dashboard() {
         }
     }, [navigate]);
 
+    function goToProducts() {
+        navigate("/produtos");
+      }
+
 
     const handleLogout = async () => {
         const refreshToken = localStorage.getItem('refreshToken'); // Pegue o refresh token armazenado
@@ -65,6 +69,14 @@ function Dashboard() {
             <section class="produtos-favoritos">
                 <ProdutosFavoritos />
             </section>
+
+            <section>
+                <button class="btn btn-primary" onClick={goToProducts}>
+                    Fazer Compras
+                </button>
+            
+            </section>
+
 
             {/* Logout */}
             <section >

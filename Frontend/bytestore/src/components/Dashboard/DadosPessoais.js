@@ -55,13 +55,15 @@ const DadosPessoais = () => {
 
     // Exibe o formulário de edição ou os dados do cliente
     return (
+
+        
         <div>
+            
             {loading ? (
                 <div>Carregando...</div>
             ) : (
                 <>
                     {!isEditing ? (
-                        // Exibe os dados pessoais
                         <div>
                             <p><strong>Nome:</strong> {dados.nome}</p>
                             <p><strong>Email:</strong> {dados.email}</p>
