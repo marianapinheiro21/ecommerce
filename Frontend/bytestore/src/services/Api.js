@@ -74,24 +74,34 @@ export const registerLojista = async (credentials) => {
     }
 };
 
+
 export const loginLojista = async (credentials) => {
+    console.log('Credentials being sent:', credentials);
+
     try {
-        const response = await axios.post(`${API_URL}/lojista/login/`, credentials);
-        const { access_token, refresh_token } = response.data;
-        localStorage.setItem('accessToken', access_token);
-        localStorage.setItem('refreshToken', refresh_token);
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+        const response=await axios.post(`${API_URL}/lojista/login/`, JSON.stringify(credentials), config);
+        //const { access_token, refresh_token } = response.data;
+        localStorage.setItem('accessToken', response.data.access_token);
+        localStorage.setItem('refreshToken', response.data.refresh_token);
         return response.data; // Returns the data part of the response from server
     } catch (error) {
         console.error('Login error:', error.response);
-        throw error;
+        throw error.response.data;
     }
 };
+
 
 
 export const logoutUser = async () => {
     try {
         const token = getAccessToken();
-        await apiInstance.post('/logout/', {}, {
+        const refreshToken = localStorage.getItem('refreshToken'); 
+        await apiInstance.post('/logout/', {refresh: refreshToken}, {
             headers: { Authorization: `Bearer ${token}` }
         });
     } catch (error) {
@@ -100,6 +110,42 @@ export const logoutUser = async () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         window.location = '/';  // Redirect to login page
+    }
+};
+
+
+export const adicionarProdutos = async (productData, token) => {
+    const url = `${API_URL}/produtos/create/`;
+    const formData = new FormData();
+
+    formData.append('nome', productData.nome);
+    formData.append('preco', productData.preco);
+    formData.append('descricao', productData.descricao);
+    formData.append('stock', productData.stock);
+    formData.append('categoria', productData.categoria);
+
+    if (productData.imagens) {
+        formData.append('imagens', productData.imagens);
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}` 
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorDetails = await response.json();
+            throw new Error(errorDetails.message || "Failed to add product.");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("API error:", error.message);
+        throw error;
     }
 };
 
