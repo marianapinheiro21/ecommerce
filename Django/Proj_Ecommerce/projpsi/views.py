@@ -18,6 +18,7 @@ from .models import *
 from .forms import *
 from .serializers import *
 from .permissions import *
+from rest_framework.pagination import PageNumberPagination
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -30,6 +31,10 @@ from drf_yasg import openapi
 logger = logging.getLogger(__name__)
 from rest_framework import status
 from rest_framework.permissions import AllowAny 
+from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Produto
+from .serializers import ProdutoSerializer
 
 
 
@@ -224,15 +229,16 @@ class ProdutoCreateAPIView(APIView):
 
 class ProdutoDetalheView(APIView):
     permission_classes = [AllowAny]
+    
     def get(self, request, pk):
         try:
-            # Busca o produto pelo ID 
             produto = Produto.objects.get(pk=pk)
             serializer = ProdutoSerializer(produto)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Produto.DoesNotExist:
             return Response({"error": "Produto não encontrado"}, status=status.HTTP_404_NOT_FOUND)
-    
+        
+        
 class CategoriaChoicesAPIView(APIView):
     """
     API para listar todas as opções de categorias disponíveis.
@@ -470,10 +476,20 @@ def adicionar_produto(request):
 #
 
 class ProdutoListaView(generics.ListAPIView):
+    pagination_class = PageNumberPagination
+    page_size = 12  
     permission_classes = [AllowAny]
-    queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
     serializer_class = ProdutoSerializer
-    
+
+    def get_queryset(self):
+        queryset = Produto.objects.all().select_related('lojista', 'lojista__user')
+        lojista_id = self.request.query_params.get('lojista', None)
+        
+        if lojista_id:
+            queryset = queryset.filter(lojista_id=lojista_id)
+        
+        return queryset
+
     def get_serializer_context(self):
         return {'request': self.request}
     
@@ -489,6 +505,19 @@ class PublicLojistaListAPIView(APIView):
         lojistas = Lojista.objects.select_related('user').all()
         serializer = PublicLojistaSerializer(lojistas, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class LojistaDetailView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, user_id):
+        try:
+            lojista = Lojista.objects.select_related('user').get(user_id=user_id)
+            serializer = PublicLojistaSerializer(lojista)
+            return Response(serializer.data)
+        except Lojista.DoesNotExist:
+            return Response(
+                {"error": "Lojista não encontrado"},
+                status=status.HTTP_404_NOT_FOUND
+            )
     
 class PrivateLojistaAPIView(APIView):
     """
@@ -785,4 +814,4 @@ class ClienteDadosView(APIView):
             return Response(data)
         except Cliente.DoesNotExist:
             return Response({'error': 'Cliente não encontrado'}, status=404)
-
+        

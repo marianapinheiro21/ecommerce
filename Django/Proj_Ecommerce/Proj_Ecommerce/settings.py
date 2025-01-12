@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist', #Mariana
     'corsheaders', #Mariana
     'drf_yasg',
+    'django_filters',
     ]
 
 REST_FRAMEWORK = {
