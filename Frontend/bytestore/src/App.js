@@ -18,7 +18,6 @@ import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componen
 import ProdutoDetalhe from './components/ProductDetail/ProductDetail';
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
-import LojistaRegistrationForm from './components/CreateAccount/Lojista/LojistaRegistrationForm';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LojistaDetail from './components/Lojista/LojistaDetail';
@@ -39,21 +38,8 @@ function App() {
   return (
     <div>
       <ErrorBoundary>
-
-        <Routes>
-
-          
-          
-          
-          
-          
-         
-          
-         
-
-        {/**/}
         <AuthProvider>
-          <Header /> 
+          <Header />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginClienteForm />} />
