@@ -13,6 +13,7 @@ import ProdutosComputadorPortatil from './components/PaginasProdutos/ProdutosCom
 import ProdutosPeriferico from './components/PaginasProdutos/ProdutosPeriferico';
 import DashboardLojista from './components/DashboardLojista/DashboardLojista';
 import AdicionarProdutos from './components/AdicionarProdutos/AdicionarProdutos';
+import ProdutosCarrinho from './components/ProdutosCarrinho/ProdutosCarrinho';
 import ErrorBoundary from './ErrorBoundary'; 
 import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
 import ProdutoDetalhe from './components/ProductDetail/ProductDetail';
@@ -55,6 +56,7 @@ function App() {
             <Route path="/produtos/computadoresfixos" element={<ProdutosComputadorFixo />} />
             <Route path="/produtos/portateis" element={<ProdutosComputadorPortatil />} />
             <Route path="/produtos/perifericos" element={<ProdutosPeriferico />} />
+            <Route path="/produtos/carrinho" element={<ProdutosCarrinho />} />
             {/* Rota privada para o Dashboard do Cliente */}
             <Route path="/dashboard" element={<PrivateRoute allowedRoles={['cliente']}><Dashboard /></PrivateRoute>}  />
             <Route path="/lojista/dashboard" element={<PrivateRoute allowedRoles={['lojista']}><DashboardLojista /></PrivateRoute>} />

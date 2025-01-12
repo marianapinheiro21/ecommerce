@@ -3,13 +3,13 @@
     flex-wrap: wrap; 
     list-style-type: none; 
     padding: 0; 
-    margin: 0; 
+    margin-top: 1rem; 
     gap: 16px;
   }
   
 
  .todos-produtos-li {
-    flex: 1 1 calc(33.333% - 16px); 
+    flex: auto ; 
     box-sizing: border-box; 
     border: 1px solid #ddd; 
     padding: 16px;
@@ -25,3 +25,8 @@
     object-fit: cover; 
   }
   
+h1 {
+  text-align: center;
+  padding: 1rem;
+  font-size: 2px;
+}

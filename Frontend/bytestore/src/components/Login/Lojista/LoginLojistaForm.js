@@ -28,7 +28,7 @@ const LoginLojistaForm = () => {
             console.log(data.message);  // To check the message content
 
             if (data.access_token && data.message === "Lojista login successful"){
-                //localStorage.setItem('acessToken', data.access_token)
+                //localStorage.setItem('accessToken', data.access_token)
                 console.log('Login Successful', data);
                 login(data.access_token, 'lojista');
                 //navigate('/lojista/dashboard');
