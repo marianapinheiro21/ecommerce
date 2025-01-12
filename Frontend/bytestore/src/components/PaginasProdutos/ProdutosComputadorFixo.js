@@ -46,6 +46,14 @@ const FilterPaper = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
+// Função para determinar a cor do stock
+const getStockColor = (stock) => {
+  if (stock === 0) return { bg: '#ffebee', text: '#d32f2f' }; // Vermelho
+  if (stock < 5) return { bg: '#fff3e0', text: '#ef6c00' };   // Laranja
+  if (stock < 10) return { bg: '#f1f8e9', text: '#689f38' };  // Verde claro
+  return { bg: '#e8f5e9', text: '#2e7d32' };                  // Verde
+};
+
 function ProdutosComputadorFixo() {
   const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,15 +77,12 @@ function ProdutosComputadorFixo() {
     fetchData();
   }, []);
 
-  // Função para navegar para a página de detalhes
   const handleProductClick = (productId) => {
     navigate(`/produto/${productId}`);
   };
 
-  // Função para evitar navegação quando clicar nos ícones
   const handleIconClick = (e, action) => {
-    e.stopPropagation(); // Impede que o clique propague para o card
-    // Aqui você pode adicionar a lógica para favoritos e carrinho
+    e.stopPropagation();
     console.log(action);
   };
 
@@ -157,12 +162,30 @@ function ProdutosComputadorFixo() {
                 {produto.descricao}
               </Typography>
               <Box sx={{ mt: 'auto' }}>
-                <Typography variant="h6" color="primary" gutterBottom>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    color: '#2e7d32',
+                    fontWeight: 600,
+                    mb: 1
+                  }}
+                >
                   {parseFloat(produto.preco).toFixed(2)} €
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Box
+                  sx={{
+                    display: 'inline-flex',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    backgroundColor: getStockColor(produto.stock).bg,
+                    color: getStockColor(produto.stock).text,
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    marginBottom: 1
+                  }}
+                >
                   Stock: {produto.stock} unidades
-                </Typography>
+                </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                   <IconButton 
                     size="small"
