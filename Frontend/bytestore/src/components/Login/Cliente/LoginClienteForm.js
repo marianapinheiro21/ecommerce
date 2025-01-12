@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginCliente } from '../../../services/Api'; // Import the API function
 import { useAuth } from '../../../context/AuthContext';
-import './LoginForm.css';
+import './LoginClienteForm.css';
 
 
-const LoginForm = () => {
+const LoginClienteForm = () => {
     const [credentials, setCredentials] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate(); 
@@ -23,9 +23,9 @@ const LoginForm = () => {
             console.log(data.message);  // To check the message content
 
             if (data.access_token && data.message === "Cliente login successful"){
-                //localStorage.setItem('acessToken', data.access_token)
+                //localStorage.setItem('accessToken', data.access_token)
+                console.log('Login Successful', data);
                 login(data.access_token, 'cliente');
-                //console.log('Login Successful', data);
                 navigate('/dashboard');
                 //login(data.access_token);
             }
@@ -84,4 +84,4 @@ const LoginForm = () => {
     );
 };
 
-export default LoginForm;
+export default LoginClienteForm;

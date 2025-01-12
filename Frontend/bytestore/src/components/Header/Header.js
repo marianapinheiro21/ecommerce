@@ -1,11 +1,11 @@
-import React, { useState, useEffect }  from 'react';
+import React, { useState, useEffect, useContext }  from 'react';
 import { AppBar, Toolbar, IconButton, Modal, Typography, Button, InputBase } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import logo from '../../assets/byte-store2.png'; 
-
+import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { logoutUser } from '../../services/Api'; 
@@ -17,20 +17,28 @@ const Header = () => {
     //const accessToken = localStorage.getItem('accessToken');
     const navigate = useNavigate();
     const [isModalOpen, setIsModalOpen] = useState(false);  
+    const { authToken, userType, logout } = useAuth();
 
-
-    useEffect(() => {
-        if (localStorage.getItem('accessToken')) {
-            navigate('/dashboard');
-        }
-    }, [navigate]);
+    //useEffect(() => {
+    //    if (localStorage.getItem('accessToken')) {
+    //        navigate('/dashboard');
+    //    }
+    //}, [navigate]);
 
     const handleOpen = () => {
-       // if (localStorage.getItem('accessToken')) {
-         //   navigate ('/dashboard');
-        //} else {
+        if (!authToken) {
             setIsModalOpen(true);
-        //}
+        } else {
+            if (userType === 'cliente'){
+                navigate('/dashboard');
+            }
+            if (userType === 'lojista'){
+                navigate('/lojista/dashboard')
+            }
+            else{
+                navigate('/')
+            }
+        }
     };
 
     const handleClose = () => setIsModalOpen(false);
@@ -114,6 +122,7 @@ const Header = () => {
                         </IconButton>
                     </div>    
                 </Toolbar>
+
             </AppBar>
 
         </nav>
