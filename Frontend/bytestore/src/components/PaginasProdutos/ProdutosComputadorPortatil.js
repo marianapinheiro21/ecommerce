@@ -3,7 +3,7 @@ import Header from "../Header/Header";
 import { BrowserRouter as Router } from "react-router-dom";
 
 function ProdutosComputadorPortatil(){
-    
+    const [favoritos, setFavoritos] = useState([]); // Estado para favoritos
     const [produtos, setProdutos] = useState([]); // Initializing state to hold products
 
     useEffect(() => {
