@@ -115,9 +115,9 @@ export const logoutUser = async () => {
 };
 
 
-export const adicionarProdutos = async (productData, token) => {
+export const adicionarProdutos = async (formData, token) => {
     const url = `${API_URL}/produtos/create/`;
-    const formData = new FormData();
+    /*const formData = new FormData();
 
     formData.append('nome', productData.nome);
     formData.append('preco', productData.preco);
@@ -125,9 +125,13 @@ export const adicionarProdutos = async (productData, token) => {
     formData.append('stock', productData.stock);
     formData.append('categoria', productData.categoria);
 
-    if (productData.imagens) {
-        formData.append('imagens', productData.imagens);
-    }
+    if (productData.imagens && productData.imagens.length > 0) {
+        productData.imagens.forEach(file => {
+            formData.append('imagens', file);
+        });
+    } else {
+        console.error('No images to upload');
+    } */
 
     try {
         const response = await fetch(url, {

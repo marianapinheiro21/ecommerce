@@ -16,10 +16,16 @@ import AdicionarProdutos from './components/AdicionarProdutos/AdicionarProdutos'
 import ProdutosCarrinho from './components/ProdutosCarrinho/ProdutosCarrinho';
 import ErrorBoundary from './ErrorBoundary'; 
 import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
-import ProdutoDetalhe from './pages/ProdutoDetalhe';
-import { AuthProvider } from './context/AuthContext';
+import ProdutoDetalhe from './components/ProductDetail/ProductDetail';
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import LojistaList from './components/Lojista/LojistaList';
+import LojistaDetail from './/components/Lojista/LojistaDetail';
+import { AuthProvider } from './context/AuthContext';
+
+
 
 
 
@@ -34,15 +40,16 @@ function App() {
   return (
     <div>
       <ErrorBoundary>
-        {/**/}
         <AuthProvider>
-          <Header /> 
+          <Header />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginClienteForm />} />
             <Route path="/register" element={<ClienteRegistrationForm />} />
             <Route path="/lojista/login" element={<LoginLojistaForm />} />
             <Route path="/lojista/register" element={<LojistaRegistrationForm />} />
+            <Route path="/lojista" element={<LojistaList />} />
+            <Route path="/lojista/:id" element={<LojistaDetail />} />
             <Route path="/produto/:id" element={<ProdutoDetalhe />} />
             <Route path="/produtos" element={<TodosProdutos />} />
             <Route path="/produtos/acessorios" element={<ProdutosAcessorios />} />
@@ -56,6 +63,7 @@ function App() {
             <Route path="lojista/produtos/novo" element={<PrivateRoute allowedRoles={['lojista']}><AdicionarProdutos /></PrivateRoute>} />
           </Routes>
         </AuthProvider>
+
       </ErrorBoundary> 
     </div>
   );
