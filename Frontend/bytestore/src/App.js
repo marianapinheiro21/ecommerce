@@ -12,11 +12,15 @@ import ProdutosPeriferico from './components/PaginasProdutos/ProdutosPeriferico'
 
 import ErrorBoundary from './ErrorBoundary'; 
 import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
-import ProdutoDetalhe from './pages/ProdutoDetalhe';
+import ProdutoDetalhe from './components/ProductDetail/ProductDetail';
 
 import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 import LojistaRegistrationForm from './components/CreateAccount/Lojista/LojistaRegistrationForm';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import LojistaDetail from './components/Lojista/LojistaDetail';
+
 
 
 function App() {
@@ -38,6 +42,7 @@ function App() {
           <Route path="/register" element={<ClienteRegistrationForm />} />
           <Route path="/login/lojista" element={<LoginForm />} />
           <Route path="/register/lojista" element={<LojistaRegistrationForm />} />
+          <Route path="/lojista/:id" element={<LojistaDetail />} />
           <Route path="/produto/:id" element={<ProdutoDetalhe />} />
           <Route path="/produtos" element={<TodosProdutos />} />
           <Route path="/produtos/acessorios" element={<ProdutosAcessorios />} />
