@@ -40,6 +40,10 @@ span{
     text-decoration: none;
 }
 
+.components {
+    background-color: #d5e0e0;
+    width: auto;
+}
 
 @media (max-width: 768px) {
     .components-container {

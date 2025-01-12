@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../Header/Header";
 import { BrowserRouter as Router } from "react-router-dom";
-import '../TodosProdutos.css';
+import './TodosProdutos.css';
 
 function TodosProdutos() {
   const [produtos, setProdutos] = useState([]); // Estado para produtos
@@ -28,9 +28,12 @@ function TodosProdutos() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Token de autenticação
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`, // Token de autenticação
         },
-        body: JSON.stringify({ produto_id: produtoId }) // Envia o ID do produto
+        body: JSON.stringify({
+          produto: produtoId,   // Envia o ID do produto
+          quantidade: 1
+        }),
       });
 
       if (response.ok) {
@@ -46,7 +49,7 @@ function TodosProdutos() {
   };
 
   const favoritarProduto = async (produtoId) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     console.log('Token being sent:', token); // Verifica se o token está sendo obtido corretamente
   
     try {
@@ -76,7 +79,7 @@ function TodosProdutos() {
 
   return (
     <div className="todosProdutos-container">
-      <h1> Produtos Disponíveis </h1>
+      <h1> Aqui podes encontrar todos os produtos que temos disponíveis para si! </h1>
       <ul className="todos-produtos-ul">
         {produtos.map(produto => (
           <li className="todos-produtos-li" key={produto.id}>

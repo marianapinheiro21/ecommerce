@@ -44,6 +44,7 @@ export const loginCliente = async (credentials) => {
             }
         }
         const response=await axios.post(`${API_URL}/cliente/login/`, JSON.stringify(credentials), config);
+        console.log('Server response:', response.data);
         //const { access_token, refresh_token } = response.data;
         localStorage.setItem('accessToken', response.data.access_token);
         localStorage.setItem('refreshToken', response.data.refresh_token);
