@@ -224,15 +224,16 @@ class ProdutoCreateAPIView(APIView):
 
 class ProdutoDetalheView(APIView):
     permission_classes = [AllowAny]
+    
     def get(self, request, pk):
         try:
-            # Busca o produto pelo ID 
             produto = Produto.objects.get(pk=pk)
             serializer = ProdutoSerializer(produto)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Produto.DoesNotExist:
             return Response({"error": "Produto não encontrado"}, status=status.HTTP_404_NOT_FOUND)
-    
+        
+        
 class CategoriaChoicesAPIView(APIView):
     """
     API para listar todas as opções de categorias disponíveis.
@@ -785,4 +786,3 @@ class ClienteDadosView(APIView):
             return Response(data)
         except Cliente.DoesNotExist:
             return Response({'error': 'Cliente não encontrado'}, status=404)
-
