@@ -83,29 +83,28 @@ function TodosProdutos() {
       <ul className="todos-produtos-ul">
         {produtos.map(produto => (
           <li className="todos-produtos-li" key={produto.id}>
-            <h2>{produto.name}</h2>
-            <p>{produto.descricao}</p>
-            <p>Preço: {produto.preco}€</p>
-            <p>Stock: {produto.stock}</p>
-            {produto.imagens.length > 0 && (
-              <div>
-                {produto.imagens.map((img, index) => (
-                  <img key={index} src={img.imagem} alt={produto.nome} style={{ width: '100px', height: '100px' }} />
-                ))}
-              </div>
+            <h2>{produto.nome}</h2>
+            
+            <div className="product-image">
+            {produto.imagens.length > 0 ? (
+              <img src={produto.imagens[0].imagem} alt={produto.nome} />
+            ) : (
+              <span className="no-image">No image available</span>
             )}
+          </div>
+          <p>Preço: {produto.preco}€</p>
             <div className="produto-actions">
               <button 
                 className="add-to-cart-btn"
                 onClick={() => adicionarAoCarrinho(produto.id)} // Chama a função para adicionar ao carrinho
               >
-                Adicionar ao carrinho
+                Adicionar ao carrinho 🛒
               </button>
               <button 
                 className={`favoritar-icon ${favoritos.includes(produto.id) ? 'favorito' : ''}`}
                 onClick={() => favoritarProduto(produto.id)}
               >
-                ★
+                ❤
               </button>
             </div>
           </li>
@@ -113,6 +112,7 @@ function TodosProdutos() {
       </ul>
     </div>
   );
+
 }
 
 export default TodosProdutos;
