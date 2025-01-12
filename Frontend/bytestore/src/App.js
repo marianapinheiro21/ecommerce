@@ -12,6 +12,7 @@ import ProdutosAcessorios from './components/PaginasProdutos/ProdutosAcessorios'
 import ProdutosComputadorPortatil from './components/PaginasProdutos/ProdutosComputadorPortatil';
 import ProdutosPeriferico from './components/PaginasProdutos/ProdutosPeriferico';
 import DashboardLojista from './components/DashboardLojista/DashboardLojista';
+import AdicionarProdutos from './components/AdicionarProdutos/AdicionarProdutos';
 import ErrorBoundary from './ErrorBoundary'; 
 import Dashboard from './components/Dashboard/Dashboard'; // Adicione o componente Dashboard
 import ProdutoDetalhe from './pages/ProdutoDetalhe';
@@ -31,16 +32,16 @@ function App() {
 
   return (
     <div>
-      <AuthProvider>
-        {/**/}<Header /> 
-        <ErrorBoundary>
+      <ErrorBoundary>
+        {/**/}
+        <AuthProvider>
+          <Header /> 
           <Routes>
-
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginClienteForm />} />
             <Route path="/register" element={<ClienteRegistrationForm />} />
-            <Route path="/login/lojista" element={<LoginLojistaForm />} />
-            <Route path="/register/lojista" element={<LojistaRegistrationForm />} />
+            <Route path="/lojista/login" element={<LoginLojistaForm />} />
+            <Route path="/lojista/register" element={<LojistaRegistrationForm />} />
             <Route path="/produto/:id" element={<ProdutoDetalhe />} />
             <Route path="/produtos" element={<TodosProdutos />} />
             <Route path="/produtos/acessorios" element={<ProdutosAcessorios />} />
@@ -49,10 +50,11 @@ function App() {
             <Route path="/produtos/perifericos" element={<ProdutosPeriferico />} />
             {/* Rota privada para o Dashboard do Cliente */}
             <Route path="/dashboard" element={<PrivateRoute allowedRoles={['cliente']}><Dashboard /></PrivateRoute>}  />
-            <Route path="/dashboard/lojista" element={<PrivateRoute allowedRoles={['lojista']}><DashboardLojista /></PrivateRoute>} />
+            <Route path="/lojista/dashboard" element={<PrivateRoute allowedRoles={['lojista']}><DashboardLojista /></PrivateRoute>} />
+            <Route path="lojista/produtos/novo" element={<PrivateRoute allowedRoles={['lojista']}><AdicionarProdutos /></PrivateRoute>} />
           </Routes>
-        </ErrorBoundary> 
-      </AuthProvider>
+        </AuthProvider>
+      </ErrorBoundary> 
     </div>
   );
 }

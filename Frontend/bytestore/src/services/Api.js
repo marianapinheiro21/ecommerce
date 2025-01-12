@@ -114,6 +114,42 @@ export const logoutUser = async () => {
 };
 
 
+export const adicionarProdutos = async (productData, token) => {
+    const url = `${API_URL}/produtos/create/`;
+    const formData = new FormData();
+
+    formData.append('nome', productData.nome);
+    formData.append('preco', productData.preco);
+    formData.append('descricao', productData.descricao);
+    formData.append('stock', productData.stock);
+    formData.append('categoria', productData.categoria);
+
+    if (productData.imagens) {
+        formData.append('imagens', productData.imagens);
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}` 
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorDetails = await response.json();
+            throw new Error(errorDetails.message || "Failed to add product.");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("API error:", error.message);
+        throw error;
+    }
+};
+
+
 // Function to fetch cart data by user ID
 export const fetchCarrinho = async () => {
     try {

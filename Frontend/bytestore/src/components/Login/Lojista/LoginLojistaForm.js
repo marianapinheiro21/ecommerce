@@ -13,7 +13,7 @@ const LoginLojistaForm = () => {
 
     useEffect(() => {
         if (authToken && userType === 'lojista') {
-          navigate('/dashboard/lojista');
+          navigate('/lojista/dashboard');
         }
       }, [authToken, userType, navigate]);
 
@@ -31,7 +31,7 @@ const LoginLojistaForm = () => {
                 //localStorage.setItem('acessToken', data.access_token)
                 console.log('Login Successful', data);
                 login(data.access_token, 'lojista');
-                //navigate('/dashboard/lojista');
+                //navigate('/lojista/dashboard');
                 //login(data.access_token);
             }
             else{
@@ -53,7 +53,7 @@ const LoginLojistaForm = () => {
     };
 
     const handleCreateAccount = () =>{
-        navigate('/register/lojista');
+        navigate('/lojista/register');
     }
 
     return (

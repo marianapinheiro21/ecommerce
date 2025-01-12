@@ -1,7 +1,7 @@
 // src/context/AuthContext.js
 import React, { createContext, useContext, useState } from 'react';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [authToken, setAuthToken] = useState(localStorage.getItem('accessToken'));
@@ -16,6 +16,11 @@ export const AuthProvider = ({ children }) => {
         
     };
 
+        // Context provider value
+        //const contextValue = {
+        //    authState,
+        //    setAuthState
+        //};  contextValue, 
 
     const logout = () => {
         localStorage.removeItem('accessToken');
