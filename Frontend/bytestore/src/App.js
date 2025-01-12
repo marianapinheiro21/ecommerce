@@ -20,7 +20,8 @@ import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import LojistaDetail from './components/Lojista/LojistaDetail';
+import LojistaList from './components/Lojista/LojistaList';
+import LojistaDetail from './/components/Lojista/LojistaDetail';
 import { AuthProvider } from './context/AuthContext';
 
 
@@ -46,6 +47,7 @@ function App() {
             <Route path="/register" element={<ClienteRegistrationForm />} />
             <Route path="/lojista/login" element={<LoginLojistaForm />} />
             <Route path="/lojista/register" element={<LojistaRegistrationForm />} />
+            <Route path="/lojista" element={<LojistaList />} />
             <Route path="/lojista/:id" element={<LojistaDetail />} />
             <Route path="/produto/:id" element={<ProdutoDetalhe />} />
             <Route path="/produtos" element={<TodosProdutos />} />
