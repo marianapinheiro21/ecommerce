@@ -25,3 +25,12 @@
     object-fit: cover; 
   }
   
+h1 {
+  text-align: center;
+  padding: 1rem;
+}
+
+.favoritar-icon {
+  background-color: rgb(236, 236, 96);
+  color: black;
+}

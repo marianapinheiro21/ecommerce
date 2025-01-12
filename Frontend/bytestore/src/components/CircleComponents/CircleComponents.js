@@ -32,6 +32,13 @@ function CircleComponents() {
                     </div>
                     <span>Acessórios</span>
                 </Link> 
+
+                <Link to="/produtos/perifericos" className="component">
+                    <div className="circle">
+                    <img src={acessorioImg} alt="Periféricos" />
+                    </div>
+                    <span>Periféricos</span>
+                </Link> 
             </div>
         </section>
     );

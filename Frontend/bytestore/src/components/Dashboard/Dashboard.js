@@ -66,6 +66,11 @@ function Dashboard() {
                 <ProdutosFavoritos />
             </section>
 
+            <section>
+            <a href="/produtos" class="btn btn-primary">Fazer Compras</a>
+            </section>
+
+
             {/* Logout */}
             <section >
                 <button class="button-logout" onClick={handleLogout}>Logout</button>

@@ -20,18 +20,59 @@ function TodosProdutos() {
     fetchData(); // Chama a função para buscar os dados
   }, []); // Array de dependência vazio, executa o efeito apenas uma vez
 
-  // Função para alternar o estado de favorito
-  const favoritarProduto = (produtoId) => {
-    setFavoritos((prevFavoritos) => {
-      if (prevFavoritos.includes(produtoId)) {
-        // Remove dos favoritos
-        return prevFavoritos.filter(id => id !== produtoId);
+  // Função para adicionar produto ao carrinho 
+  const adicionarAoCarrinho = async (produtoId) => {
+    try {
+      // Requisição POST para adicionar o produto ao carrinho
+      const response = await fetch('http://localhost:8000/api/add-to-carrinho/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Token de autenticação
+        },
+        body: JSON.stringify({ produto_id: produtoId }) // Envia o ID do produto
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert('Produto adicionado ao carrinho com sucesso!');
       } else {
-        // Adiciona aos favoritos
-        return [...prevFavoritos, produtoId];
+        const error = await response.json();
+        alert('Erro ao adicionar o produto ao carrinho: ' + error.error);
       }
-    });
+    } catch (error) {
+      console.error('Erro ao adicionar produto ao carrinho:', error);
+    }
   };
+
+  const favoritarProduto = async (produtoId) => {
+    const token = localStorage.getItem('token');
+    console.log('Token being sent:', token); // Verifica se o token está sendo obtido corretamente
+  
+    try {
+      const response = await fetch('http://localhost:8000/api/adicionar_favorito/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Enviar o token de autenticação
+        },
+        body: JSON.stringify({ produto_id: produtoId })
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        alert('Produto favoritado com sucesso!');
+        // Atualize o estado dos favoritos
+        setFavoritos(prev => [...prev, produtoId]);
+      } else {
+        const error = await response.json();
+        alert('Erro ao favoritar o produto: ' + (error.error || 'Erro desconhecido'));
+      }
+    } catch (error) {
+      console.error('Erro ao favoritar produto:', error);
+    }
+  };
+
 
   return (
     <div className="todosProdutos-container">
@@ -51,10 +92,18 @@ function TodosProdutos() {
               </div>
             )}
             <div className="produto-actions">
-              <button className="add-to-cart-btn">Adicionar ao carrinho</button>
-              <span className={`favorite-icon ${favoritos.includes(produto.id) ? 'favorito' : ''}`} onClick={() => favoritarProduto(produto.id)}>
+              <button 
+                className="add-to-cart-btn"
+                onClick={() => adicionarAoCarrinho(produto.id)} // Chama a função para adicionar ao carrinho
+              >
+                Adicionar ao carrinho
+              </button>
+              <button 
+                className={`favoritar-icon ${favoritos.includes(produto.id) ? 'favorito' : ''}`}
+                onClick={() => favoritarProduto(produto.id)}
+              >
                 ★
-              </span>
+              </button>
             </div>
           </li>
         ))}
