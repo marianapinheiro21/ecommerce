@@ -13,7 +13,6 @@ import {
   Container,
   Breadcrumbs,
   Link,
-  Chip
 } from '@mui/material';
 
 // Icons
@@ -36,7 +35,7 @@ const ProductWrapper = styled(Paper)(({ theme }) => ({
 }));
 
 const PriceTag = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.main,
+  color: '#1976d2',
   fontSize: '2rem',
   fontWeight: 'bold',
 }));
@@ -48,8 +47,15 @@ const AddToCartButton = styled(Button)(({ theme }) => ({
   fontSize: '1.1rem',
 }));
 
-const API_URL = 'http://localhost:8000/api';
+// Função para determinar a cor do stock
+const getStockColor = (stock) => {
+  if (stock === 0) return { bg: '#ffebee', text: '#d32f2f', label: 'Sem stock' }; 
+  if (stock < 5) return { bg: '#fff3e0', text: '#ef6c00', label: 'Stock baixo' };   
+  if (stock < 10) return { bg: '#f1f8e9', text: '#689f38', label: 'Stock médio' };  
+  return { bg: '#e8f5e9', text: '#2e7d32', label: 'Em stock' };                  
+};
 
+const API_URL = 'http://localhost:8000/api';
 const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -226,7 +232,7 @@ const ProductDetail = () => {
           <Link 
             underline="hover" 
             color="inherit" 
-            onClick={() => navigate(`/categoria/${product.categoria}`)}
+            onClick={() => navigate(`/produtos/categoria/${product.categoria}`)}
             sx={{ cursor: 'pointer' }}
           >
             {product.categoria_nome}
@@ -263,7 +269,7 @@ const ProductDetail = () => {
                           width: 80,
                           height: 80,
                           cursor: 'pointer',
-                          border: selectedImage === index ? '2px solid primary.main' : 'none',
+                          border: selectedImage === index ? '2px solid #1976d2' : 'none',
                         }}
                         onClick={() => setSelectedImage(index)}
                       />
@@ -293,11 +299,21 @@ const ProductDetail = () => {
                 </IconButton>
               </Box>
 
-              <Chip 
-                label={product.stock > 10 ? 'Muitas unidades' : `${product.stock} unidades`}
-                color={product.stock > 10 ? 'success' : 'warning'}
-                sx={{ mb: 2 }}
-              />
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  padding: '8px 16px',
+                  borderRadius: '4px',
+                  backgroundColor: getStockColor(product.stock).bg,
+                  color: getStockColor(product.stock).text,
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  mb: 2,
+                  alignItems: 'center'
+                }}
+              >
+                {getStockColor(product.stock).label}: {product.stock} unidades
+              </Box>
 
               <Typography variant="body1" paragraph>
                 {product.descricao}
@@ -398,9 +414,29 @@ const ProductDetail = () => {
                     <Typography variant="h6" noWrap>
                       {relatedProduct.nome}
                     </Typography>
-                    <Typography variant="h6" color="primary">
+                    <Typography 
+                      variant="h6" 
+                      sx={{ 
+                        color: '#1976d2',
+                        fontWeight: 600 
+                      }}
+                    >
                       {parseFloat(relatedProduct.preco).toFixed(2)} €
                     </Typography>
+                    <Box
+                      sx={{
+                        display: 'inline-flex',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        backgroundColor: getStockColor(relatedProduct.stock).bg,
+                        color: getStockColor(relatedProduct.stock).text,
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                        mt: 1
+                      }}
+                    >
+                      Stock: {relatedProduct.stock}
+                    </Box>
                   </Paper>
                 </Grid>
               ))}

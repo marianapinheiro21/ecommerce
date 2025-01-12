@@ -14,7 +14,8 @@ import {
   CardMedia,
   CardContent,
   Fade,
-  Chip
+  Chip,
+  IconButton
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StorefrontIcon from '@mui/icons-material/Storefront';
@@ -22,6 +23,11 @@ import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Swal from 'sweetalert2';
+
+const API_URL = 'http://localhost:8000/api';
 
 const StyledBackButton = styled(Link)({
   textDecoration: 'none',
@@ -44,12 +50,11 @@ const InfoItem = ({ icon, text }) => (
   </Box>
 );
 
-// Função para determinar a cor do stock
 const getStockColor = (stock) => {
-  if (stock === 0) return { bg: '#ffebee', text: '#d32f2f' }; // Vermelho
-  if (stock < 5) return { bg: '#fff3e0', text: '#ef6c00' };   // Laranja
-  if (stock < 10) return { bg: '#f1f8e9', text: '#689f38' };  // Verde claro
-  return { bg: '#e8f5e9', text: '#2e7d32' };                  // Verde
+  if (stock === 0) return { bg: '#ffebee', text: '#d32f2f' };
+  if (stock < 5) return { bg: '#fff3e0', text: '#ef6c00' };
+  if (stock < 10) return { bg: '#f1f8e9', text: '#689f38' };
+  return { bg: '#e8f5e9', text: '#2e7d32' };
 };
 
 function LojistaDetail() {
@@ -59,16 +64,108 @@ function LojistaDetail() {
   const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const checkAuthStatus = () => {
+    const token = localStorage.getItem('accessToken');
+    setIsAuthenticated(!!token);
+  };
+
+  const handleAddToCart = async (productId, event) => {
+    event.stopPropagation();
+    
+    if (!isAuthenticated) {
+      Swal.fire({
+        title: 'Necessário iniciar sessão',
+        text: 'Para adicionar ao carrinho, inicie sessão ou crie uma conta',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Iniciar Sessão',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login');
+        }
+      });
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('accessToken');
+      await axios.post(
+        `${API_URL}/add-to-carrinho/`,
+        { produto_id: productId },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      Swal.fire('Sucesso!', 'Produto adicionado ao carrinho!', 'success');
+    } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        navigate('/login');
+      } else {
+        Swal.fire('Erro!', 'Não foi possível adicionar ao carrinho', 'error');
+      }
+    }
+  };
+
+  const handleAddToFavorites = async (productId, event) => {
+    event.stopPropagation();
+    
+    if (!isAuthenticated) {
+      Swal.fire({
+        title: 'Necessário iniciar sessão',
+        text: 'Para adicionar aos favoritos, inicie sessão ou crie uma conta',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Iniciar Sessão',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/login');
+        }
+      });
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('accessToken');
+      await axios.post(
+        `${API_URL}/adicionar_favorito/`,
+        { produto_id: productId },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      Swal.fire('Sucesso!', 'Produto adicionado aos favoritos!', 'success');
+    } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        navigate('/login');
+      } else {
+        Swal.fire('Erro!', 'Não foi possível adicionar aos favoritos', 'error');
+      }
+    }
+  };
   useEffect(() => {
+    checkAuthStatus();
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
         
         const [lojistaResponse, produtosResponse] = await Promise.all([
-          axios.get(`http://localhost:8000/api/lojistas/${id}/`),
-          axios.get(`http://localhost:8000/api/produtos/lista?lojista=${id}`)
+          axios.get(`${API_URL}/lojistas/${id}/`),
+          axios.get(`${API_URL}/produtos/lista?lojista=${id}`)
         ]);
 
         setLojista(lojistaResponse.data);
@@ -245,7 +342,7 @@ function LojistaDetail() {
                             variant="h6" 
                             sx={{ 
                               mb: 1,
-                              color: '#2e7d32',
+                              color: '#1976d2',
                               fontWeight: 600
                             }}
                           >
@@ -275,6 +372,37 @@ function LojistaDetail() {
                               {produto.descricao}
                             </Typography>
                           )}
+                          <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'flex-end', 
+                            mt: 2,
+                            gap: 1 
+                          }}>
+                            <IconButton 
+                              size="small"
+                              color="inherit"
+                              sx={{
+                                '&:hover': {
+                                  color: 'error.main'
+                                }
+                              }}
+                              onClick={(e) => handleAddToFavorites(produto.id, e)}
+                            >
+                              <FavoriteIcon />
+                            </IconButton>
+                            <IconButton 
+                              size="small"
+                              color="inherit"
+                              sx={{
+                                '&:hover': {
+                                  color: 'primary.main'
+                                }
+                              }}
+                              onClick={(e) => handleAddToCart(produto.id, e)}
+                            >
+                              <ShoppingCartIcon />
+                            </IconButton>
+                          </Box>
                         </CardContent>
                       </Card>
                     </Fade>
