@@ -33,7 +33,7 @@ const Header = () => {
                 navigate('/dashboard');
             }
             if (userType === 'lojista'){
-                navigate('/dashboard/lojista')
+                navigate('/lojista/dashboard')
             }
             else{
                 navigate('/')
