@@ -90,6 +90,7 @@ export const loginLojista = async (credentials) => {
         //const { access_token, refresh_token } = response.data;
         localStorage.setItem('accessToken', response.data.access_token);
         localStorage.setItem('refreshToken', response.data.refresh_token);
+        localStorage.setItem('userType', 'lojista');
         return response.data; // Returns the data part of the response from server
     } catch (error) {
         console.error('Login error:', error.response);
@@ -166,6 +167,77 @@ export const createVenda = async (accessToken) => {
       console.error('Failed to create venda:', error);
     }
   }
+
+  export const fetchLojistas = async (accessToken) => {
+    const url = `${API_URL}/lojistas/`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Fetched lojistas successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch lojistas:', error);
+    }
+}
+
+
+export const fetchLojistaById = async (userId, accessToken) => {
+    const url = `${API_URL}/lojistas/${userId}/`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Fetched lojista by ID successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch lojista by ID:', error);
+    }
+}
+
+export const fetchLojistaSales = async (accessToken) => {
+    const url = `${API_URL}/lojista/vendas/`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Fetched lojista sales successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('Failed to fetch lojista sales:', error);
+    }
+}
+
 
 // Function to fetch cart data by user ID
 export const fetchCarrinho = async () => {

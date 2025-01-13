@@ -796,6 +796,19 @@ class LojistaVendasAPIView(generics.ListAPIView):
             return Venda.objects.none()
         return Venda.objects.filter(carrinho__cliente__id=lojista.user.id)
 
+class LojistaProdutosAPIView(generics.ListAPIView):
+    serializer_class = ProdutoSerializer
+    permission_classes = [IsAuthenticated, IsLojista]  # Ensures the user is authenticated
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the products
+        for the currently authenticated lojista.
+        """
+        lojista = self.request.user.lojista
+        return Produto.objects.filter(lojista=lojista)
+        
+    
 class BuscarProdutosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         query = request.query_params.get('q', None)
