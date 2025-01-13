@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from '../../context/AuthContext';
 import './TodosProdutos.css';
 import Modal from './Modal'
+import CircleComponents from "../CircleComponents/CircleComponents";
 
 function TodosProdutos() {
   const [produtos, setProdutos] = useState([]); // Estado para produtos
@@ -114,6 +115,7 @@ function TodosProdutos() {
   return (
     <div className="todosProdutos-container">
       <h1> Aqui podes encontrar todos os produtos que temos disponíveis para si! </h1>
+      <CircleComponents />
       <ul className="todos-produtos-ul">
         {produtos.map(produto => (
           <li className="todos-produtos-li" key={produto.id}>
