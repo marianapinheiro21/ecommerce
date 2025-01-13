@@ -48,6 +48,7 @@ export const loginCliente = async (credentials) => {
         //const { access_token, refresh_token } = response.data;
         localStorage.setItem('accessToken', response.data.access_token);
         localStorage.setItem('refreshToken', response.data.refresh_token);
+        localStorage.setItem('userType', 'cliente');
         return response.data; // Returns the data part of the response from server
     } catch (error) {
         console.error('Login error:', error.response);
