@@ -258,7 +258,7 @@ class ProdutoImagemSerializer(serializers.ModelSerializer):
 class ProdutoSerializer(serializers.ModelSerializer):
 
     imagens = ProdutoImagemSerializer(many=True, read_only=True)
-    lojista = serializers.PrimaryKeyRelatedField(read_only=True)
+    lojista = PublicLojistaSerializer(read_only=True)
     
     class Meta:
         model = Produto
@@ -275,6 +275,13 @@ class ProdutoSerializer(serializers.ModelSerializer):
             ProdutoImagem.objects.create(produto=produto, imagem=image_data)
         return produto
 
+class ProdutoDetailSerializer(serializers.ModelSerializer):
+    imagens = ProdutoImagemSerializer(many=True, read_only=True)
+    lojista = PublicLojistaSerializer(read_only=True)
+    
+    class Meta:
+        model = Produto
+        fields = ['id', 'lojista', 'nome', 'preco', 'descricao', 'stock', 'categoria', 'imagens']
 
 class FavoritoSerializer(serializers.ModelSerializer):
     class Meta:

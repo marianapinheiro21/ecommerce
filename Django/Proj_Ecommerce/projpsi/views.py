@@ -20,6 +20,7 @@ from .serializers import *
 from .permissions import *
 from rest_framework.pagination import PageNumberPagination
 import json
+from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from projpsi.models import Cliente, Produto, Carrinho, CarrinhoProduto
@@ -475,6 +476,20 @@ def adicionar_produto(request):
 #    return render(request, 'addProduct.html', {'form':form, 'formset': formset})
 #
 
+class ProdutoDetailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        try:
+            produto = Produto.objects.select_related('lojista', 'lojista__user').get(pk=pk)
+            serializer = ProdutoDetailSerializer(produto)
+            return Response(serializer.data)
+        except Produto.DoesNotExist:
+            return Response(
+                {"error": "Produto não encontrado"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
 class ProdutoListaView(generics.ListAPIView):
     pagination_class = PageNumberPagination
     page_size = 12  
@@ -815,3 +830,69 @@ class ClienteDadosView(APIView):
         except Cliente.DoesNotExist:
             return Response({'error': 'Cliente não encontrado'}, status=404)
         
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_cart_count(request):
+    try:
+        cliente = Cliente.objects.get(user=request.user)
+        count = CarrinhoProduto.objects.filter(
+            carrinho__cliente=cliente,
+            venda__isnull=True
+        ).count()
+        print(f"Cart count for user {request.user.email}: {count}")
+        return Response({'count': count})
+    except Exception as e:
+        print(f"Error in get_cart_count: {str(e)}")
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_favorites_count(request):
+    try:
+        cliente = Cliente.objects.get(user=request.user)
+        count = Favorito.objects.filter(
+            id_cliente=cliente
+        ).count()
+        print(f"Favorites count for user {request.user.email}: {count}")
+        return Response({'count': count})
+    except Exception as e:
+        print(f"Error in get_favorites_count: {str(e)}")
+        return Response({'error': str(e)}, status=400)
+    
+@api_view(['GET'])
+def search_produtos(request):
+    """Pesquisa produtos por nome ou descrição"""
+    query = request.query_params.get('q', '')
+    if len(query) < 3:
+        return Response([])
+
+    try:
+        produtos = Produto.objects.filter(
+            Q(nome__icontains=query) |
+            Q(descricao__icontains=query)
+        ).select_related('lojista')  # Otimiza a query
+
+        # Formata os resultados incluindo todas as informações necessárias
+        results = []
+        for produto in produtos[:10]:  # Limita a 10 resultados
+            produto_data = {
+                'id': produto.id,
+                'nome': produto.nome,
+                'preco': float(produto.preco),  # Converte Decimal para float
+                'descricao': produto.descricao,
+                'categoria': produto.categoria,
+            }
+            
+            # Adiciona a primeira imagem do produto, se existir
+            primeira_imagem = ProdutoImagem.objects.filter(produto=produto).first()
+            if primeira_imagem:
+                produto_data['imagem'] = request.build_absolute_uri(primeira_imagem.imagem.url)
+            else:
+                produto_data['imagem'] = None
+
+            results.append(produto_data)
+        
+        return Response(results)
+    except Exception as e:
+        print(f"Erro na busca de produtos: {str(e)}")
+        return Response({'error': str(e)}, status=400)

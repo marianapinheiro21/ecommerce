@@ -344,8 +344,9 @@ const ProductDetail = () => {
                     <Button
                       variant="outlined"
                       size="small"
-                      onClick={() => navigate(`/lojista/${product.lojista.id}`)}
+                      onClick={() => navigate(`/lojista/${product.lojista.id}`)} 
                       startIcon={<StorefrontIcon />}
+                      
                     >
                       Ver Loja
                     </Button>

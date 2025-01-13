@@ -24,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import LojistaList from './components/Lojista/LojistaList';
 import LojistaDetail from './/components/Lojista/LojistaDetail';
 import { AuthProvider } from './context/AuthContext';
+import Favoritos from './components/Favoritos/Favoritos';
 
 
 
@@ -59,6 +60,7 @@ function App() {
             <Route path="/produtos/perifericos" element={<ProdutosPeriferico />} />
             <Route path="/produtos/carrinho" element={<ProdutosCarrinho />} />
             {/* Rota privada para o Dashboard do Cliente */}
+            <Route path="/favoritos" element={<Favoritos />} />
             <Route path="/dashboard" element={<PrivateRoute allowedRoles={['cliente']}><Dashboard /></PrivateRoute>}  />
             <Route path="/lojista/dashboard" element={<PrivateRoute allowedRoles={['lojista']}><DashboardLojista /></PrivateRoute>} />
             <Route path="lojista/produtos/novo" element={<PrivateRoute allowedRoles={['lojista']}><AdicionarProdutos /></PrivateRoute>} />
