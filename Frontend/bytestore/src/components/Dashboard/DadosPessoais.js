@@ -65,6 +65,7 @@ const DadosPessoais = () => {
                 <>
                     {!isEditing ? (
                         <div>
+                            <h2>Dados Pessoais</h2>
                             <p><strong>Nome:</strong> {dados.nome}</p>
                             <p><strong>Email:</strong> {dados.email}</p>
                             <p><strong>Nif:</strong> {dados.nif}</p>
@@ -74,9 +75,10 @@ const DadosPessoais = () => {
                         </div>
                     ) : (
                         // Exibe o formulário de edição
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} class="form-dados-pessoais">
                             <div>
-                                <label htmlFor="nome">Nome</label>
+                                <h3>Alterar dados pessoais</h3>
+                                <label htmlFor="nome">Nome: </label>
                                 <input
                                     type="text"
                                     id="nome"
@@ -87,7 +89,7 @@ const DadosPessoais = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="email">Email</label>
+                                <label htmlFor="email">Email: </label>
                                 <input
                                     type="email"
                                     id="email"
@@ -98,7 +100,7 @@ const DadosPessoais = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="nif">Nif</label>
+                                <label htmlFor="nif">Nif: </label>
                                 <input
                                     type="number"
                                     id="nif"
@@ -109,7 +111,7 @@ const DadosPessoais = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="telefone">Telefone</label>
+                                <label htmlFor="telefone">Telefone: </label>
                                 <input
                                     type="number"
                                     id="telefone"
@@ -120,7 +122,7 @@ const DadosPessoais = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="morada">Morada</label>
+                                <label htmlFor="morada">Morada: </label>
                                 <input
                                     type="text"
                                     id="morada"

@@ -41,13 +41,12 @@ const ProdutosCarrinho = () => {
   };
 
   useEffect(() => {
-    fetchData(); // Chama a função para buscar os dados
+    fetchData(); 
   }, []);
   
   
   const removerDoCarrinho = async (produtoId) => {
     try {
-      // Requisição POST para adicionar o produto ao carrinho
       const response = await fetch('http://localhost:8000/api/remove-to-cart/', {
         method: 'DELETE',
         headers: {
@@ -61,7 +60,7 @@ const ProdutosCarrinho = () => {
 
       if (response.ok) {
         const result = await response.json();
-        fetchData(); // Chama a função para buscar os dados
+        fetchData(); 
         alert('Produto removido do carrinho com sucesso!');
       } else {
         const error = await response.json();
@@ -98,7 +97,7 @@ const handleCheckout = () => {
 
           <button 
             className=""
-            onClick={() => removerDoCarrinho(produto.id)} // Chama a função para adicionar ao carrinho
+            onClick={() => removerDoCarrinho(produto.id)} 
           >Remover produto</button>
         </li>
       ))}
