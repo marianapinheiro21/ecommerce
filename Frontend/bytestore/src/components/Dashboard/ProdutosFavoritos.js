@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { listarFavoritos } from '../../services/Api'; // Certifique-se de importar corretamente
+import { listarFavoritos } from '../../services/Api';
 import axios from 'axios';
 
 const ProdutosFavoritos = () => {
@@ -7,26 +7,26 @@ const ProdutosFavoritos = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchFavoritos = async () => {
-            try {
-                const data = await listarFavoritos(); 
-                console.log('Favoritos recebidos:', data); 
-                if (Array.isArray(data.favoritos)) { 
-                    setFavoritos(data.favoritos); 
-                } else {
-                    setError('Dados de favoritos inválidos');
-                }
-            } catch (err) {
-                setError('Erro ao buscar os favoritos');
-            } finally {
-                setLoading(false);
+   
+    const fetchFavoritos = async () => {
+        try {
+            const data = await listarFavoritos(); 
+            console.log('Favoritos recebidos:', data); 
+            if (Array.isArray(data.favoritos)) { 
+                setFavoritos(data.favoritos); 
+            } else {
+                setError('Dados de favoritos inválidos');
             }
-        };
+        } catch (err) {
+            setError('Erro ao buscar os favoritos');
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchFavoritos();
     }, []);
-
 
     const removerFavorito = async (produtoId) => {
         const token = localStorage.getItem('accessToken');
@@ -50,7 +50,8 @@ const ProdutosFavoritos = () => {
     
             if (response.ok) {
                 const result = await response.json();
-                fetchData();
+            
+                fetchFavoritos();
                 alert('Produto removido com sucesso:');
             } else {
                 const error = await response.json();
@@ -61,9 +62,6 @@ const ProdutosFavoritos = () => {
         }
     };
     
- 
-    
-    // Verifique se está carregando ou se houve erro
     if (loading) return <div>Carregando...</div>;
     if (error) return <div>{error}</div>;
 
@@ -78,7 +76,6 @@ const ProdutosFavoritos = () => {
                         <p>{produto.Preço}</p>
                         <p>{produto.categoria}</p>
                         <button onClick={() => removerFavorito(produto.id)}>Remover Favorito</button>
-                        
                     </li>
                 ))}
             </ul>
