@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
-
 import './ProdutosCarrinho.css';
 
 const ProdutosCarrinho = () => {
-
+  const navigate = useNavigate();
   const [produtos, setProdutos] = useState([]);
   const [precoTotal, setPrecoTotal] = useState([]); 
 
@@ -42,13 +41,12 @@ const ProdutosCarrinho = () => {
   };
 
   useEffect(() => {
-    fetchData(); // Chama a função para buscar os dados
+    fetchData(); 
   }, []);
   
   
   const removerDoCarrinho = async (produtoId) => {
     try {
-      // Requisição POST para adicionar o produto ao carrinho
       const response = await fetch('http://localhost:8000/api/remove-to-cart/', {
         method: 'DELETE',
         headers: {
@@ -62,7 +60,7 @@ const ProdutosCarrinho = () => {
 
       if (response.ok) {
         const result = await response.json();
-        fetchData(); // Chama a função para buscar os dados
+        fetchData(); 
         alert('Produto removido do carrinho com sucesso!');
       } else {
         const error = await response.json();
@@ -71,10 +69,11 @@ const ProdutosCarrinho = () => {
     } catch (error) {
       console.error('Erro ao remover produto do carrinho:', error);
     }
-
     
 }
-
+const handleCheckout = () => {
+      navigate('/checkout');
+    };
 
   //Ser feliz
 
@@ -98,13 +97,16 @@ const ProdutosCarrinho = () => {
 
           <button 
             className=""
-            onClick={() => removerDoCarrinho(produto.id)} // Chama a função para adicionar ao carrinho
+            onClick={() => removerDoCarrinho(produto.id)} 
           >Remover produto</button>
         </li>
       ))}
     </ul>
 
     <h1>Preco Total: {precoTotal}</h1>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '10vh' }}>
+      <button onClick={handleCheckout} style={{ padding: '10px 20px', fontSize: '16px' }}>Finalizar Compra</button>
+    </div>
     
   </div>
 

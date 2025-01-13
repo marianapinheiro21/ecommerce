@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/produtos/categorias/', CategoriaChoicesAPIView.as_view(), name='categoria_choices'),
     path('api/produtos/categoria/<str:categoria>/',ProdutoPorCategoriaAPIView.as_view(), name='produtos-por-categoria'),
     path('api/lojista/vendas/', LojistaVendasAPIView.as_view(), name='lojista-vendas'),
+    path('api/lojista/produtos/', LojistaProdutosAPIView.as_view(), name='lojista-produtos'),
     #path('registar/lojista/', novoLojista, name='novoLojista'),
     #path('sucesso/', sucesso, name='sucesso'), 
     #path('criar_login/', criar_login, name='criar_login'),
@@ -57,6 +58,8 @@ urlpatterns = [
     path('produto/computadores/', produtos_computadores, name='produtos_computadores'),
     path('produto/acessorios/', produtos_acessorios, name='produtos_acessorios'),
     path('produto/portateis/', produtos_portateis, name='produtos_portateis'),
+    path('api/produtos/update/<int:pk>/', views.ProdutoUpdateAPIView.as_view(), name='produto-update'),
+    path('api/lojista/produtos-sold/', ProdutosSoldAPIView.as_view(), name='produtos-sold'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const DadosPessoais = () => {
+const DadosPessoaisLojista = () => {
     const [dados, setDados] = useState({
         nome: '',
         email: '',
         ntelefone: '',
+        nif: '',
+        morada: '',
     });
     const [isEditing, setIsEditing] = useState(false);  // Controla se o formulário de edição está visível
     const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ const DadosPessoais = () => {
         const fetchDados = async () => {
             const token = localStorage.getItem('accessToken');
             try {
-                const response = await axios.get('/api/cliente/dados/', {
+                const response = await axios.get('/api/lojista/me/', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -38,7 +40,7 @@ const DadosPessoais = () => {
         const token = localStorage.getItem('accessToken');
 
         try {
-            const response = await axios.patch('/api/cliente/editar/', dados, {
+            const response = await axios.patch('/api/lojista/update/', dados, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -53,7 +55,7 @@ const DadosPessoais = () => {
         }
     };
 
-    // Exibe o formulário de edição ou os dados do cliente
+    // Exibe o formulário de edição ou os dados do lojista
     return (
 
         
@@ -65,7 +67,6 @@ const DadosPessoais = () => {
                 <>
                     {!isEditing ? (
                         <div>
-                            <h2>Dados Pessoais</h2>
                             <p><strong>Nome:</strong> {dados.nome}</p>
                             <p><strong>Email:</strong> {dados.email}</p>
                             <p><strong>Nif:</strong> {dados.nif}</p>
@@ -75,10 +76,9 @@ const DadosPessoais = () => {
                         </div>
                     ) : (
                         // Exibe o formulário de edição
-                        <form onSubmit={handleSubmit} class="form-dados-pessoais">
+                        <form onSubmit={handleSubmit}>
                             <div>
-                                <h3>Alterar dados pessoais</h3>
-                                <label htmlFor="nome">Nome: </label>
+                                <label htmlFor="nome">Nome</label>
                                 <input
                                     type="text"
                                     id="nome"
@@ -89,7 +89,7 @@ const DadosPessoais = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="email">Email: </label>
+                                <label htmlFor="email">Email</label>
                                 <input
                                     type="email"
                                     id="email"
@@ -100,7 +100,7 @@ const DadosPessoais = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="nif">Nif: </label>
+                                <label htmlFor="nif">Nif</label>
                                 <input
                                     type="number"
                                     id="nif"
@@ -111,7 +111,7 @@ const DadosPessoais = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="telefone">Telefone: </label>
+                                <label htmlFor="telefone">Telefone</label>
                                 <input
                                     type="number"
                                     id="telefone"
@@ -122,7 +122,7 @@ const DadosPessoais = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="morada">Morada: </label>
+                                <label htmlFor="morada">Morada</label>
                                 <input
                                     type="text"
                                     id="morada"
@@ -143,4 +143,4 @@ const DadosPessoais = () => {
     );
 };
 
-export default DadosPessoais;
+export default DadosPessoaisLojista;

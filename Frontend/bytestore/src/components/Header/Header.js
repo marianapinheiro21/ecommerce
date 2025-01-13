@@ -64,7 +64,7 @@ const Header = () => {
 }, [isLoggedIn]);
 
 const fetchCounts = async () => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn || (localStorage.getItem('userType')==='lojista')) return;
     
     try {
         console.log("Starting fetchCounts...");  // Debug log
@@ -107,9 +107,18 @@ const fetchCounts = async () => {
         try {
             await logoutUser();
             localStorage.removeItem('accessToken');
-            navigate('/login');
+            localStorage.removeItem('userType');
+            navigate('/');
         } catch (error) {
             console.error('Error logging out:', error);
+        }
+    };
+
+    const handleDashboard = async() => {
+        if (localStorage.getItem('userType')==='lojista'){
+            navigate('/lojista/dashboard');
+        } else {
+            navigate('/dashboard');
         }
     };
 
@@ -296,7 +305,8 @@ const fetchCounts = async () => {
                     >
                         <MenuItem onClick={() => {
                             setUserMenu(null);
-                            navigate('/dashboard');
+                            handleDashboard();
+                            
                         }}>
                             Dashboard
                         </MenuItem>

@@ -15,8 +15,6 @@ const HomePage = () => {
   return (
     <div>
       <Carrossel />
-      <CircleComponents />
-      <h1>Welcome to the Home Page</h1>
       <TodosProdutos />
       {/* Additional homepage content */}
       {/*<h1> Produtos Disponíveis </h1>
@@ -38,7 +36,7 @@ const HomePage = () => {
                 </li>
             ))}
           </ul> */}
-      <Footer />
+      
     </div>
   );
 };

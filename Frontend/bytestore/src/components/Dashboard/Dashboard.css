@@ -10,19 +10,8 @@ section {
     padding: 1rem;
 }
 
-.dados-pessoais {
-    background-color: #B6CDCC;
-    
-}
-
-.historico-compras {
-    background-color: #d3d4d4;
-   
-}
-
 .produtos-favoritos {
     background-color: #B6CDCC;
-
 }
 
 .button-logout {
@@ -39,11 +28,16 @@ section {
     border-bottom: 1rem;
 }
 
-.alterar-dados-pessoais {
+button .alterar-dados-pessoais {
     background-color: #fff;
     padding: 10px 15px;  
     border: black;  
     border-radius: 8px;
     cursor: pointer;  
 }
+
+form .form-dados-pessoais {
+    padding: 1rem;
+}
+
 

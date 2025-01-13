@@ -8,13 +8,12 @@ const ProdutosFavoritos = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Função para buscar favoritos
         const fetchFavoritos = async () => {
             try {
-                const data = await listarFavoritos(); // Chama a função da API
-                console.log('Favoritos recebidos:', data); // Imprima para verificar os dados
-                if (Array.isArray(data.favoritos)) {  // Verifique se 'favoritos' é um array
-                    setFavoritos(data.favoritos); // Armazene os favoritos no estado
+                const data = await listarFavoritos(); 
+                console.log('Favoritos recebidos:', data); 
+                if (Array.isArray(data.favoritos)) { 
+                    setFavoritos(data.favoritos); 
                 } else {
                     setError('Dados de favoritos inválidos');
                 }
@@ -36,31 +35,29 @@ const ProdutosFavoritos = () => {
             setError('Você precisa estar logado para remover um favorito');
             return;
         }
-        
-        try {
-            // Verifique se o produtoId está sendo passado corretamente
-            console.log('Produto ID enviado:', produtoId);
     
-            // Enviar a requisição DELETE com o produto_id no corpo
-            const response = await axios.delete('/api/remover/favorito/', {
+        try {
+            const response = await fetch('http://localhost:8000/api/remover/favorito/', {
+                method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`  
                 },
-                data: { produto_id: produtoId } // Enviar produto_id no corpo da requisição
+                body: JSON.stringify({
+                    produto_id: produtoId  
+                })
             });
     
-            setFavoritos(favoritos.filter(produto => produto.id !== produtoId));
-            console.log('Produto removido com sucesso:', response.data);
-        } catch (err) {
-            console.error('Erro ao remover favorito:', err);
-    
-            if (err.response) {
-                console.log('Erro detalhes:', err.response.data);
-                setError(`Erro: ${err.response.data.error || err.response.data.detail}`);
+            if (response.ok) {
+                const result = await response.json();
+                fetchData();
+                alert('Produto removido com sucesso:');
             } else {
-                setError('Erro desconhecido ao remover favorito');
+                const error = await response.json();
+                alert('Erro ao remover favorito:' + error.error);
             }
+        } catch (error) {
+            console.error('Erro ao remover ', error);
         }
     };
     
@@ -81,6 +78,7 @@ const ProdutosFavoritos = () => {
                         <p>{produto.Preço}</p>
                         <p>{produto.categoria}</p>
                         <button onClick={() => removerFavorito(produto.id)}>Remover Favorito</button>
+                        
                     </li>
                 ))}
             </ul>
