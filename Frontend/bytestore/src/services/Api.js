@@ -97,7 +97,10 @@ export const loginLojista = async (credentials) => {
     }
 };
 
-
+export const isAuthenticated = () => {
+    const token = localStorage.getItem('accessToken');
+    return !!token; // Retorna true se existir token, false caso contrário
+};
 
 export const logoutUser = async () => {
     try {
@@ -198,6 +201,45 @@ export const listarFavoritos = async () => {
     }
 };
 
+// Verificar se um produto está nos favoritos
+export const verificarFavorito = async (produtoId) => {
+    try {
+        const favoritos = await listarFavoritos();
+        return favoritos.favoritos.some(fav => fav.Produto.id === produtoId);
+    } catch (error) {
+        console.error('Erro ao verificar favorito:', error);
+        return false;
+    }
+};
+
+// Adicionar aos favoritos
+export const adicionarFavorito = async (produtoId) => {
+    try {
+        const response = await apiInstance.post('/api/adicionar_favorito/', {
+            produto_id: produtoId
+        });
+        window.dispatchEvent(new Event('favoritesUpdated'));
+        return response.data;
+    } catch (error) {
+        console.error('Erro ao adicionar favorito:', error);
+        throw error;
+    }
+};
+
+// Remover dos favoritos
+export const removerFavorito = async (produtoId) => {
+    try {
+        const response = await apiInstance.delete('/api/remover/favorito/', {
+            data: { produto_id: produtoId }
+        });
+        window.dispatchEvent(new Event('favoritesUpdated'));
+        return response.data;
+    } catch (error) {
+        console.error('Erro ao remover favorito:', error);
+        throw error;
+    }
+};
+
 // Função para buscar os dados pessoais
 export const getDadosPessoais = async () => {
     try {
@@ -215,5 +257,55 @@ export const updateCliente = async (dados) => {
         return response.data; // Dados atualizados retornados pela API
     } catch (error) {
         throw error;
+    }
+};
+
+//Procurar produtos
+export const buscarProdutos = async (searchTerm) => {
+    try {
+        const response = await apiInstance.get(`/buscar/produto/?q=${searchTerm}`);
+        return response.data;
+    } catch (error) {
+        console.error('Erro na busca:', error);
+        throw error;
+    }
+};
+
+apiInstance.interceptors.request.use(config => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, error => Promise.reject(error));
+
+export const getCartCount = async () => {
+    try {
+        const response = await apiInstance.get('/cart/count/');
+        console.log('Cart count response:', response.data);
+        return response.data.count || 0;
+    } catch (error) {
+        console.error('Error fetching cart count:', error);
+        return 0;
+    }
+};
+
+export const getFavoritesCount = async () => {
+    try {
+        const response = await apiInstance.get('/favorites/count/');
+        console.log('Favorites count response:', response.data);
+        return response.data.count || 0;
+    } catch (error) {
+        console.error('Error fetching favorites count:', error);
+        return 0;
+    }
+};
+export const searchProducts = async (query) => {
+    try {
+        const response = await apiInstance.get(`/produtos/search/?q=${query}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error searching products:', error);
+        return [];
     }
 };

@@ -27,6 +27,10 @@ import { AuthProvider } from './context/AuthContext';
 import Footer from './components/Footer/Footer';
 import Checkout from './components/Checkout/Checkout'
 import Sucesso from './components/Sucesso/Sucesso';
+import Favoritos from './components/Favoritos/Favoritos';
+
+
+
 
 
 
@@ -58,8 +62,8 @@ function App() {
             <Route path="/produtos/computadoresfixos" element={<ProdutosComputadorFixo />} />
             <Route path="/produtos/portateis" element={<ProdutosComputadorPortatil />} />
             <Route path="/produtos/perifericos" element={<ProdutosPeriferico />} />
-            {/*<Route path="/produtos/carrinho" element={<ProdutosCarrinho />} />
-             Rota privada para o Dashboard do Cliente */}
+            <Route path="/favoritos" element={<Favoritos />} />
+
             <Route path="/dashboard" element={<PrivateRoute allowedRoles={['cliente']}><Dashboard /></PrivateRoute>}  />
             <Route path="/produtos/carrinho" element={<PrivateRoute allowedRoles={['cliente']}><ProdutosCarrinho /></PrivateRoute>} />
             <Route path="/checkout" element={<PrivateRoute allowedRoles={['cliente']}><Checkout /></PrivateRoute>}  />
