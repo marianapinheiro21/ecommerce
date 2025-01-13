@@ -5,6 +5,7 @@ import HistoricoCompras from './HistoricoCompras';
 import ProdutosFavoritos from './ProdutosFavoritos';
 import axios from 'axios';
 import './Dashboard.css';
+import CircleComponents from '../CircleComponents/CircleComponents';
 
 function Dashboard() {
     const [error, setError] = useState('');  // Declarando o state para o erro
@@ -57,8 +58,9 @@ function Dashboard() {
 
     return (
         <div class="div-container">
-
-            <h1>Dashboard do Cliente</h1>
+        <CircleComponents />
+            <h1>Bem-vindo de Volta!</h1>
+            <h2>Dashboard do Cliente</h2>
             {/* Seção de dados pessoais */}
             <section class="dados-pessoais">
                 <h2>Dados Pessoais</h2>

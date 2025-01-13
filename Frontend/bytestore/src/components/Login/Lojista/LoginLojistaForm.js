@@ -56,10 +56,14 @@ const LoginLojistaForm = () => {
         navigate('/lojista/register');
     }
 
+    const handleCliente = () =>{
+        navigate('/login');
+    }
+
     return (
         <div className="login-container">
             <form className="login-form" onSubmit={handleLogin}>
-            <h1> Bem-Vindo!</h1>       
+            <h1> Bem-Vind@, Lojista!</h1>       
                     <label htmlFor="email">Email: </label>
                     <input
                         type="email"
@@ -82,6 +86,7 @@ const LoginLojistaForm = () => {
                 {error && <p className="error">{error}</p>}
 
                 <button onClick={handleCreateAccount}>Create Account</button> 
+                <button onClick={handleCliente}>É um Cliente?</button> 
             </form>
 
             

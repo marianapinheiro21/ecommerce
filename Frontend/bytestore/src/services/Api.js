@@ -121,21 +121,6 @@ export const logoutUser = async () => {
 
 export const adicionarProdutos = async (formData, token) => {
     const url = `${API_URL}/produtos/create/`;
-    /*const formData = new FormData();
-
-    formData.append('nome', productData.nome);
-    formData.append('preco', productData.preco);
-    formData.append('descricao', productData.descricao);
-    formData.append('stock', productData.stock);
-    formData.append('categoria', productData.categoria);
-
-    if (productData.imagens && productData.imagens.length > 0) {
-        productData.imagens.forEach(file => {
-            formData.append('imagens', file);
-        });
-    } else {
-        console.error('No images to upload');
-    } */
 
     try {
         const response = await fetch(url, {
@@ -158,6 +143,29 @@ export const adicionarProdutos = async (formData, token) => {
     }
 };
 
+export const createVenda = async (accessToken) => {
+    const url = `${API_URL}/venda/create/`;
+  
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log('Venda created successfully:', data);
+      return data;
+    } catch (error) {
+      console.error('Failed to create venda:', error);
+    }
+  }
 
 // Function to fetch cart data by user ID
 export const fetchCarrinho = async () => {
