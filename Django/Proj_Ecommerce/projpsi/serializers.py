@@ -167,7 +167,7 @@ class PrivateLojistaSerializer(serializers.ModelSerializer):
     """
     Serializer para exibir os dados completos do lojista autenticado.
     """
-    id = serializers.IntegerField(source='user.id')
+    id = serializers.IntegerField(source='user.id', read_only=True)
     total_ganho = serializers.SerializerMethodField()
     nome = serializers.SerializerMethodField(source='user.nome')
     email = serializers.SerializerMethodField(source='user,email')
@@ -177,7 +177,7 @@ class PrivateLojistaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lojista
-        fields = ['user', 'nome', 'email', 'nif', 'ntelefone', 'morada', 'total_ganho']
+        fields = ['id', 'nome', 'email', 'nif', 'ntelefone', 'morada', 'total_ganho']
 
     def get_nome(self, obj):
         return obj.user.nome

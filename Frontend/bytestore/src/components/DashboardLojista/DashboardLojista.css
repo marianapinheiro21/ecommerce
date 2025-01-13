@@ -1,0 +1,38 @@
+.dashboard-container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+}
+
+.dashboard-container h1,
+.dashboard-container h2 {
+    color: #333;
+}
+
+.button-logout {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button-logout:hover {
+    background-color: #d32f2f;
+}
+
+.dados-pessoais {
+    margin-top: 20px;
+}
+
+section {
+    background: white;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
