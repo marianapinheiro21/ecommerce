@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import DadosPessoaisLojista from './DadosPessoaisLojista';
 import { fetchLojistaSales } from '../../services/Api';
 import './DashboardLojista.css'
+import ProdutosLojista from './ProdutosLojista';
+import ProdutosVendidos from './ProdutosVendidos';
 
 function DashboardLojista() {
     //const [error, setError] = useState('');  // Declarando o state para o erro
@@ -18,6 +20,7 @@ function DashboardLojista() {
         if (authToken) {
             setLoading(true);
             fetchLojistaSales(authToken).then(data => {
+                console.log('Data received:', data);
                 setSales(data);
                 setLoading(false);
             }).catch(err => {
@@ -48,18 +51,21 @@ function DashboardLojista() {
             ) : (
                 <section>
                     <h2>Estes são os seus ganhos desde que se juntou à Byte Store:</h2>
-                    <p>${sales ? sales.totalSales : 'Data not available'}</p>
+                    <p>{sales ? sales.total_sales : 'Data not available'}€</p>
                     <p>Obrigada Pelo seu Apoio</p>
                 </section>
             )}
 
+            <ProdutosVendidos />
+            
             <section className="dados-pessoais">
                 <h2>Dados Pessoais</h2>
                 <DadosPessoaisLojista />
             </section>
 
             <section>
-                <button className="button-logout" onClick={logout}>Logout</button>
+                <h2>Os seu produtos: </h2>
+                <ProdutosLojista />
             </section>
         </div>
     );
