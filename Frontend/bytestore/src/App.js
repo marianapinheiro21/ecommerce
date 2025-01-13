@@ -34,6 +34,7 @@ function App() {
   useEffect(() => {
     // Clear the accessToken on initial app load
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('userType');
   }, []);
 
 
