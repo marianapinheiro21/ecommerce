@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
-
 import './ProdutosCarrinho.css';
 
 const ProdutosCarrinho = () => {
-
+  const navigate = useNavigate();
   const [produtos, setProdutos] = useState([]);
   const [precoTotal, setPrecoTotal] = useState([]); 
 
@@ -71,10 +70,11 @@ const ProdutosCarrinho = () => {
     } catch (error) {
       console.error('Erro ao remover produto do carrinho:', error);
     }
-
     
 }
-
+const handleCheckout = () => {
+      navigate('/checkout');
+    };
 
   //Ser feliz
 
@@ -105,6 +105,9 @@ const ProdutosCarrinho = () => {
     </ul>
 
     <h1>Preco Total: {precoTotal}</h1>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '10vh' }}>
+      <button onClick={handleCheckout} style={{ padding: '10px 20px', fontSize: '16px' }}>Finalizar Compra</button>
+    </div>
     
   </div>
 

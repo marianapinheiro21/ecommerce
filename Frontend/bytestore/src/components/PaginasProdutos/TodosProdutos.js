@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import './TodosProdutos.css';
 import Modal from './Modal'
 import CircleComponents from "../CircleComponents/CircleComponents";
+import { useNavigate } from "react-router-dom";
 
 function TodosProdutos() {
   const [produtos, setProdutos] = useState([]); // Estado para produtos
@@ -10,7 +11,8 @@ function TodosProdutos() {
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState('');
   const { authToken, userType, logout } = useAuth();
-
+  const navigate = useNavigate();
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -112,6 +114,10 @@ function TodosProdutos() {
     console.log("Modal should be showing:", showModal);
   }, [showModal]);
 
+  const handleImageClick = (produtoId) => {
+    navigate(`/produto/${produtoId}`);
+  };
+
   return (
     <div className="todosProdutos-container">
       <h1> Aqui podes encontrar todos os produtos que temos disponíveis para si! </h1>
@@ -121,7 +127,7 @@ function TodosProdutos() {
           <li className="todos-produtos-li" key={produto.id}>
             <h2>{produto.nome}</h2>
             
-            <div className="product-image">
+            <div className="product-image" onClick={() => handleImageClick(produto.id)}>
             {produto.imagens.length > 0 ? (
               <img src={produto.imagens[0].imagem} alt={produto.nome} />
             ) : (
