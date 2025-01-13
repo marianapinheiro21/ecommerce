@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
-from django.http import HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden
+from django.http import Http404, HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden
 from django.contrib.auth.models import AbstractBaseUser
 from django.utils.timezone import now
 from django.http import HttpResponse, HttpResponseForbidden
@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from .models import *
 from .forms import *
 from .serializers import *
@@ -26,7 +26,7 @@ from django.views.decorators.csrf import csrf_exempt
 from projpsi.models import Cliente, Produto, Carrinho, CarrinhoProduto
 import logging
 from django.conf import settings
-from django.db.models import Q #Consultas na barra de navegação
+from django.db.models import Q, F, Sum#Consultas na barra de navegação
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 logger = logging.getLogger(__name__)
@@ -788,13 +788,51 @@ class ProdutosCompradosAPIView(APIView):
     
 class LojistaVendasAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsLojista]
-    serializer_class = GetVendaSerializerLojista
+    serializer_class = VendaSerializer  # Ensure you have an appropriate serializer
 
+    def get(self, request, *args, **kwargs):
+        lojista_id = request.user.id
+        total_sales = CarrinhoProduto.objects.filter(
+            carrinho__venda__isnull=False,  # Ensures that the Carrinho is part of a Venda
+            produto__lojista_id=lojista_id
+        ).annotate(
+            total_price=F('produto__preco') * F('quantidade')
+        ).aggregate(
+            total_sales=Sum('total_price')
+        )
+
+        return Response({"total_sales": total_sales['total_sales']})
+    
     def get_queryset(self):
-        lojista = getattr(self.request.user, 'lojista', None)
-        if not lojista:
-            return Venda.objects.none()
-        return Venda.objects.filter(carrinho__cliente__id=lojista.user.id)
+        lojista_id = self.request.user.lojista.id
+        vendas = CarrinhoProduto.objects.filter(
+            carrinho__venda__isnull=False,  # Ensures that the Carrinho is part of a Venda
+            produto__lojista_id=lojista_id
+        ).annotate(
+            total_price=F('produto__preco') * F('quantidade')
+        ).aggregate(
+            total_sales=Sum('total_price')
+        )
+
+        return vendas
+    
+
+class ProdutosSoldAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsLojista]
+
+    def get(self, request, *args, **kwargs):
+        lojista_id = request.user.id
+        produtos_sold = CarrinhoProduto.objects.filter(
+            carrinho__venda__isnull=False,  # Ensure the Carrinho has been checked out
+            produto__lojista_id=lojista_id
+        ).values(
+            'produto_id', 'produto__nome', 'produto__preco'
+        ).annotate(
+            total_quantity=Sum('quantidade')
+        ).order_by('-total_quantity')
+
+        serializer = ProdutoSoldSerializer(produtos_sold, many=True)
+        return Response(serializer.data)
 
 class LojistaProdutosAPIView(generics.ListAPIView):
     serializer_class = ProdutoSerializer
@@ -809,6 +847,25 @@ class LojistaProdutosAPIView(generics.ListAPIView):
         return Produto.objects.filter(lojista=lojista)
         
     
+class ProdutoUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsLojista]
+    parser_classes = (JSONParser, MultiPartParser, FormParser)
+
+    def get_object(self, pk):
+        try:
+            return Produto.objects.get(pk=pk)
+        except Produto.DoesNotExist:
+            raise Http404
+
+    def put(self, request, pk, format=None):
+        produto = self.get_object(pk)
+        serializer = ProdutoSerializer(produto, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+        
 class BuscarProdutosAPIView(APIView):
     def get(self, request, *args, **kwargs):
         query = request.query_params.get('q', None)

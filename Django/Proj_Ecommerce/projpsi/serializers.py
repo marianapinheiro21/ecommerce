@@ -258,7 +258,7 @@ class ProdutoImagemSerializer(serializers.ModelSerializer):
 class ProdutoSerializer(serializers.ModelSerializer):
 
     imagens = ProdutoImagemSerializer(many=True, read_only=True)
-    lojista = PublicLojistaSerializer(read_only=True)
+    lojista = PublicLojistaSerializer()
     
     class Meta:
         model = Produto
@@ -274,6 +274,16 @@ class ProdutoSerializer(serializers.ModelSerializer):
         for image_data in image_files.values():
             ProdutoImagem.objects.create(produto=produto, imagem=image_data)
         return produto
+    
+    def update(self, instance, validated_data):
+        instance.nome = validated_data.get('nome', instance.nome)
+        instance.preco = validated_data.get('preco', instance.preco)
+        instance.descricao = validated_data.get('descricao', instance.descricao)
+        instance.stock = validated_data.get('stock', instance.stock)
+        instance.categoria = validated_data.get('categoria', instance.categoria)
+        instance.save()
+        return instance
+    
 
 class ProdutoDetailSerializer(serializers.ModelSerializer):
     imagens = ProdutoImagemSerializer(many=True, read_only=True)
@@ -437,3 +447,9 @@ class GetVendaSerializerLojista(serializers.ModelSerializer):
         produtos = CarrinhoProduto.objects.filter(venda=obj)
         total = sum(CarrinhoProduto.quantidade * CarrinhoProduto.produto.preco for CarrinhoProduto in produtos)  
         return total
+    
+class ProdutoSoldSerializer(serializers.Serializer):
+    produto_id = serializers.IntegerField(read_only=True)
+    produto__nome = serializers.CharField(read_only=True)
+    produto__preco = serializers.FloatField(read_only=True)
+    total_quantity = serializers.IntegerField(read_only=True)

@@ -58,6 +58,8 @@ urlpatterns = [
     path('produto/computadores/', produtos_computadores, name='produtos_computadores'),
     path('produto/acessorios/', produtos_acessorios, name='produtos_acessorios'),
     path('produto/portateis/', produtos_portateis, name='produtos_portateis'),
+    path('api/produtos/update/<int:pk>/', views.ProdutoUpdateAPIView.as_view(), name='produto-update'),
+    path('api/lojista/produtos-sold/', ProdutosSoldAPIView.as_view(), name='produtos-sold'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
