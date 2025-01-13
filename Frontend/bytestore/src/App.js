@@ -24,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import LojistaList from './components/Lojista/LojistaList';
 import LojistaDetail from './/components/Lojista/LojistaDetail';
 import { AuthProvider } from './context/AuthContext';
+import Footer from './components/Footer/Footer';
 
 
 
@@ -63,6 +64,7 @@ function App() {
             <Route path="/lojista/dashboard" element={<PrivateRoute allowedRoles={['lojista']}><DashboardLojista /></PrivateRoute>} />
             <Route path="lojista/produtos/novo" element={<PrivateRoute allowedRoles={['lojista']}><AdicionarProdutos /></PrivateRoute>} />
           </Routes>
+          <Footer />
         </AuthProvider>
 
       </ErrorBoundary> 
