@@ -103,7 +103,7 @@ const handleCheckout = () => {
       ))}
     </ul>
 
-    <h1>Preco Total: {precoTotal}</h1>
+    <h1>Preço Total: {precoTotal} €</h1>
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '10vh' }}>
       <button onClick={handleCheckout} style={{ padding: '10px 20px', fontSize: '16px' }}>Finalizar Compra</button>
     </div>

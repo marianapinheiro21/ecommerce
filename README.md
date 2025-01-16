@@ -1,46 +1,68 @@
 # ecommerce
 Projecto para PSI
 
-Access Key
-AKIA3M7ADALCPBUSBTCZ
 
-Secret Access Key
-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
-
-
-CLIENTES:
-
-Glinda
-glinda@thegood.com
-popular!
-(sem mais dados)
-
-123456789 
-Elphaba
-wickedwitch@ofthewest.com
-wickedelphaba
-987654321
-rua de oz
-
-LOGISTAS
-Wizard of Oz
-wizard@oz.com
-234567891
-963852741
-Esmerald City
-123wizard123
-
-Byte Store
-byte@store.com
-963852741
-741852963
-memoriaRAM
+Alguns JSON para Login e de criaço de Utilizadores
 
 
 
-(superuser)
-byte@store.com
-memoriaRAM
+CLIENTES
+
+{
+    "nome":"Cliente Fantastico", 
+    "email":"cliente@fantastico.com", 
+    "password":"awesomeclient", 
+    "nif":"741852852", 
+    "ntelefone":"123321321", 
+    "morada":"rua das flores"
+}
+
+{ 
+    "email":"cliente@fantastico.com", 
+    "password":"awesomeclient"
+}
+
+{
+    "nome":"Glinda", 
+    "email":"Glinda@oz.com", 
+    "password":"thegood", 
+    "nif":"418524554", 
+    "ntelefone":"852321321", 
+    "morada":"Shiz University"
+}
+
+{
+    "email":"Glinda@oz.com", 
+    "password":"thegood"
+}
 
 
+{
+    "nome":"Elphaba", 
+    "email":"elphaba@oz.com", 
+    "password":"theWickedWitch", 
+    "nif":"417724554", 
+    "ntelefone":"865221321", 
+    "morada":"Shiz University"
+}
 
+{
+    "email":"elphaba@oz.com", 
+    "password":"theWickedWitch"
+}
+
+LOJISTAS
+
+{
+    "nome":"Lojista Fantastico", 
+    "email":"lojista@fantastico.com", 
+    "password":"awesomestoreperson", 
+    "nif":"741852853", 
+    "ntelefone":"123321322", 
+    "morada":"rua das flores"
+}
+
+{
+    "email":"lojista@fantastico.com", 
+    "password":"awesomestoreperson"
+}

@@ -79,14 +79,14 @@ function Dashboard() {
         <div className="dashboard-container">
             <h1>Bem-vindo de Volta, {cliente ? cliente.nome : 'Carregando...'}!</h1> 
 
-            <section>
+            <section className="dashboard">
                 <button class="fazer-compras" onClick={goToProducts}>
                     Clique aqui para comprar os seus produtos!
                 </button>
             </section>
 
             
-            <section className="dados-pessoais">
+            <section className="dashboard">
                 <button onClick={toggleDadosPessoais}>
                     {mostrarDadosPessoais ? 'Ocultar seus dados pessoais' : 'Dados Pessoais'}
                 </button>
@@ -95,11 +95,11 @@ function Dashboard() {
                 {mostrarDadosPessoais && <DadosPessoais />}
             </section>
 
-            <section class="produtos-favoritos">
+            <section className="dashboard">
                 <ProdutosFavoritos />
             </section>
 
-            <section >
+            <section className="dashboard">
                 <button class="button-logout" onClick={handleLogout}>Logout</button>
             </section>
         </div>

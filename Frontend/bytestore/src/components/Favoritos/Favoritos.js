@@ -128,7 +128,7 @@ const Favoritos = () => {
                                         {favorito.Descricao}
                                     </Typography>
                                     <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
-                                        R$ {favorito.Preço}
+                                        € {favorito.Preço}
                                     </Typography>
                                 </CardContent>
                                 <CardActions sx={{ justifyContent: 'space-between' }}>
