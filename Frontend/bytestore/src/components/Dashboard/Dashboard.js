@@ -76,9 +76,8 @@ function Dashboard() {
       
 
     return (
-        <div class="div-container">
-        <CircleComponents />
-            <h1>Bem-vindo de Volta, {cliente ? cliente.nome : 'Carregando...'}!</h1> {/* Exibe o nome do cliente ou 'Carregando...' */}
+        <div className="dashboard-container">
+            <h1>Bem-vindo de Volta, {cliente ? cliente.nome : 'Carregando...'}!</h1> 
 
             <section>
                 <button class="fazer-compras" onClick={goToProducts}>
