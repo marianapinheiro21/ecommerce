@@ -833,6 +833,41 @@ class ProdutosSoldAPIView(APIView):
 
         serializer = ProdutoSoldSerializer(produtos_sold, many=True)
         return Response(serializer.data)
+    
+class UpdateCarrinhoProdutoAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsCliente]
+
+    def patch(self, request):
+        produto_id = request.data.get('produto_id')
+        nova_quantidade = request.data.get('quantidade')
+
+        if not produto_id or nova_quantidade is None:
+            return Response({"error": "produto_id e quantidade são obrigatórios."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            carrinho_produto = CarrinhoProduto.objects.get(
+                carrinho__cliente=request.user.cliente, 
+                produto_id=produto_id
+            )
+        except CarrinhoProduto.DoesNotExist:
+            return Response({"error": "Produto não encontrado no carrinho."}, status=status.HTTP_404_NOT_FOUND)
+
+        if nova_quantidade < 1:
+            return Response({"error": "Quantidade deve ser ao menos 1."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if carrinho_produto.produto.stock < nova_quantidade:
+            return Response({
+                "error": "Stock insuficiente. Stock disponível: {}".format(carrinho_produto.produto.stock)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        carrinho_produto.quantidade = nova_quantidade
+        carrinho_produto.save()
+
+        carrinho = carrinho_produto.carrinho
+        carrinho.total = sum(item.quantidade * item.produto.preco for item in CarrinhoProduto.objects.filter(carrinho=carrinho))
+        carrinho.save()
+
+        return Response({"message": "Quantidade atualizada com sucesso!"}, status=status.HTTP_200_OK)
 
 class LojistaProdutosAPIView(generics.ListAPIView):
     serializer_class = ProdutoSerializer
