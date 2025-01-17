@@ -19,6 +19,8 @@ urlpatterns = [
     path('api/add-to-carrinho/', CarrinhoProdutoAPIView.as_view(), name='add-to-carrinho'),
     path('api/remove-to-cart/', RemoverProdutosCarrinhoAPIView.as_view(), name='remove-to-cart'),
     path('api/venda/create/', CreateVendaAPIView.as_view(), name='create-venda'),
+    path('api/carrinho/update/', UpdateCarrinhoProdutoAPIView.as_view(), name='update-carrinho-produto'),
+
     path('api/carrinho/', ProdutosNoCarrinhoAPIView.as_view(), name='produtos-no-carrinho'),
     path('api/produtos-comprados/', ProdutosCompradosAPIView.as_view(), name='produtos-comprados'),
     path('api/lojistas/', PublicLojistaListAPIView.as_view(), name='public_lojista_list'),
